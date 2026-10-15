@@ -1,0 +1,1487 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!-- עותק של קוד האפליקציה "לתלמיד - דוח למידה PBI מס' 1" (גרסה 10, 9.10.2026: הוחזר הצהוב של מערכת העיצוב (כפתור העתקה ראשי, קו תחתון לכותרת, קצה למטרת השיעור ולשונית נבחרת). גרסה 9: נוסף אזור "קבצי הנתונים להורדה" בתוך "עזרה וכלים", באותו אופן כמו במסע ההכנה למורה. גרסה 8: תיבת סיכום אחת במקום שתיים, העתקה שעובדת גם כשהדפדפן חוסם את הלוח, והדבקה נקייה עם כותרות מודגשות בלי צבעי רקע וכתב; הסיכום קוצר. גרסה 7: הוסר כרטיס "השיעור הנוכחי" ותווית "כעת" בלשוניות, ונוספה שכבת תנועה וחומרים לפי apple-design. התוכן, המזהים ומפתחות השמירה לא השתנו). הגרסה החיה: https://claude.ai/artifact/ANxBiCmMftYhVMPkdxsntd. לעריכה: לקרוא את הקישור, לשנות ולפרסם מחדש לאותו קישור. -->
+<title>לתלמיד - דוח למידה PBI מס' 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Secular+One&display=swap">
+<style>
+/* Palette: design system "מגמת מידע ונתונים" (tokens.json, 5.10.2026). Colors only: yellow = action and attention, blue = links, labels and done. */
+/* Layout: a lab worksheet for one lesson at a time. Lesson tabs, a goal card, short checkable steps, questions, and a submission card for Moodle. */
+:root {
+  --paper: #f3f5f6;
+  --paper-line: rgba(43, 40, 41, 0.045);
+  --card: #ffffff;
+  --ink: #2b2829;
+  --ink-2: #3a3738;
+  --ink-3: #4d4a4b;
+  --rule: #d5d8db;
+  --bar: #0b6a97;
+  --bar-soft: rgba(37, 170, 226, 0.11);
+  --tape: #ffca08;
+  --tape-ink: #7a5200;
+  --tape-soft: rgba(255, 202, 8, 0.20);
+  --on-tape: #1f1d1e;
+  --sage: #0b6a97;
+  --sage-soft: rgba(37, 170, 226, 0.17);
+  --chip: #eceff1;
+  --focus: #0b6a97;
+  --shadow: 0 1px 2px rgba(31, 29, 30, 0.10), 0 6px 18px rgba(31, 29, 30, 0.08);
+  --fw: 500;
+  --display: 'Secular One', 'Assistant', system-ui, sans-serif;
+  --body: 'Assistant', 'Segoe UI', Arial, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e0e0f; --paper-line: rgba(244, 242, 242, 0.04); --card: #1b1b1d;
+    --ink: #f4f2f2; --ink-2: #d9d6d6; --ink-3: #bdbabb; --rule: #3a3a3d; --fw: 400;
+    --bar: #25aae2; --bar-soft: rgba(37, 170, 226, 0.16);
+    --tape: #ffca08; --tape-ink: #ffca08; --tape-soft: rgba(255, 202, 8, 0.14); --on-tape: #1f1d1e;
+    --sage: #25aae2; --sage-soft: rgba(37, 170, 226, 0.22);
+    --chip: #2a2a2d; --focus: #ffca08;
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e0e0f; --paper-line: rgba(244, 242, 242, 0.04); --card: #1b1b1d;
+  --ink: #f4f2f2; --ink-2: #d9d6d6; --ink-3: #bdbabb; --rule: #3a3a3d; --fw: 400;
+  --bar: #25aae2; --bar-soft: rgba(37, 170, 226, 0.16);
+  --tape: #ffca08; --tape-ink: #ffca08; --tape-soft: rgba(255, 202, 8, 0.14); --on-tape: #1f1d1e;
+  --sage: #25aae2; --sage-soft: rgba(37, 170, 226, 0.22);
+  --chip: #2a2a2d; --focus: #ffca08;
+  --shadow: none;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--paper-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 1.1875rem;
+  line-height: 1.65;
+  font-weight: var(--fw);
+}
+.app { max-width: 860px; margin: 0 auto; padding-inline: 20px; padding-block: 26px 80px; display: grid; gap: 22px; }
+@media (max-width: 480px) { .app { padding-inline: 16px; } body { font-size: 1.125rem; } }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; margin: 0; line-height: 1.2; text-wrap: balance; }
+h1 { font-size: clamp(1.875rem, 6vw, 2.625rem); }
+h2 { font-size: clamp(1.5rem, 4.4vw, 2rem); }
+h3 { font-size: 1.25rem; }
+p { margin: 0; }
+a { color: var(--bar); text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+code { font-family: var(--mono); font-size: 0.84em; background: var(--chip); border-radius: 4px; padding: 1px 6px; direction: ltr; unicode-bidi: isolate; overflow-wrap: anywhere; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Header */
+.top { display: grid; gap: 8px; }
+.eyebrow { font-size: 0.9375rem; font-weight: 700; letter-spacing: 0.05em; color: var(--ink-3); }
+.lede { color: var(--ink-2); max-width: 60ch; }
+
+/* Helper accordions */
+.helpers { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; align-items: start; }
+@media (min-width: 560px) { .helpers { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.help.wide { grid-column: 1 / -1; }
+.help { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; min-width: 0; }
+.help > summary { cursor: pointer; list-style: none; padding: 12px 14px; font-weight: 700; display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+.help > summary::-webkit-details-marker { display: none; }
+.help > summary::after { content: "+"; font-family: var(--mono); color: var(--bar); font-size: 1.25rem; line-height: 1; }
+.help[open] > summary::after { content: "−"; }
+.help-body { padding: 0 14px 14px; display: grid; gap: 10px; font-size: 1.0625rem; color: var(--ink-2); }
+.help-body ul { margin: 0; padding-inline-start: 20px; display: grid; gap: 6px; }
+.help-body b { color: var(--ink); }
+
+/* Lesson tabs */
+.tabs { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; }
+.rod-open { justify-self: start; }
+#h-species { scroll-margin-top: 12px; }
+#tab-8 .t-p { font-family: var(--body); }
+@media (max-width: 620px) { .tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.tab { font: inherit; display: grid; gap: 0; justify-items: center; padding: 8px 4px; background: var(--card); color: var(--ink); border: 1.5px solid var(--rule); border-radius: 12px; cursor: pointer; min-width: 0; }
+.tab .t-n { font-family: var(--display); font-size: 1.375rem; line-height: 1.1; }
+.tab .t-l { font-size: 0.875rem; color: var(--ink-3); }
+.tab .t-p { font-family: var(--mono); font-size: 0.875rem; color: var(--ink-3); }
+.tab[aria-selected="true"] { border-color: var(--bar); }
+.tab[data-done="1"] .t-p { color: var(--sage); font-weight: 500; }
+
+/* Lesson panel */
+.panel { background: var(--card); border: 1px solid var(--rule); border-radius: 16px; box-shadow: var(--shadow); padding: clamp(18px, 3.4vw, 30px); display: grid; gap: 22px; }
+.kicker { font-size: 0.9375rem; font-weight: 700; color: var(--ink-3); letter-spacing: 0.04em; }
+.goal { background: var(--bar-soft); border-radius: 12px; padding: 14px 16px; display: grid; gap: 4px; }
+.goal-label { font-size: 0.875rem; font-weight: 700; color: var(--bar); letter-spacing: 0.05em; }
+.goal p { font-size: 1.1875rem; font-weight: 600; }
+.intro { color: var(--ink-2); max-width: 64ch; }
+.sec-title { font-family: var(--display); font-size: 1.25rem; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.sec-sub { font-family: var(--body); font-size: 0.9375rem; color: var(--ink-3); }
+
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; align-items: start; padding: 12px; border: 1px solid var(--rule); border-radius: 12px; cursor: pointer; transition: background 150ms ease; }
+.step:hover { background: var(--bar-soft); }
+.step input[type="checkbox"] { width: 24px; height: 24px; margin: 2px 0 0; accent-color: var(--sage); cursor: pointer; }
+.step[data-done="1"] { background: var(--sage-soft); border-color: transparent; }
+.step[data-done="1"] .s-text { color: var(--ink-2); }
+.step-body { display: grid; gap: 6px; min-width: 0; }
+.s-num { font-family: var(--mono); font-size: 0.875rem; color: var(--ink-3); }
+.s-text { min-width: 0; }
+.s-badge { display: inline-block; font-size: 0.875rem; font-weight: 700; color: var(--tape-ink); background: var(--tape-soft); border-radius: 4px; padding: 0 8px; margin-inline-end: 6px; }
+.expect { font-size: 1rem; color: var(--ink-2); }
+.expect b { color: var(--sage); font-weight: 700; }
+.hint > summary { cursor: pointer; font-size: 1rem; font-weight: 600; color: var(--bar); width: fit-content; }
+.hint p { font-size: 1rem; color: var(--ink-2); padding-top: 4px; }
+
+/* Copy chips */
+.chip { font: inherit; font-family: var(--mono); font-size: 0.82em; line-height: 1.5; direction: ltr; unicode-bidi: isolate; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; vertical-align: baseline; background: var(--chip); color: var(--ink); border: 1px solid var(--rule); border-radius: 6px; padding: 0 7px; margin: 1px 0; cursor: copy; overflow-wrap: anywhere; text-align: start; }
+.chip:hover { border-color: var(--bar); }
+.chip svg { width: 13px; height: 13px; flex: none; opacity: 0.7; }
+.chip[data-copied="1"] { border-color: var(--sage); background: var(--sage-soft); }
+
+/* Questions */
+.qs { display: grid; gap: 14px; }
+.q { display: grid; gap: 6px; }
+.q label { font-weight: 600; }
+.q .q-opt { font-size: 0.875rem; font-weight: 700; color: var(--tape-ink); }
+.q textarea { font: inherit; font-size: 1.125rem; width: 100%; min-height: 84px; resize: vertical; border: 1.5px solid var(--rule); border-radius: 10px; padding: 10px 12px; background: var(--paper); color: var(--ink); }
+.q textarea:focus { border-color: var(--bar); outline: none; box-shadow: 0 0 0 3px var(--bar-soft); }
+
+/* Submission */
+.submit { border: 2px dashed var(--bar); border-radius: 14px; padding: 16px; display: grid; gap: 10px; }
+.submit-label { font-size: 0.875rem; font-weight: 700; letter-spacing: 0.05em; color: var(--bar); }
+.submit-what { font-size: 1.1875rem; font-weight: 600; }
+.submit-how { font-size: 1rem; color: var(--ink-2); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn { font: inherit; font-weight: 700; font-size: 1.0625rem; border-radius: 999px; border: 1.5px solid var(--bar); background: var(--bar); color: var(--card); padding: 8px 18px; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--bar); }
+.btn.warn { border-color: var(--tape); background: var(--tape); color: var(--on-tape); }
+/* צהוב = פעולה ותשומת לב (מערכת העיצוב): כפתור ראשי אחד בכל מסך, קו תחתון לכותרת, קצה למטרה ולשונית נבחרת */
+.btn.go { border-color: var(--tape); background: var(--tape); color: var(--on-tape); }
+.top h1::after { content: ""; display: block; width: 4.5rem; height: 5px; border-radius: 3px; background: var(--tape); margin-top: 12px; }
+.goal { border-inline-start: 5px solid var(--tape); }
+.tab[aria-selected="true"] { box-shadow: inset 0 -4px 0 var(--tape); }
+.btn:hover { filter: brightness(1.08); }
+.status { font-size: 1rem; color: var(--sage); font-weight: 600; }
+
+.pager { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+
+/* Footer */
+.foot { display: grid; gap: 10px; font-size: 1rem; color: var(--ink-3); }
+.confirm { display: grid; gap: 10px; background: var(--tape-soft); border-radius: 12px; padding: 12px 14px; color: var(--ink); }
+
+.toast { position: fixed; inset-inline: 0; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); margin-inline: auto; width: fit-content; max-width: calc(100% - 32px); background: var(--ink); color: var(--paper); font-size: 1rem; padding: 8px 16px; border-radius: 999px; box-shadow: var(--shadow); }
+
+/* Audience badge and header actions */
+.who { display: inline-block; font-size: 0.875rem; font-weight: 700; letter-spacing: 0.04em; border-radius: 999px; padding: 1px 10px; margin-inline-end: 8px; color: var(--sage); background: var(--sage-soft); }
+.top-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.head { display: grid; gap: 8px; }
+.stepsec { display: grid; gap: 10px; }
+
+/* Learning report */
+.report-label { font-size: 0.9375rem; font-weight: 700; color: var(--ink-2); }
+/* תיבת הסיכום: דף בהיר קבוע (גם במצב כהה), כדי שמה שרואים הוא מה שמודבק: כתב כהה על רקע לבן, כותרות מודגשות */
+.report-prev { margin: 0; padding: 12px 16px; background: #fff; color: #1b1b1b; color-scheme: light; border: 1px solid var(--rule); border-radius: 10px; font-family: var(--body); font-size: 1rem; line-height: 1.6; font-weight: 400; }
+.report-prev p { margin: 0 0 0.9em; }
+.report-prev p:last-child { margin-bottom: 0; }
+.report-prev b { font-weight: 700; }
+.report-prev.tall { max-height: min(32rem, 70vh); overflow: auto; }
+.subm { display: flex; gap: 10px; align-items: center; font-weight: 600; cursor: pointer; width: fit-content; }
+.subm input { width: 22px; height: 22px; accent-color: var(--sage); }
+.rep-table-wrap { overflow-x: auto; border-radius: 12px; }
+.rep-table { border-collapse: collapse; width: 100%; font-size: 1.0625rem; font-variant-numeric: tabular-nums; }
+.rep-table th, .rep-table td { padding: 9px 10px; border-bottom: 1px solid var(--rule); text-align: start; }
+.rep-table th { font-size: 0.875rem; color: var(--ink-3); font-weight: 600; }
+.rep-open { font: inherit; font-weight: 700; color: var(--bar); background: none; border: 0; padding: 0; cursor: pointer; text-align: start; text-decoration: underline; text-underline-offset: 3px; }
+.ok { color: var(--sage); font-weight: 700; }
+.miss { color: var(--tape-ink); font-weight: 700; }
+
+/* Tour, for projecting in class */
+.tour-target { outline: 4px solid var(--focus) !important; outline-offset: 6px; border-radius: 12px; box-shadow: 0 0 0 12px var(--tape-soft) !important; }
+.tourbar { position: fixed; inset-inline: 0; bottom: 0; z-index: 10; background: var(--ink); color: var(--paper); padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -10px 30px -16px var(--ink); }
+.tourbar-in { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px 20px; align-items: center; }
+@media (max-width: 700px) { .tourbar-in { grid-template-columns: 1fr; } }
+.tour-copy { display: grid; gap: 4px; min-width: 0; }
+.tour-count { font-family: var(--mono); font-size: 0.875rem; opacity: 0.8; }
+.tour-title { font-family: var(--display); font-size: 1.5rem; line-height: 1.2; }
+.tour-text { font-size: 1.125rem; }
+.tourbar .btn { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+.tourbar .btn.ghost { background: transparent; color: var(--paper); border-color: var(--paper); }
+.tourbar .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+
+/* Text size and layout settings */
+html { font-size: calc(16px * var(--fs, 1)); }
+html[data-size="l"] { --fs: 1.15; }
+html[data-size="xl"] { --fs: 1.3; }
+.viewset > summary { cursor: pointer; list-style: none; display: inline-flex; gap: 8px; align-items: center; font-weight: 700; font-size: 1rem; color: var(--bar); border: 1.5px solid var(--rule); background: var(--card); border-radius: 999px; padding: 0.3rem 0.95rem; }
+.viewset > summary::-webkit-details-marker { display: none; }
+.viewset[open] > summary { border-color: var(--bar); }
+.viewset-body { margin-top: 8px; display: grid; gap: 12px; background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow); width: fit-content; max-width: 100%; }
+.vs-label { font-size: 0.875rem; font-weight: 700; color: var(--ink-3); margin-bottom: 4px; }
+.vs-seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.vs-btn { font: inherit; font-size: 0.9375rem; font-weight: 600; border: 1.5px solid var(--rule); background: var(--card); color: var(--ink); border-radius: 999px; padding: 0.3rem 0.85rem; cursor: pointer; }
+.vs-btn[aria-pressed="true"] { border-color: var(--bar); background: var(--bar-soft); }
+
+/* Rodent cards */
+.rodents { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+@media (min-width: 600px) { .rodents { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.rod { border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; display: grid; gap: 6px; align-content: start; background: var(--card); min-width: 0; color: var(--ink); }
+.rod-top { display: flex; gap: 10px; align-items: center; }
+.rod-code { flex: none; width: 2.75rem; height: 2.75rem; border-radius: 50%; display: grid; place-items: center; font-family: var(--mono); font-weight: 500; font-size: 0.95rem; color: var(--bar); background: var(--bar-soft); }
+.rod-names { min-width: 0; }
+.rod-he { font-family: var(--display); font-weight: 400; font-size: 1.15rem; margin: 0; line-height: 1.25; }
+.rod-en, .rod-sci { direction: ltr; text-align: right; font-size: 0.9375rem; color: var(--ink-3); line-height: 1.35; }
+.rod-sci { font-size: 0.875rem; }
+.rod-w { font-size: 0.9375rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.rod-fact { font-size: 1rem; }
+.rod-links { font-size: 0.9375rem; display: flex; flex-wrap: wrap; gap: 6px 8px; margin-top: 2px; }
+.rod-links a { display: inline-flex; align-items: center; min-height: 2.1rem; padding: 0.1rem 0.75rem; border: 1.5px solid var(--rule); border-radius: 999px; font-weight: 600; text-decoration: none; }
+.rod-links a:hover { border-color: var(--bar); }
+.rod-links a.rod-photo { background: var(--bar-soft); border-color: transparent; }
+html[data-layout="mobile"] .rodents { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 899px) { .vs-btn[data-set-layout="desktop"] { display: none; } }
+
+/* Layout: phone or half a screen */
+html[data-layout="mobile"] .app { max-width: 34rem; }
+html[data-layout="mobile"] .helpers { grid-template-columns: minmax(0, 1fr); }
+html[data-layout="mobile"] .tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+html[data-layout="mobile"] .step { grid-template-columns: 2.25rem minmax(0, 1fr); padding: 14px 12px; }
+html[data-layout="mobile"] .step input[type="checkbox"] { width: 1.75rem; height: 1.75rem; }
+html[data-layout="mobile"] .btn { min-height: 2.75rem; }
+
+/* Layout: computer, wide screens only. Each step shows what should appear next to it */
+@media (min-width: 900px) {
+  html[data-layout="desktop"] .app { max-width: 1180px; }
+  html[data-layout="desktop"] .step-body { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); column-gap: 22px; align-items: start; }
+  html[data-layout="desktop"] .step-body > .s-text { grid-column: 1; grid-row: 1 / span 2; }
+  html[data-layout="desktop"] .step-body > .expect, html[data-layout="desktop"] .step-body > .hint { grid-column: 2; border-inline-start: 2px solid var(--rule); padding-inline-start: 14px; }
+}
+
+/* Board mode: projecting the tour in class. Everything scales up */
+@media (min-width: 701px) { html[data-board="1"]:not([data-size="xl"]) { --fs: 1.25; } }
+.panel, .help-body { overflow-wrap: anywhere; }
+html[data-board="1"] .app { max-width: 1240px; padding-block-end: 16rem; }
+html[data-board="1"] .tools, html[data-board="1"] .foot, html[data-board="1"] .top-tools { display: none; }
+
+/* Lesson subtitle, the why box under a step, sub-questions */
+.l-sub { color: var(--ink-2); font-size: 1.0625rem; max-width: 64ch; }
+.s-main { display: grid; gap: 8px; min-width: 0; }
+.why { background: var(--chip); border-inline-start: 3px solid var(--bar); border-radius: 8px; padding: 8px 12px; display: grid; gap: 2px; color: var(--ink-2); font-size: 1rem; cursor: default; }
+.why-label { display: inline-flex; gap: 6px; align-items: center; font-size: 0.9375rem; font-weight: 700; color: var(--bar); }
+.why-label svg { width: 1.05em; height: 1.05em; flex: none; }
+.q-parts { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; color: var(--ink-2); font-size: 1.0625rem; }
+.toast { border-radius: 14px; text-align: center; line-height: 1.5; }
+@media (min-width: 900px) {
+  html[data-layout="desktop"] .step-body > .s-main { grid-column: 1; grid-row: 1 / span 2; }
+}
+
+/* Button lexicon */
+.lex-cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 760px) { .lex-cols { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } }
+html[data-layout="mobile"] .lex-cols { grid-template-columns: minmax(0, 1fr); }
+.lex { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.lex h4 { font-family: var(--display); font-weight: 400; font-size: 1.125rem; margin: 0; color: var(--ink); }
+.lex ul { margin: 0; padding-inline-start: 20px; display: grid; gap: 6px; }
+.lex bdi { font-family: var(--mono); font-size: 0.9em; }
+
+
+/* Help-and-tools area */
+.step, .q, .submit { scroll-margin-top: 16px; }
+.tools-sub { display: block; font-weight: 500; font-size: 0.9375rem; color: var(--ink-3); }
+.tools-body { gap: 14px; }
+.tools-intro { color: var(--ink-2); }
+
+/* Data files to download (same pattern as the teacher journey app) */
+.files { display: grid; gap: 10px; }
+.file { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; align-items: center; border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; background: var(--card); }
+@media (max-width: 620px) { .file { grid-template-columns: 1fr; } }
+.file-name { font-family: var(--mono); font-size: 1rem; font-weight: 500; color: var(--ink); direction: ltr; unicode-bidi: isolate; overflow-wrap: anywhere; text-align: end; justify-self: start; }
+.file-meta { font-size: 1rem; color: var(--ink-2); }
+.file-when { display: inline-block; font-size: 0.875rem; font-weight: 700; color: var(--bar); background: var(--bar-soft); border-radius: 4px; padding: 0 8px; margin-inline-end: 6px; }
+.file-when[data-late="1"] { color: var(--tape-ink); background: var(--tape-soft); }
+.file-act { display: grid; gap: 4px; justify-items: end; }
+@media (max-width: 620px) { .file-act { justify-items: start; } }
+.dl-status { font-size: 0.875rem; color: var(--ink-3); min-height: 1em; }
+.file-note { grid-column: 1 / -1; font-size: 0.9375rem; color: var(--ink-2); background: var(--paper); border-radius: 8px; padding: 8px 10px; }
+.file a.btn { text-decoration: none; display: inline-block; }
+html[data-layout="mobile"] .file { grid-template-columns: minmax(0, 1fr); }
+html[data-layout="mobile"] .file-act { justify-items: start; }
+
+.top-tools { margin-top: 4px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+/* ===== שכבת תנועה וחומרים לפי apple-design (9.10.2026). CSS בלבד, בלי שינוי בתוכן, במזהים ובמפתחות השמירה ===== */
+:root { --smooth: cubic-bezier(0.22, 1, 0.36, 1); interpolate-size: allow-keywords; }
+/* אלמנט עם hidden נשאר מוסתר גם כשהצופה לא מוסיף את כלל ה-hidden שלו */
+[hidden] { display: none !important; }
+
+/* 1. תגובה מיידית: המשוב מתחיל בלחיצה עצמה, וההחזרה רכה. בלי השהיית נגיעה */
+button, summary, [role="tab"], .step, .checks label, .q label, .rod-links a, .qlinks a, .link-btn { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+button, summary, .step, .checks label, .q label, .rod-links a, .qlinks a, .link-btn {
+  transition: transform 450ms var(--smooth), background-color 160ms ease, border-color 160ms ease, box-shadow 280ms var(--smooth), color 160ms ease, filter 160ms ease, opacity 200ms ease;
+}
+button:not(:disabled):active, .rod-links a:active, .qlinks a:active, .link-btn:active { transform: scale(0.94); transition: transform 70ms ease-out; }
+button.tab:not(:disabled):active, button.wk:not(:disabled):active, button.dot:not(:disabled):active { transform: scale(0.97); }
+button.dot:not(:disabled):active { transform: scale(0.88); }
+summary:active, .step:active:not(:has(:active)), .checks label:active, .q label:active { transform: scale(0.985); transition: transform 70ms ease-out; }
+.tab[aria-selected="true"] { transform: translateY(-2px); }
+button.tab[aria-selected="true"]:not(:disabled):active { transform: translateY(-2px) scale(0.97); }
+
+/* 2. טיפוגרפיה: בעברית אין אותיות גדולות, ולכן אין צורך במרווח אותיות בתוויות. כותרות גדולות מקבלות רווח שורות הדוק */
+.eyebrow, .kicker, .goal-label, .goals-label, .submit-label, .who, .st-kicker, .qg-title, .idea-label, .next-label, .cont-label, .proto { letter-spacing: 0; }
+h1 { line-height: 1.08; }
+h2 { line-height: 1.12; }
+p { text-wrap: pretty; }
+
+/* 3. חומרים: אלמנטים צפים מעומעמים, כדי שהתוכן יישאר מורגש מתחתם */
+.tourbar, .gbar { background: color-mix(in srgb, var(--ink) 92%, transparent); -webkit-backdrop-filter: blur(22px) saturate(160%); backdrop-filter: blur(22px) saturate(160%); border-top: 1px solid color-mix(in srgb, var(--paper) 22%, transparent); transition: transform 460ms var(--smooth), opacity 240ms ease; }
+.toast { background: color-mix(in srgb, var(--ink) 93%, transparent); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); transition: transform 380ms var(--smooth), opacity 200ms ease; }
+.viewset-body { background: color-mix(in srgb, var(--card) 88%, transparent); -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%); }
+
+/* 4. עקביות מרחבית: הסרגל נכנס מלמטה, וההודעה עולה ממקומה */
+@starting-style { .tourbar, .gbar { transform: translateY(100%); opacity: 0; } .toast { transform: translateY(14px) scale(0.96); opacity: 0; } }
+/* חלונות נפתחים וסגורים בתנועה, ולא בקפיצה */
+details::details-content { opacity: 0; block-size: 0; overflow-y: clip; transition: content-visibility 340ms allow-discrete, opacity 240ms ease, block-size 340ms var(--smooth); }
+details[open]::details-content { opacity: 1; block-size: auto; }
+/* מעבר בין רקע בהיר לכהה כמעבר רך של כל העמוד */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 380ms; animation-timing-function: ease; }
+
+/* 5. נגישות: שקיפות, ניגודיות ותנועה לפי הגדרות המכשיר */
+@media (prefers-reduced-transparency: reduce) {
+  .tourbar, .gbar { background: var(--ink); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .toast { background: var(--ink); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .viewset-body { background: var(--card); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  :root { --rule: #6b6b6e; }
+  .step, .tab, .panel, .viewset-body, .wk, .card { border-color: var(--ink-3); }
+}
+@media (prefers-reduced-motion: reduce) {
+  button:not(:disabled):active, .rod-links a:active, .qlinks a:active, .link-btn:active, summary:active, .step:active, .checks label:active, .q label:active { transform: none; opacity: 0.7; }
+  .tab[aria-selected="true"] { transform: none; }
+  details::details-content { transition: none; }
+}
+
+/* תוכן השיעור (תלמיד) נכנס מעט אחרי מעט */
+@keyframes ap-rise { from { opacity: 0; transform: translateY(10px); } }
+.panel > * { animation: ap-rise 460ms var(--smooth) backwards; }
+.panel > :nth-child(2) { animation-delay: 50ms; }
+.panel > :nth-child(3) { animation-delay: 100ms; }
+.panel > :nth-child(4) { animation-delay: 150ms; }
+.panel > :nth-child(5) { animation-delay: 200ms; }
+.panel > :nth-child(n+6) { animation-delay: 250ms; }
+@media (prefers-reduced-motion: reduce) { .panel > * { animation: none; } }
+
+</style>
+
+<div class="app" dir="rtl" lang="he">
+  <header class="top">
+    <p class="eyebrow"><span class="who">לתלמיד</span>קורס Power BI, שבוע 1, 7 שיעורים</p>
+    <h1>דוח למידה PBI מס' 1</h1>
+    <p class="lede">זה דוח הלמידה שלכם לשבוע הראשון. בכל שיעור יש מטרה, צעדים לסימון, שאלות והגשה במודל.</p>
+    <div class="top-tools">
+    <details class="viewset" id="viewset">
+      <summary>תצוגה: גודל טקסט ורקע כהה</summary>
+      <div class="viewset-body">
+        <div class="vs-group"><p class="vs-label" id="vsSize">גודל טקסט</p>
+          <div class="vs-seg" role="group" aria-labelledby="vsSize">
+            <button type="button" class="vs-btn" data-set-size="m">רגיל</button>
+            <button type="button" class="vs-btn" data-set-size="l">גדול</button>
+            <button type="button" class="vs-btn" data-set-size="xl">גדול מאוד</button>
+          </div></div>
+        <div class="vs-group"><p class="vs-label" id="vsLayout">פריסה</p>
+          <div class="vs-seg" role="group" aria-labelledby="vsLayout">
+            <button type="button" class="vs-btn" data-set-layout="auto">אוטומטית</button>
+            <button type="button" class="vs-btn" data-set-layout="desktop">מחשב</button>
+            <button type="button" class="vs-btn" data-set-layout="mobile">טלפון או חצי מסך</button>
+          </div></div>
+        <div class="vs-group"><p class="vs-label" id="vsTheme">רקע</p>
+          <div class="vs-seg" role="group" aria-labelledby="vsTheme">
+            <button type="button" class="vs-btn" data-set-theme="auto">לפי המכשיר</button>
+            <button type="button" class="vs-btn" data-set-theme="light">בהיר</button>
+            <button type="button" class="vs-btn" data-set-theme="dark">כהה</button>
+          </div></div>
+      </div>
+    </details>
+    </div>
+  </header>
+
+  <details class="help tools" id="tools">
+    <summary><span>עזרה וכלים<span class="tools-sub">סיור באפליקציה, סיכום השבוע, קבצי נתונים, מילים ואיפה הכפתור</span></span></summary>
+    <div class="help-body tools-body">
+      <p class="tools-intro">לא מוצאים כפתור ב-Power BI? לחצו בדוח על שם הכפתור (הוא מופיע במסגרת אפורה). השם יועתק, ותופיע הודעה שאומרת איפה הכפתור נמצא.</p>
+    <div class="top-actions">
+      <button type="button" class="btn ghost" id="reportBtn">סיכום השבוע</button>
+      <button type="button" class="btn ghost" id="tourBtn">סיור באפליקציה</button>
+    </div>
+  <section class="helpers" aria-label="עזרה">
+    <!-- FILES SECTION START -->
+    <details class="help wide" id="h-files">
+      <summary>קבצי הנתונים להורדה</summary>
+      <div class="help-body">
+        <p>כל קובץ מורידים רק כשהצעדים בשיעור מבקשים. הקובץ יורד לתיקייה Downloads (הורדות). משם מעבירים אותו לתיקייה <code>data</code> שלכם, ולא משנים את השם שלו.</p>
+        <div class="files" id="fileList"></div>
+      </div>
+    </details>
+    <!-- FILES SECTION END -->
+    <details class="help" id="h-folder">
+      <summary>התיקייה שלכם</summary>
+      <div class="help-body">
+        <p>כל השבוע עובדים באותה תיקייה: <code>Documents\PBI_Course\Cohen_Noa</code></p>
+        <p>במקום Cohen_Noa כתבו את השם שלכם באנגלית, בלי רווחים. כך גם בשמות של קובצי Power BI.</p>
+        <ul>
+          <li>בתוכה שתי תיקיות: <code>data</code> לקובצי הנתונים, ו-<code>work</code> לקובצי Power BI.</li>
+          <li>בכל שיעור פותחים את הקובץ שכתוב בצעדים, ושומרים מיד בשם חדש: L01, L02 וכן הלאה. כך תמיד יש גרסה קודמת.</li>
+          <li>בווינדוס בעברית התיקייה Documents נקראת מסמכים.</li>
+          <li>אל תזיזו את הקבצים שב-<code>data</code> ואל תשנו את השמות שלהם. Power BI שומר את המיקום המדויק של כל קובץ, ואם קובץ זז, Power BI לא ימצא אותו בפעם הבאה.</li>
+        </ul>
+      </div>
+    </details>
+    <details class="help" id="h-words">
+      <summary>מילים שכדאי להכיר</summary>
+      <div class="help-body">
+        <ul>
+          <li><b>שורה (רשומה):</b> פריט מידע אחד בקובץ. מה בדיוק מתועד בשורה, בודקים בכל מאגר מחדש.</li>
+          <li><b>עמודה (משתנה):</b> סוג מידע שנרשם בכל שורה, כמו שנה או משקל.</li>
+          <li><b>מזהה:</b> עמודה שתפקידה לזהות, כמו recordID. אין טעם לחבר מזהים.</li>
+          <li><b>חלקה:</b> שטח מגודר של 50 על 50 מטרים. יש 24 חלקות, ובכל אחת 49 מלכודות.</li>
+          <li><b>סבב לכידה:</b> פעם בחודש, סמוך למולד הירח, החוקרים מציבים מלכודות בחלקות במשך שני לילות. כל ערך חיובי של period הוא סבב לכידה אחד.</li>
+          <li><b>לכידה:</b> פעם אחת שבה חיה נמצאה במלכודת.</li>
+          <li><b>פרט:</b> חיה אחת מסוימת. בקובץ מזהים אותה לפי העמודה id.</li>
+          <li><b>מאמץ דגימה:</b> כמה סבבי לכידה נערכו בתקופה מסוימת.</li>
+          <li><b>השוואה הוגנת:</b> השוואה בין שנים שמתחשבת במאמץ הדגימה.</li>
+          <li><b>Power Query:</b> החלון שבו מנקים את הנתונים לפני שהם נכנסים לדוח.</li>
+          <li><b>שאילתה (Query):</b> טבלה ב-Power Query, יחד עם רשימת הצעדים שבוצעו כדי ליצור אותה.</li>
+          <li><b>רשימת הצעדים (Applied Steps):</b> ה"מתכון" של Power Query. כל צעד שביצעתם נרשם ברשימה שבצד ימין של החלון. הרשימה נשמרת, ובכל רענון Power BI מבצע מחדש את כל הצעדים שבה, לפי הסדר.</li>
+          <li><b>רענון (Refresh):</b> Power BI קורא שוב את קובץ הנתונים, ומבצע מחדש את כל הצעדים שברשימה.</li>
+        </ul>
+      </div>
+    </details>
+    <details class="help wide" id="h-buttons">
+      <summary>איפה הכפתור? כל הכפתורים של השבוע</summary>
+      <div class="help-body">
+        <p>לחיצה על שם של כפתור במסגרת אפורה, בתוך הצעדים, מעתיקה אותו ואומרת איפה הוא נמצא. כאן כל המיקומים במקום אחד. הם מתאימים לממשק באנגלית.</p>
+        <div class="lex-cols">
+          <section class="lex">
+            <h4>בחלון Power BI</h4>
+            <ul>
+              <li><b><bdi>Blank report</bdi>:</b> במסך הפתיחה, כשפותחים את Power BI.</li>
+              <li><b><bdi>Get data</bdi>:</b> בסרגל העליון, בלשונית Home.</li>
+              <li><b><bdi>Excel workbook</bdi>:</b> ברשימה שנפתחת מתחת ל-Get data.</li>
+              <li><b><bdi>Load</bdi> ו-<bdi>Transform data</bdi>, אחרי שבוחרים קובץ:</b> בתחתית החלון שמציג את תוכן הקובץ.</li>
+              <li><b><bdi>Report view</bdi>, <bdi>Table view</bdi> ו-<bdi>Model view</bdi>:</b> שלושת הסמלים העליונים בפס האנכי בצד שמאל של החלון.</li>
+              <li><b>מספר השורות:</b> ב-Table view, בשורת המצב שבתחתית החלון.</li>
+              <li><b><bdi>Card</bdi>, <bdi>Table</bdi>, <bdi>Slicer</bdi>, <bdi>Clustered column chart</bdi> ו-<bdi>Line chart</bdi>:</b> בחלונית Visualizations שבצד ימין.</li>
+              <li><b>רשימת העמודות:</b> בחלונית Data שבצד ימין, ליד Visualizations.</li>
+              <li><b><bdi>Count</bdi>, <bdi>Average</bdi> ו-<bdi>Count (Distinct)</bdi>:</b> בחץ הקטן שליד שם העמודה, באזור השדות של הגרף בחלונית Visualizations.</li>
+              <li><b><bdi>Format visual</bdi> (סמל המברשת):</b> בחלונית Visualizations, כשהגרף מסומן. בראש החלונית יש תיבת חיפוש.</li>
+              <li><b><bdi>Display units</bdi>:</b> בתוך Format visual. הכי מהר: מקלידים Display units בתיבת החיפוש של Format visual.</li>
+              <li><b><bdi>X-axis</bdi> ואחריו <bdi>Type</bdi>:</b> בתוך Format visual, כשגרף העמודות מסומן.</li>
+              <li><b><bdi>Legend</bdi>:</b> באזור השדות של גרף הקווים, בחלונית Visualizations.</li>
+              <li><b>עמוד חדש (+):</b> בתחתית החלון, ליד שמות העמודים. לחיצה כפולה על שם של עמוד מאפשרת לשנות את השם.</li>
+              <li><b><bdi>Column tools</bdi> ו-<bdi>Summarization</bdi>:</b> ב-Table view לוחצים על עמודה, ובסרגל העליון נפתחת הלשונית Column tools.</li>
+              <li><b><bdi>Transform data</bdi>:</b> בסרגל העליון, בלשונית Home. פותח את Power Query.</li>
+              <li><b><bdi>Data source settings</bdi>:</b> בחץ הקטן של הכפתור Transform data.</li>
+              <li><b><bdi>Change Source</bdi>:</b> בתחתית החלון Data source settings.</li>
+              <li><b><bdi>Apply changes</bdi>:</b> בפס צהוב שמופיע מתחת לסרגל העליון אחרי החלפת קובץ.</li>
+              <li><b><bdi>Refresh</bdi>:</b> בסרגל העליון, בלשונית Home.</li>
+              <li><b><bdi>Save as</bdi>:</b> בתפריט File.</li>
+              <li><b>חיפוש:</b> תיבת החיפוש בראש החלון. מקלידים שם של פקודה, למשל Get data.</li>
+            </ul>
+          </section>
+          <section class="lex">
+            <h4>בחלון Power Query</h4>
+            <ul>
+              <li><b><bdi>Applied Steps</bdi>:</b> בחלונית Query Settings שבצד ימין. ה-X שליד צעד מוחק אותו.</li>
+              <li><b><bdi>Queries</bdi>, רשימת השאילתות:</b> בצד שמאל של החלון. לחיצה ימנית על שאילתה פותחת תפריט, ובו Duplicate.</li>
+              <li><b><bdi>Column quality</bdi>, <bdi>Column distribution</bdi> ו-<bdi>Column profile</bdi>:</b> בלשונית View, בקבוצה Data Preview.</li>
+              <li><b><bdi>Column profiling based on top 1000 rows</bdi>:</b> בשורת המצב שבתחתית החלון, משמאל. לחיצה עליו מאפשרת לבחור entire data set.</li>
+              <li><b><bdi>Number Filters</bdi> ו-<bdi>Remove Empty</bdi>:</b> בחץ שבכותרת העמודה.</li>
+              <li><b><bdi>Choose Columns</bdi>:</b> בלשונית Home, בקבוצה Manage Columns.</li>
+              <li><b><bdi>Replace Values</bdi>:</b> בלשונית Home או בלשונית Transform. Advanced options נמצא בתוך החלון שנפתח.</li>
+              <li><b>שינוי שם של עמודה:</b> לחיצה כפולה על כותרת העמודה.</li>
+              <li><b>סוג הנתונים, למשל <bdi>Decimal Number</bdi>:</b> בסמל שמשמאל לשם העמודה, בכותרת (ABC, 123 או 1.2).</li>
+              <li><b><bdi>Close &amp; Apply</bdi>:</b> בלשונית Home, הכפתור הראשון משמאל.</li>
+            </ul>
+          </section>
+        </div>
+        <p>עזרה עם צילומי מסך, באנגלית: <a href="https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-report-view" target="_blank" rel="noopener">חלון Power BI</a>, <a href="https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-ribbon" target="_blank" rel="noopener">הסרגל העליון ותיבת החיפוש</a>, <a href="https://learn.microsoft.com/en-us/power-query/power-query-ui" target="_blank" rel="noopener">חלון Power Query</a>.</p>
+      </div>
+    </details>
+    <details class="help wide" id="h-species">
+      <summary>המכרסמים במחקר: שמות, תמונות וקישורים</summary>
+      <div class="help-body">
+        <p>בקובץ כל מין מופיע כקוד של שתי אותיות. השמות בעברית הם תרגום חופשי של השם האנגלי. כל קישור נפתח בלשונית חדשה: ויקיפדיה באנגלית, ותמונות של המין בוויקישיתוף.</p>
+        <div class="rodents" id="rodentsS"></div>
+      </div>
+    </details>
+  </section>
+    </div>
+  </details>
+
+  <nav class="tabs" id="tabs" role="tablist" aria-label="השיעורים של השבוע"></nav>
+
+  <main class="panel" id="panel" role="tabpanel" tabindex="-1"></main>
+
+  <footer class="foot">
+    <p>הסימונים והתשובות נשמרים רק בדפדפן הזה, ולא נשלחים לאף אחד. את התוצר מגישים במודל.</p>
+    <div class="row">
+      <button type="button" class="btn ghost" id="resetBtn">ניקוי הסימונים והתשובות במחשב הזה</button>
+    </div>
+    <div class="confirm" id="confirmBox" hidden>
+      <p>למחוק את כל הסימונים והתשובות שנשמרו כאן? אי אפשר לבטל את זה.</p>
+      <div class="row">
+        <button type="button" class="btn warn" id="confirmYes">כן, למחוק</button>
+        <button type="button" class="btn ghost" id="confirmNo">ביטול</button>
+      </div>
+    </div>
+  </footer>
+  <div class="tourbar" id="tourbar" role="region" aria-label="סיור באפליקציה" hidden>
+    <div class="tourbar-in">
+      <div class="tour-copy">
+        <span class="tour-count" id="tourCount"></span>
+        <p class="tour-title" id="tourTitle"></p>
+        <p class="tour-text" id="tourText" aria-live="polite"></p>
+      </div>
+      <div class="row">
+        <button type="button" class="btn ghost" id="tourPrev">הקודם</button>
+        <button type="button" class="btn" id="tourNext">הבא</button>
+        <button type="button" class="btn ghost" id="tourExit">יציאה מהסיור</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // Touch feedback on iOS needs a touch listener on the page. Theme changes cross-fade the whole page.
+  document.addEventListener("touchstart", function () { }, { passive: true });
+  function withFade(fn) {
+    try {
+      if (document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) { document.startViewTransition(fn); return; }
+    } catch (e) { }
+    fn();
+  }
+
+  // [[term]] = copy chip for Power BI search. {{text}} = inline code (left to right).
+  // w = "למה עושים את זה?" box under the step. parts = sub-questions under a question.
+  var LESSONS = [
+    { n: 1, data: "Portal", rod: true, title: "מה מייצגת כל שורה בקובץ?",
+      sub: "טוענים ל-Power BI את נתוני המכרסמים, ובודקים מה מתועד בכל שורה",
+      goal: "היום תטענו ל-Power BI קובץ ממחקר אמיתי, תספרו כמה שורות יש בו, ותבדקו מה מתועד בכל שורה.",
+      intro: "הנתונים נאספו במחקר שדה שנערך במדבר באריזונה מאז 1977. החוקרים בודקים מה קורה לשאר המכרסמים כשחולדות הקנגורו לא יכולות להיכנס לחלקה: בחלק מהחלקות הפתחים בגדר קטנים מדי בשבילן. פעם בחודש החוקרים מציבים מלכודות, רושמים כל מכרסם שנלכד ומשחררים אותו. הקובץ שלכם כולל את כל הלכידות מינואר 2016 עד מאי 2026. היום תבדקו: מה מתועד בכל שורה, והאם מספר השורות שווה למספר החיות?",
+      steps: [
+        { id: "l1-1", t: "צרו את התיקייה {{Documents\\PBI_Course\\Cohen_Noa}}, ובתוכה שתי תיקיות: {{data}} ו-{{work}}.", e: "שתי תיקיות ריקות.", h: "במקום Cohen_Noa כתבו את השם שלכם באנגלית, בלי רווחים." },
+        { id: "l1-2", t: "הורידו מהמודל את Portal_rodents_2016_2026.csv ואת Portal_species.csv לתיקייה {{data}}.", e: "שני הקבצים נמצאים ב-data. הם ירדו לתיקייה Downloads (הורדות)? העבירו אותם ל-data." },
+        { id: "l1-2b", t: "שמרו את קובץ המקור בגרסת Excel: פתחו את Portal_rodents_2016_2026.csv ב-Excel, ולחצו על File ואז Save As. בסוג הקובץ בחרו Excel Workbook (*.xlsx), ושמרו בתיקייה {{work}} בשם {{Portal_rodents_2016_2026.xlsx}}. סגרו את Excel.", e: "בתיקייה work יש קובץ xlsx, ובתיקייה data נשאר ה-CSV המקורי.", h: "Excel שואל אם לשמור שינויים בקובץ ה-CSV? בחרו Don't Save. את קובץ המקור לא משנים.", w: "הקובץ המקורי נשאר ב-data, כדי שתמיד אפשר יהיה לחזור אליו. ב-Power BI עובדים על העותק ב-Excel." },
+        { id: "l1-3", t: "פתחו את Power BI, ובמסך הפתיחה בחרו [[Blank report]]. אחר כך בחרו [[Get data]] ואז [[Excel workbook]], בחרו את Portal_rodents_2016_2026.xlsx מהתיקייה work. בחלון Navigator סמנו את הגיליון Portal_rodents_2016_2026, ולחצו על [[Load]].", e: "ברשימת השדות מופיעות העמודות של הקובץ.", h: "לחצתם על Transform data ונפתח חלון אחר? לחצו שם על Close & Apply." },
+        { id: "l1-4", t: "עברו ל-[[Table view]]. כמה שורות יש בקובץ?", e: "15,120 שורות. המספר מופיע בתחתית החלון." },
+        { id: "l1-5", t: "חזרו ל-[[Report view]], הוסיפו [[Card]] וגררו אליו את recordID.", e: "מספר ענק עם bn או B בסוף (מיליארד).", h: "זה לא באג. Power BI חיבר את כל מספרי הרשומות. בצעד הבא מתקנים." },
+        { id: "l1-6", t: "בחץ שליד recordID בחרו [[Count]]. אחר כך לחצו על סמל המברשת (Format visual), חפשו [[Display units]] ושנו ל-None.", e: "15,120.", w: "recordID הוא מזהה: אין טעם לחבר את הערכים שלו, ולכן סופרים אותם. Display units ב-None מציג את המספר המלא, בלי קיצור כמו 15K." },
+        { id: "l1-7", t: "הוסיפו [[Table]] עם species ועם recordID. בחץ שליד recordID בחרו [[Count]].", e: "לכל מין מופיע מספר שורות. יש גם שורה בלי שם מין: כמה שורות אין בהן species? רשמו את המספר בשאלה 2.", h: "ב-Table view אפשר לראות את note1 בשורות האלה. הערך 2: הציבו בחלקה מלכודות, ולא נלכדה אף חיה. הערך 4: באותו סבב לא הציבו מלכודות בחלקה." },
+        { id: "l1-8", t: "בטבלה מופיע גם NA. פתחו את Portal_species.csv (בלי לשמור בו שינויים) ובדקו מה זה.", e: "NA הוא קוד של מין: חולדת העצים לבנת הגרון. הוא לא אומר \"אין נתון\"." },
+        { id: "l1-9", t: "הוסיפו עוד [[Table]], הפעם עם id ועם recordID מסוג [[Count]]. לחצו על כותרת עמודת הספירה עד שהמספר הגדול למעלה.", e: "בשורה הראשונה ה-id ריק: אלה השורות בלי חיה. איזו חיה מופיעה אחריה, וכמה פעמים היא נלכדה?" },
+        { id: "l1-9b", opt: true, t: "רוצים לראות את הפרט עצמו? גררו את id לחלונית Filters (Filters on this visual) וסמנו בה את החיה שמופיעה ראשונה אחרי השורה הריקה. הוסיפו לטבלה את sex, year ו-plot, ובחץ שליד year בחרו Don't summarize.", e: "מה אתם רואים בשנים, בחלקה ובמין? מה זה אומר על חיה שנלכדת שוב ושוב?", h: "year הוא מספר, ולכן Power BI מנסה לחבר אותו. Don't summarize מציג את השנה עצמה." },
+        { id: "l1-10", t: "שמרו: [[Save as]] בתיקייה {{work}}, בשם {{L01_Portal_Cohen_Noa.pbix}}, עם השם שלכם.", e: "הקובץ מופיע ב-work." }
+      ],
+      qs: [
+        { id: "l1-q1", q: "מה מייצגת כל שורה בקובץ?", ph: "א.\nב.",
+          parts: ["א. ב-Table view בחרו שורה אחת. מה רשום בה? (היעזרו בעמודות year, plot, species, sex, wgt ו-id)",
+                  "ב. האם כל לכידה מתעדת פרט חדש? בטבלה שבניתם עם העמודה id (צעד 9), מצאו פרט שמופיע ביותר משורה אחת, ונמקו."] },
+        { id: "l1-q2", q: "בכרטיס מופיע 15,120. האם זה מספר החיות שנלכדו?", ph: "א.\nב.\nג.",
+          parts: ["א. כמה שורות אין בהן species? מה כתוב בהן בעמודה note1, ומה זה אומר? (הפירוש ברמז של צעד 7)",
+                  "ב. בשאלה 1 מצאתם פרט שמופיע בכמה שורות. מה זה אומר על המספר 15,120?",
+                  "ג. כתבו במשפט אחד למה מספר החיות קטן מ-15,120."] },
+        { id: "l1-q3", q: "אתגר: לאיזה סוג שייכת כל עמודה: מזהה, זמן, כמותית או קטגוריאלית? recordID, year, wgt, plot, species, sex. רמז על plot: יש בה מספרים, אבל האם יש טעם לחשב ממוצע של מספרי חלקות?", opt: true }
+      ],
+      submit: "צילום מסך של הכרטיס עם 15,120, ותשובות לשאלות 1 ו-2." },
+
+    { n: 2, data: "Portal", title: "ניקוי נתונים ו\"מתכון\" הצעדים ב-Power Query",
+      sub: "מסננים נתונים לפי כללי המחקר, ורואים איך הפעולות נשמרות ברשימת הצעדים",
+      goal: "היום תנקו את הנתונים ב-Power Query לפי שני כללים שכתבו החוקרים. כל סינון שתעשו יישמר כצעד ברשימת הצעדים (Applied Steps), ה\"מתכון\" של Power Query.",
+      intro: "החוקרים כתבו בתיעוד של המחקר שני כללים. 1. שורה שבה period שלילי נרשמה מחוץ לסבבים הקבועים, ולכן לא מנתחים אותה. 2. שורה בלי species מתעדת חלקה שלא נלכדה בה אף חיה, או חלקה שבאותו סבב לא הציבו בה מלכודות, ולכן היא לא לכידה. היום תסננו את הנתונים לפי שני הכללים האלה. הקובץ בתיקייה data לא ישתנה: הסינון חל רק על הנתונים שנטענים ל-Power BI.",
+      steps: [
+        { id: "l2-1", t: "פתחו את L01 ושמרו מיד בשם {{L02_Portal_Cohen_Noa.pbix}}.", e: "יש שלושה קבצים ב-work: L01, L02 וקובץ ה-xlsx." },
+        { id: "l2-2", t: "לחצו על [[Transform data]] (בסרגל העליון, בלשונית Home). ייפתח חלון חדש: Power Query Editor.", e: "בצד ימין, ברשימת הצעדים (Applied Steps), כבר יש ארבעה צעדים: Source, Navigation, Promoted Headers ו-Changed Type.", w: "ב-Power Query מנקים את הנתונים לפני שהם נכנסים לדוח. את ארבעת הצעדים הראשונים Power BI הוסיף כשטענתם את הקובץ: Source קורא את הקובץ, Navigation בוחר בו את הגיליון, Promoted Headers הופך את השורה הראשונה לשמות העמודות, ו-Changed Type קובע לכל עמודה סוג, למשל מספר או טקסט." },
+        { id: "l2-3", t: "בלשונית View סמנו [[Column quality]], [[Column distribution]] ו-[[Column profile]]. לחצו על העמודה period.", e: "בדקו: יש ערך שלילי?" },
+        { id: "l2-4", t: "בתחתית החלון כתוב Column profiling based on top 1000 rows. לחצו עליו ובחרו [[entire data set]].", e: "בדקו שוב את period. מה השתנה?", h: "עד עכשיו הפרופיל חושב רק על 1,000 השורות הראשונות." },
+        { id: "l2-4b", t: "בדקו את הכלל: בחץ של period בחרו [[Number Filters]] ואז [[Less Than]], והקלידו 0.", e: "99 שורות (Count בפרופיל).", h: "אחרי שראיתם את התוצאה, מחקו את הצעד: לחצו על ה-X שליד שמו ברשימת הצעדים." },
+        { id: "l2-5", t: "סננו את period: בחץ של העמודה בחרו [[Number Filters]] ואז [[Greater Than]], והקלידו 0.", e: "15,021 שורות (Count בפרופיל)." },
+        { id: "l2-6", t: "סננו את species: בחץ של העמודה בחרו [[Remove Empty]].", e: "14,492 שורות.", h: "ניסיתם Remove Blank Rows ולא קרה כלום? הפקודה הזו מוחקת רק שורות שריקות לגמרי." },
+        { id: "l2-7", t: "בחרו [[Choose Columns]] והשאירו רק: recordID, year, month, day, period, plot, species, sex, hfl, wgt, id.", e: "11 עמודות." },
+        { id: "l2-9", opt: true, t: "לפני Close & Apply: שנו את שם העמודה wgt ל-weight_g, ובחץ של weight_g בחרו [[Remove Empty]]. עכשיו מחקו ברשימת הצעדים את הצעד של שינוי השם. מה קרה?", e: "הודעת שגיאה. למה היא הופיעה?", h: "צעד הסינון פועל על עמודה בשם weight_g, ואחרי שמחקתם את שינוי השם אין עמודה כזו. כל צעד במתכון נשען על הצעדים שלפניו. כדי לתקן, מחקו גם את צעד הסינון." },
+        { id: "l2-8", t: "לחצו על [[Close & Apply]] ושמרו.", e: "הכרטיס מראה 14,492." }
+      ],
+      qs: [
+        { id: "l2-q1", q: "בעמודה species יש שורות עם הערך NA.", ph: "א.\nב.",
+          parts: ["א. פתחו את Portal_species.csv. מה מסמן הקוד NA?", "ב. למה לא מחקנו את השורות האלה?"] },
+        { id: "l2-q2", q: "כמה שורות הוריד כל סינון, ולפי איזה כלל?", ph: "א.\nב.\nג.",
+          parts: ["א. כמה שורות הוריד הסינון של period? (לפני הסינון היו 15,120)",
+                  "ב. כמה שורות הוריד הסינון של species? רמז: בשיעור 1 ספרתם 541 שורות בלי species. אם יצא לכם פחות, בדקו כמה מהן ירדו כבר בסינון של period.",
+                  "ג. לפי איזה כלל של החוקרים נעשה כל סינון?"] }
+      ],
+      submit: "צילום מסך של רשימת הצעדים (Applied Steps), ותשובות לשתי השאלות." },
+
+    { n: 3, data: "Portal", rod: true, title: "השוואה הוגנת ומאמץ דגימה: המקרה של חולדות הקנגורו",
+      sub: "לומדים לנרמל נתונים, ולהשוות בין שנים שבהן נערך מספר שונה של סבבי לכידה",
+      goal: "היום תבנו גרף של מספר הלכידות בכל שנה, ותבדקו אם הירידה שרואים בו אומרת שהיו פחות חיות בשטח.",
+      intro: "בגרף שתבנו תראו צניחה חדה ב-2020. מה גרם לה? האם החיות נעלמו, או שמשהו השתנה באיסוף הנתונים? היום תבדקו את מאמץ הדגימה, כלומר כמה סבבי לכידה נערכו בכל שנה, ותלמדו להשוות בין שנים בצורה הוגנת.",
+      steps: [
+        { id: "l3-1", t: "פתחו את L02 ושמרו בשם {{L03_Portal_Cohen_Noa.pbix}}.", e: "יש ארבעה קבצים ב-work: L01, L02, L03 וקובץ ה-xlsx." },
+        { id: "l3-2", t: "ב-Table view לחצו על year, ובלשונית Column tools שנו את [[Summarization]] ל-[[Don't summarize]]. עשו אותו דבר ל-plot.", e: "Power BI כבר לא יחבר שנים או מספרי חלקות.", w: "חיבור של שנים, 2016 ועוד 2017, לא אומר כלום. גם חיבור של מספרי חלקות." },
+        { id: "l3-3", t: "ב-Report view לחצו על + בתחתית המסך כדי לפתוח עמוד חדש, וקראו לו לכידות (לחיצה כפולה על השם).", e: "עמוד ריק בשם לכידות." },
+        { id: "l3-3b", t: "הוסיפו מסנן: לחצו על מקום ריק בעמוד, ובחלונית Visualizations לחצו על [[Slicer]]. מרשימת השדות גררו את species לאזור Field.", e: "מופיעה רשימה של שמות מינים, עם ריבוע סימון ליד כל אחד.", h: "Slicer הוא תצוגה כמו גרף, ולא טבלה. הוא נבנה מעמודה שכבר קיימת, ואין צורך ליצור טבלה חדשה. לא רואים את הרשימה? לחצו קודם על מקום ריק בעמוד: כשתצוגה אחרת נבחרת, הגרירה משנה אותה." },
+        { id: "l3-3c", t: "ברשימה של ה-Slicer לחצו על DM (חולדת הקנגורו של מריאם).", e: "רק DM מסומן. הכרטיס מהעמוד הראשון נשאר כמו שהוא.", h: "הרשימה ארוכה? הקלידו DM בתיבת החיפוש שבראש ה-Slicer, או גללו.", w: "Slicer מסנן את כל מה שנמצא איתו באותו עמוד. בעמוד נפרד, הכרטיס מהעמוד הראשון לא מושפע ממנו." },
+        { id: "l3-4", t: "לחצו על מקום ריק בעמוד, ובחלונית Visualizations לחצו על [[Clustered column chart]]. גררו year לאזור X-axis, וגררו recordID לאזור Y-axis. בחץ שליד recordID באזור Y-axis בחרו [[Count]]. בחץ שליד year באזור X-axis ודאו שמסומן Don't summarize.", e: "עמודה לכל שנה, מ-2016 עד 2026. כדי לראות מספר, העבירו את העכבר מעל עמודה.", h: "יש רק עמודה אחת, של 2016? כנראה year מסוכם (למשל Minimum או Sum). בחץ שליד year באזור X-axis בחרו Don't summarize. הציר מראה 2,016? בעיצוב הגרף (סמל המברשת) פתחו את X-axis ושנו את Type ל-Categorical." },
+        { id: "l3-4b", t: "ודאו שהעמודות מסודרות לפי שנה, מ-2016 עד 2026. אם הן מסודרות לפי גובה: לחצו על שלוש הנקודות בפינת הגרף, בחרו [[Sort axis]] ואז year, ושוב על שלוש הנקודות ובחרו [[Sort ascending]].", e: "263 לכידות ב-2019, ו-61 ב-2020.", h: "אחרי שינוי ל-Categorical, Power BI מסדר את העמודות לפי גובה ולא לפי שנה. אין עמודות בכלל? ודאו ש-DM מסומן ב-Slicer." },
+        { id: "l3-5", t: "עצרו. מה יכול להסביר את הירידה ב-2020? כתבו שתי אפשרויות בשאלה 1, לפני שממשיכים.", e: "עוד לא מתקנים כלום. רק כותבים." },
+        { id: "l3-6", t: "פתחו עוד עמוד חדש, בשם סבבים. הוסיפו [[Table]] עם year ועם period, ושנו את period ל-[[Count (Distinct)]].", e: "ב-2019: 12 סבבים. ב-2020: 2.", h: "למה ב-2020 רק 2 סבבים? אחרי פברואר 2020 עבודת השדה נעצרה בגלל מגפת הקורונה, וחודשה רק ביוני 2021.", w: "Slicer מסנן את כל מה שנמצא איתו באותו עמוד. בעמוד נפרד, טבלת הסבבים סופרת את כל הסבבים, ולא רק את אלה שבהם נלכד המין שבחרתם." },
+        { id: "l3-7", t: "את החישוב עושים במחשבון או על דף, לא ב-Power BI. מספר הלכידות של 2019 ו-2020 נמצא בגרף בעמוד לכידות (העבירו את העכבר מעל העמודה). מספר הסבבים נמצא בטבלה בעמוד סבבים. חלקו: לכידות חלקי סבבים.", e: "2019: 263 חלקי 12 הם 21.9. 2020: 61 חלקי 2 הם 30.5.", h: "שני הסבבים של 2020 היו בינואר ובפברואר, ובחורף נלכדות יותר חולדות קנגורו מאשר בקיץ. אפשר להסיק שהן לא נעלמו, אבל לא ש-2020 הייתה שנה טובה יותר.", w: "כך מתחשבים במאמץ הדגימה. החישוב הזה נקרא נרמול, ובזכותו ההשוואה בין השנים הוגנת." },
+        { id: "l3-8", t: "עכשיו 2023 מול 2025, באותה דרך: את הלכידות קוראים מהגרף בעמוד לכידות, ואת הסבבים מהטבלה בעמוד סבבים. בשתי השנים נערכו 11 סבבים.", e: "2023: 605 חלקי 11 הם 55.0. 2025: 169 חלקי 11 הם 15.4." },
+        { id: "l3-9", t: "לבד: בחרו מין אחר ב-Slicer, וחשבו ממוצע לכידות בסבב ל-2019, 2020, 2023 ו-2025.", e: "רשמו את המספרים בשאלה 2.", h: "המינים הנפוצים: PP, PB, OT ו-DO. השמות והקישורים לתמונות נמצאים למעלה, בחלק \"המכרסמים במחקר\". אין עמודה לשנה מסוימת? באותה שנה לא נלכד אף פרט מהמין. שימו לב: PP נלכד מעט מאוד בחורף." },
+        { id: "l3-10", t: "שמרו את הקובץ.", e: "L03 נשמר ב-work." }
+      ],
+      qs: [
+        { id: "l3-q1", q: "לפני החישוב: בגרף רואים 61 לכידות של DM (חולדת הקנגורו של מריאם) ב-2020, לעומת 263 ב-2019. מה יכול להסביר את הירידה? כתבו שתי אפשרויות." },
+        { id: "l3-q2", q: "על המין שבחרתם:", ph: "א.\nב.\nג.\nד. טענה:\nראיה:\nנימוק:",
+          parts: ["א. רשמו ל-2019, 2020, 2023 ו-2025: מספר לכידות, מספר סבבים וממוצע לכידות בסבב.",
+                  "ב. האם הירידה ב-2020 נובעת מפחות חיות, או ממאמץ דגימה קטן יותר? נמקו לפי ממוצע הלכידות בסבב.",
+                  "ג. ב-2023 וב-2025 נערכו 11 סבבים בכל שנה. האם ממוצע הלכידות בסבב ירד בין 2023 ל-2025?",
+                  "ד. כתבו טענה, ראיה ונימוק על מה שקרה ב-2025."] }
+      ],
+      submit: "צילום מסך של הגרף ושל טבלת הסבבים, ותשובה לשאלה 2." },
+
+    { n: 4, data: "BRFSS", title: "מאגר חדש: סקר בריאות ופעילות גופנית (BRFSS)",
+      sub: "מנקים נתונים במאגר שבו תא ריק אינו מסמן בהכרח מידע חסר",
+      goal: "היום תעבדו עם מאגר חדש, סקר בריאות מארצות הברית, ותבדקו מה אומר תא ריק בטבלה: לפעמים חסר בו מידע, ולפעמים הוא ריק בכוונה.",
+      intro: "ה-CDC, המרכז האמריקאי לבקרת מחלות, עורך כל שנה סקר טלפוני על הרגלי בריאות, בקרב מבוגרים בכל מדינות ארצות הברית. שם הסקר: BRFSS. בקובץ שלכם יש רק את השאלות על פעילות גופנית. בעזרת הנתונים האלה אפשר לבדוק אילו קבוצות באוכלוסייה עוסקות פחות בפעילות גופנית, והיום תבדקו כמה גדול הפער בין קבוצות השכלה. שימו לב: כאן כל שורה היא אחוז ולא אדם. למשל, כמה אחוזים מבין בוגרי הקולג' בארצות הברית לא עשו שום פעילות גופנית בזמנם הפנוי ב-2025.",
+      steps: [
+        { id: "l4-1", t: "הורידו מהמודל את BRFSS_PA.csv לתיקייה {{data}}.", e: "הקובץ נמצא ב-data." },
+        { id: "l4-1b", t: "שמרו את BRFSS_PA.csv בגרסת Excel: פתחו אותו ב-Excel, ולחצו על File ואז Save As. בחרו Excel Workbook (*.xlsx), ושמרו בתיקייה {{work}} בשם {{BRFSS_PA.xlsx}}. סגרו את Excel.", e: "בתיקייה work יש קובץ xlsx, ובתיקייה data נשאר ה-CSV המקורי.", h: "הקובץ גדול, ולכן הפתיחה והשמירה לוקחות כמה שניות." },
+        { id: "l4-2", t: "פתחו קובץ Power BI חדש ושמרו מיד בשם {{L04_BRFSS_Cohen_Noa.pbix}}.", e: "הקובץ נמצא ב-work." },
+        { id: "l4-3", t: "בחרו [[Get data]] ואז [[Excel workbook]], בחרו את BRFSS_PA.xlsx מהתיקייה work, סמנו בחלון Navigator את הגיליון BRFSS_PA, והפעם לחצו על [[Transform data]].", e: "נפתח Power Query.", h: "בקובץ יש 60,060 שורות, והטעינה לוקחת קצת זמן.", w: "כדי לנקות את הנתונים ב-Power Query לפני שהם נכנסים לדוח, ולכן לא לוחצים על Load." },
+        { id: "l4-4", t: "עברו ל-[[entire data set]] ולחצו על העמודה education.", e: "כמה אחוזים מהתאים ריקים? רשמו." },
+        { id: "l4-5", t: "אל תמחקו את השורות שבהן education ריקה. סננו במקום זה שלוש עמודות: stratificationcategory1 שווה Education, questionid שווה Q047, ו-locationabbr שווה US.", e: "60 שורות.", h: "Q047 היא השאלה: כמה אחוזים לא עשו שום פעילות גופנית בזמנם הפנוי. US הוא כל ארצות הברית.", w: "העמודה education מלאה רק בשורות שבהן האחוז מחושב לפי השכלה. בשאר השורות החלוקה היא לפי גיל, מין, הכנסה או מוצא, או שהשורה מתארת את כל האוכלוסייה. מחיקה של השורות שבהן education ריקה תמחק את רוב הקובץ: את האחוז רשמתם בצעד הקודם." },
+        { id: "l4-6", t: "בפרופיל של education יש 5 ערכים במקום 4. בחרו [[Replace Values]], והחליפו את [[Some college or technical sch]] ב-[[Some college or technical school]]. לפני OK פתחו את Advanced options וסמנו [[Match entire cell contents]].", e: "4 ערכים.", h: "שכחתם לסמן? יופיע schoolool. מחקו את הצעד ונסו שוב.", w: "לאותה קבוצת השכלה יש בקובץ שני שמות: עד 2023 השם מקוצר ({{Some college or technical sch}}), ומ-2024 הוא מלא. ל-Power BI אלה שני ערכים שונים, ולכן בגרף הקבוצה תופיע כשני קווים. צעד אחד מאחד את שני השמות." },
+        { id: "l4-7", t: "לחצו על [[Close & Apply]]. הוסיפו [[Table]] עם yearstart, education ו-data_value, ובדקו את 2025.", e: "College graduate 12.3, Some college 21.2, High school graduate 27.9, Less than high school 41.7.", h: "data_value מופיע כטקסט? חזרו ל-Power Query ושנו את הסוג ל-Decimal Number." },
+        { id: "l4-8", t: "שמרו את הקובץ.", e: "L04 נשמר ב-work." }
+      ],
+      qs: [
+        { id: "l4-q1", q: "למה לא מחקנו את השורות הריקות ב-education? הסבירו במילים שלכם." },
+        { id: "l4-q2", q: "מה מייצגת שורה אחת במאגר הזה?", ph: "א.\nב.",
+          parts: ["א. מה מתועד בשורה אחת ב-BRFSS? (היעזרו בעמודות yearstart, locationabbr, question, education ו-data_value)", "ב. במה זה שונה משורה ב-Portal?"] }
+      ],
+      submit: "צילום מסך של רשימת הצעדים (Applied Steps) ושל הטבלה, ותשובות לשתי השאלות." },
+
+    { n: 5, data: "BRFSS", title: "ניקוי נתונים עצמאי",
+      sub: "מקבלים מטרה ונקודות בדיקה, ומחליטים לבד אילו צעדים לבצע",
+      goal: "היום תנקו נתונים בעצמכם. תקבלו מטרה ונקודות בדיקה, ותחליטו לבד אילו צעדים לבצע ב-Power Query. נקודת בדיקה היא מספר שאמור להופיע אם הניקוי הצליח.",
+      intro: "המטרה: אחוז המבוגרים בארצות הברית שעושים אימוני כוח פעמיים בשבוע או יותר, לפי גיל.",
+      steps: [
+        { id: "l5-1", t: "פתחו את L04 ושמרו בשם {{L05_BRFSS_Cohen_Noa.pbix}}. ב-Power Query, ברשימת השאילתות (Queries) שבצד שמאל, לחצו לחיצה ימנית על השאילתה ובחרו [[Duplicate]].", e: "יש שאילתה שנייה עם אותם צעדים.", w: "העותק מקבל את כל המתכון של שיעור 4, ומשנים בו רק את מה שצריך. השאילתה המקורית נשארת כמו שהיא." },
+        { id: "l5-2", t: "נקודת בדיקה 1: אחרי השינויים שלכם נשארות 36 שורות.", e: "36 שורות.", h: "השאלה על אימוני כוח היא Q046. הגיל נמצא בקטגוריה Age (years)." },
+        { id: "l5-3", t: "נקודת בדיקה 2: ב-2023, בגילי 18 עד 24 הערך הוא 51.2, ובגיל 65 ומעלה 38.1.", e: "שני הערכים מתאימים." },
+        { id: "l5-4", t: "בדקו אילו שנים יש בטבלה ואילו חסרות.", e: "רשמו בשאלה 1." },
+        { id: "l5-5", opt: true, t: "Q047 במדינה שהמורה בחר, לפי Race/Ethnicity. כמה ערכים חסרים? מה כתוב בעמודה data_value_footnote?", e: "רשמו בשאלה 2." },
+        { id: "l5-6", t: "שמרו את הקובץ.", e: "L05 נשמר ב-work." }
+      ],
+      qs: [
+        { id: "l5-q1", q: "באילו שנים יש נתונים על אימוני כוח?", ph: "א.\nב.\nג.",
+          parts: ["א. באילו שנים יש נתונים על אימוני כוח, ובאילו אין?",
+                  "ב. מה תציגו בגרף בשנים שאין בהן נתונים?",
+                  "ג. למה אסור לכתוב בשנים האלה 0? (רמז: מה אומר 0, ומה אומר תא ריק?)"] },
+        { id: "l5-q2", q: "אתגר: למה חסרים ערכים בחלק מקבוצות המוצא?", opt: true }
+      ],
+      submit: "צילום מסך של רשימת הצעדים (Applied Steps) של השאילתה החדשה, ותשובה לשאלה 1." },
+
+    { n: 6, data: "BRFSS", title: "בדיקת איכות הנתונים בגרף קווים",
+      sub: "מזהים טעויות ניקוי ודפוסים חוזרים בעזרת ויזואליזציה",
+      goal: "היום תבנו גרף קווים, ותבדקו בו את הניקוי משיעור 4: אם יש בגרף קו מיותר, משהו בניקוי לא הצליח. בגרף תמצאו גם דפוס שחוזר בשנים 2011 עד 2020, ותבדקו אם הוא נובע משינוי אצל אנשים או מהשאלון.",
+      steps: [
+        { id: "l6-1", t: "פתחו את L05 ושמרו בשם {{L06_BRFSS_Cohen_Noa.pbix}}.", e: "L06 נמצא ב-work." },
+        { id: "l6-2", t: "הוסיפו [[Line chart]] מהטבלה של שיעור 4: yearstart בציר X, data_value בציר Y (בחץ שלו בחרו [[Average]]), ו-education ב-[[Legend]].", e: "4 קווים.", h: "יש 5 קווים? ה-Replace משיעור 4 לא עבד. חזרו אליו." },
+        { id: "l6-3", t: "הסתכלו על השנים 2011 עד 2020. באילו שנים רוב הקווים גבוהים יותר: בשנים הזוגיות (למשל 2012 ו-2014) או בשנים האי-זוגיות (למשל 2011 ו-2013)?", e: "רשמו בשאלה 1." },
+        { id: "l6-4", t: "השוו רק שנים אי-זוגיות, למשל 2011 מול 2023.", e: "Less than high school: 39.0 ב-2011, ו-44.8 ב-2023." },
+        { id: "l6-5", t: "שמרו את הקובץ.", e: "L06 נשמר ב-work." }
+      ],
+      qs: [
+        { id: "l6-q1", q: "איזה דפוס מצאתם בשנים 2011 עד 2020?", ph: "א.\nב.",
+          parts: ["א. תארו את הדפוס במספרים: מה הערך של בוגרי הקולג' ב-2011, ומה ב-2012?",
+                  "ב. האם סביר שבכל שנה שנייה אנשים פעילים פחות? מה עוד יכול לגרום להבדל?"] },
+        { id: "l6-q2", q: "כתבו טענה, ראיה ונימוק שמשווים רק שנים מאותו סוג.", ph: "טענה:\nראיה:\nנימוק:" }
+      ],
+      submit: "צילום מסך של גרף הקווים, ותשובה לשאלה 2." },
+
+    { n: 7, data: "Portal", title: "המתכון עובד גם מחר: אוטומציה ועדכון נתונים",
+      sub: "מחליפים את קובץ המקור בגרסה חדשה, ורואים איך הצעדים רצים מחדש באופן אוטומטי",
+      goal: "היום תעדכנו את הדוח בנתונים חדשים, ותראו שה\"מתכון\" משיעור 2 עובד גם עליהם.",
+      intro: "החוקרים ממשיכים ללכוד מכרסמים כל חודש, ולכן יש גרסה חדשה של הקובץ, עם הלכידות של יוני 2026. בקובץ ה-Power BI שלכם שמורים שני דברים: מאיזה קובץ לקרוא את הנתונים, והמתכון, כלומר רשימת הצעדים שבניתם בשיעור 2. היום תחליפו את הקובץ הישן בקובץ החדש. Power BI יקרא את הקובץ החדש ויבצע עליו את אותו מתכון, צעד אחרי צעד, וכל הכרטיסים, הטבלאות והגרפים יתעדכנו. זו אוטומציה: את הניקוי בונים פעם אחת, ומפעילים אותו על כל גרסה חדשה של הנתונים.",
+      steps: [
+        { id: "l7-1", t: "הורידו מהמודל את Portal_rodents_2016_2026_update.csv לתיקייה {{data}}.", e: "הקובץ נמצא ב-data, ליד הקובץ הישן." },
+        { id: "l7-1b", t: "שמרו את קובץ העדכון בגרסת Excel: פתחו אותו ב-Excel, ולחצו על File ואז Save As. בחרו Excel Workbook (*.xlsx), ושמרו בתיקייה {{work}} בשם {{Portal_rodents_2016_2026_update.xlsx}}. לפני השמירה שנו את שם הגיליון (לחיצה כפולה על הלשונית בתחתית) ל-Portal_rodents_2016_2026, כמו בקובץ הישן.", e: "בתיקייה work יש שני קובצי xlsx, והגיליון בכל אחד נקרא Portal_rodents_2016_2026.", h: "שם הגיליון חייב להיות זהה. אחרת Power BI לא ימצא את הגיליון כשתחליפו מקור, ויופיע בו שגיאה.", w: "הצעד Navigation ברשימת הצעדים בוחר גיליון לפי שמו. גיליון בשם אחר לא ימצא." },
+        { id: "l7-2", t: "פתחו את L03 ושמרו בשם {{L07_Portal_Cohen_Noa.pbix}}.", e: "L07 נמצא ב-work." },
+        { id: "l7-3", t: "בחץ שליד Transform data בחרו [[Data source settings]] ואז [[Change Source]]. לחצו על Browse ובחרו ב-work את קובץ ה-xlsx של העדכון. לחצו על OK ואז על Close, ובפס הצהוב לחצו על [[Apply changes]].", e: "הכרטיס עולה מ-14,492 ל-14,548.", h: "המספרים לא השתנו? לחצו על Refresh.", w: "ב-Data source settings רואים מאיזה קובץ Power BI קורא את הנתונים, וב-Change Source בוחרים במקומו את הקובץ החדש. אחרי Apply changes, Power BI מריץ את המתכון מחדש, הפעם על הקובץ החדש." },
+        { id: "l7-4", t: "בדקו את עמוד הסבבים. בעמוד לכידות בחרו DM ב-Slicer ובדקו את הגרף.", e: "ב-2026: 6 סבבים במקום 5, ו-181 לכידות של DM במקום 159." },
+        { id: "l7-5", t: "הבדיקה המעשית: המורה יחלק את המשימות.", e: "עובדים לבד." },
+        { id: "l7-6", t: "שמרו את הקובץ.", e: "L07 נשמר ב-work." }
+      ],
+      qs: [
+        { id: "l7-q1", q: "מה עשה המתכון עם הקובץ החדש?", ph: "א.\nב.",
+          parts: ["א. בקובץ החדש יש 61 שורות נוספות, אבל המספר בכרטיס עלה רק ב-56. איזה צעד במתכון משיעור 2 הוריד את 5 השורות האחרות, ולמה? (רמז: בכל 61 השורות החדשות period חיובי.)",
+                  "ב. למה לא הייתם צריכים לסנן מחדש?"] },
+        { id: "l7-q2", q: "מה למדתי השבוע? שתי שורות." }
+      ],
+      submit: "צילום מסך של הכרטיס עם 14,548, ותשובה לשאלה 1. את הבדיקה המעשית מגישים לפי ההוראות של המורה." }
+  ];
+
+  // Where each button is in Power BI (English interface). Shown in the copy message and in the lexicon.
+  var LOC = {
+    "Blank report": "במסך הפתיחה של Power BI",
+    "Get data": "בסרגל העליון, בלשונית Home",
+    "Text/CSV": "ברשימה שנפתחת מתחת ל-Get data",
+    "Excel workbook": "ברשימה שנפתחת מתחת ל-Get data",
+    "Load": "בתחתית החלון שמציג את תוכן הקובץ",
+    "Transform data": "בסרגל העליון, בלשונית Home. אחרי שבוחרים קובץ, הוא נמצא גם בתחתית החלון שמציג את תוכן הקובץ",
+    "Report view": "בפס האנכי שבצד שמאל של החלון, הסמל הראשון מלמעלה",
+    "Table view": "בפס האנכי שבצד שמאל של החלון, הסמל השני מלמעלה",
+    "Card": "בחלונית Visualizations שבצד ימין",
+    "Table": "בחלונית Visualizations שבצד ימין",
+    "Slicer": "בחלונית Visualizations שבצד ימין",
+    "Sort axis": "בשלוש הנקודות בפינת הגרף (More options)",
+    "Sort ascending": "בשלוש הנקודות בפינת הגרף (More options), תחת Sort axis",
+    "Clustered column chart": "בחלונית Visualizations שבצד ימין",
+    "Line chart": "בחלונית Visualizations שבצד ימין",
+    "Count": "בחץ הקטן שליד שם השדה, באזור השדות של הגרף בחלונית Visualizations",
+    "Average": "בחץ הקטן שליד שם השדה, באזור השדות של הגרף בחלונית Visualizations",
+    "Count (Distinct)": "בחץ הקטן שליד שם השדה, באזור השדות של הגרף בחלונית Visualizations",
+    "Display units": "בעיצוב של הכרטיס או של הגרף (סמל המברשת, Format visual). הכי מהר: מקלידים Display units בתיבת החיפוש שבראש החלונית",
+    "Legend": "באזור השדות של גרף הקווים, בחלונית Visualizations",
+    "Save as": "בתפריט File",
+    "Summarization": "בלשונית Column tools, שנפתחת בסרגל העליון אחרי לחיצה על עמודה ב-Table view",
+    "Don't summarize": "ברשימה של Summarization, בלשונית Column tools",
+    "Column quality": "ב-Power Query, בלשונית View, בקבוצה Data Preview",
+    "Column distribution": "ב-Power Query, בלשונית View, בקבוצה Data Preview",
+    "Column profile": "ב-Power Query, בלשונית View, בקבוצה Data Preview",
+    "entire data set": "ב-Power Query, בשורת המצב שבתחתית החלון: לוחצים על Column profiling based on top 1000 rows",
+    "Number Filters": "בחץ שבכותרת העמודה, ב-Power Query",
+    "Greater Than": "ברשימה שנפתחת מ-Number Filters",
+    "Less Than": "ברשימה שנפתחת מ-Number Filters",
+    "Remove Empty": "בחץ שבכותרת העמודה, ב-Power Query",
+    "Choose Columns": "ב-Power Query, בלשונית Home, בקבוצה Manage Columns",
+    "Close & Apply": "ב-Power Query, בלשונית Home, הכפתור הראשון משמאל",
+    "Replace Values": "ב-Power Query, בלשונית Home או בלשונית Transform",
+    "Match entire cell contents": "בחלון Replace Values, תחת Advanced options",
+    "Duplicate": "ב-Power Query: לחיצה ימנית על השאילתה ברשימת Queries שבצד שמאל",
+    "Applied Steps": "ב-Power Query, בחלונית Query Settings שבצד ימין",
+    "Data source settings": "בחץ הקטן של הכפתור Transform data, בסרגל העליון",
+    "Change Source": "בתחתית החלון Data source settings",
+    "Apply changes": "בפס הצהוב שמופיע מתחת לסרגל העליון"
+  };
+  // Values to paste, not buttons
+  var PASTE = {
+    "Some college or technical sch": "הדביקו בחלון Replace Values, בשדה Value To Find.",
+    "Some college or technical school": "הדביקו בחלון Replace Values, בשדה Replace With."
+  };
+
+  // ---------- State (this browser only) ----------
+  var KEY = "pbi-week1-student-v1";
+  var REPORT = 8;
+  var state = { done: {}, ans: {}, sub: {}, lesson: 1 };
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw) {
+      var s = JSON.parse(raw);
+      if (s && typeof s === "object") {
+        state.done = s.done || {};
+        state.ans = s.ans || {};
+        state.sub = s.sub || {};
+        if (s.lesson >= 1 && s.lesson <= REPORT) state.lesson = s.lesson;
+      }
+    }
+  } catch (e) { /* storage blocked: the page still works */ }
+  var saveTimer = null;
+  function save() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { }
+    }, 250);
+  }
+
+  // ---------- Helpers ----------
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  // Rodent cards: names, average weight from the class file, one checked fact, links with photos
+  var RODENTS = [
+    { code: "DM", he: "חולדת הקנגורו של מריאם", en: "Merriam's kangaroo rat", sci: "Dipodomys merriami", w: "43.8", wiki: "Merriam%27s_kangaroo_rat",
+      fact: "קופצת על הרגליים האחוריות, וכמעט לא שותה מים: את המים היא מקבלת מהזרעים שהיא אוכלת." },
+    { code: "PP", he: "עכבר כיס מדברי", en: "Desert pocket mouse", sci: "Chaetodipus penicillatus", w: "16.9", wiki: "Desert_pocket_mouse",
+      fact: "נושא זרעים בכיסים שבלחיים, ומכאן השם. בקובץ הוא נלכד מעט מאוד בחורף." },
+    { code: "PB", he: "עכבר הכיס של ביילי", en: "Bailey's pocket mouse", sci: "Chaetodipus baileyi", w: "30.5", wiki: "Bailey%27s_pocket_mouse",
+      fact: "גדול מעכבר הכיס המדברי: בקובץ הכיתה הוא שוקל בממוצע כמעט פי 2 ממנו." },
+    { code: "OT", he: "עכבר החגבים הדרומי", en: "Southern grasshopper mouse", sci: "Onychomys torridus", w: "23.8", wiki: "Southern_grasshopper_mouse",
+      fact: "טורף: אוכל כמעט רק פרוקי רגליים, כמו חיפושיות, חגבים ועקרבים, ועמיד לעקיצת העקרב." },
+    { code: "DO", he: "חולדת הקנגורו של אורד", en: "Ord's kangaroo rat", sci: "Dipodomys ordii", w: "49.8", wiki: "Ord%27s_kangaroo_rat",
+      fact: "קרובה של חולדת הקנגורו של מריאם, ומעט כבדה ממנה." },
+    { code: "PE", he: "עכבר הקקטוס", en: "Cactus mouse", sci: "Peromyscus eremicus", w: "20.9", wiki: "Cactus_mouse",
+      fact: "אוכל זרעים, חרקים וצמחייה ירוקה. כשחסרים לו מזון או מים, הוא יכול להיכנס לתרדמת קצרה." },
+    { code: "RM", he: "עכבר הקציר המערבי", en: "Western harvest mouse", sci: "Reithrodontomys megalotis", w: "10.5", wiki: "Western_harvest_mouse",
+      fact: "הקטן מבין המינים שכאן." },
+    { code: "NA", he: "חולדת העצים לבנת הגרון", en: "White-throated woodrat", sci: "Neotoma albigula", w: "166.9", wiki: "White-throated_woodrat",
+      fact: "הכבדה מבין המינים שכאן, כמעט פי 10 מעכבר הכיס המדברי. בונה מחסה מחלקי קקטוס ומענפים." }
+  ];
+  function renderRodents(id) {
+    var box = document.getElementById(id);
+    if (!box) return;
+    RODENTS.forEach(function (r) {
+      var c = el("article", "rod");
+      var top = el("div", "rod-top");
+      top.appendChild(el("span", "rod-code", r.code));
+      var names = el("div", "rod-names");
+      names.appendChild(el("h4", "rod-he", r.he));
+      names.appendChild(el("p", "rod-en", r.en));
+      var sci = el("p", "rod-sci"); sci.appendChild(el("i", "", r.sci));
+      names.appendChild(sci);
+      top.appendChild(names);
+      c.appendChild(top);
+      c.appendChild(el("p", "rod-w", "משקל ממוצע בקובץ הכיתה: " + r.w + " גרם"));
+      if (r.fact) c.appendChild(el("p", "rod-fact", r.fact));
+      var links = el("p", "rod-links");
+      var a2 = el("a", "rod-photo", "תמונות בוויקישיתוף");
+      a2.href = "https://commons.wikimedia.org/w/index.php?search=" + encodeURIComponent(r.sci) + "&title=Special:MediaSearch&type=image"; a2.target = "_blank"; a2.rel = "noopener";
+      a2.setAttribute("aria-label", "תמונות של " + r.he + " בוויקישיתוף, בלשונית חדשה");
+      var a1 = el("a", "", "ויקיפדיה (באנגלית)");
+      a1.href = "https://en.wikipedia.org/wiki/" + r.wiki; a1.target = "_blank"; a1.rel = "noopener";
+      a1.setAttribute("aria-label", r.he + " בוויקיפדיה באנגלית, בלשונית חדשה");
+      links.appendChild(a2); links.appendChild(a1);
+      c.appendChild(links);
+      box.appendChild(c);
+    });
+  }
+
+  // Display settings: text size and layout (this browser only)
+  var VIEW_KEY = "pbi-view-v1";
+  var onViewChange = null;
+  var view = { size: "m", layout: "auto", theme: "auto" };
+  var hostTheme = document.documentElement.getAttribute("data-theme");
+  try {
+    var vraw = JSON.parse(localStorage.getItem(VIEW_KEY) || "null");
+    if (vraw && typeof vraw === "object") { view.size = vraw.size || "m"; view.layout = vraw.layout || "auto"; view.theme = vraw.theme || "auto"; }
+  } catch (e) { }
+  function applyView() {
+    var h = document.documentElement;
+    if (view.size === "m") h.removeAttribute("data-size"); else h.setAttribute("data-size", view.size);
+    if (view.theme === "light" || view.theme === "dark") h.setAttribute("data-theme", view.theme); else if (hostTheme) h.setAttribute("data-theme", hostTheme); else h.removeAttribute("data-theme");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-set-theme]"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-set-theme") === view.theme ? "true" : "false"); });
+    if (view.layout === "auto") h.removeAttribute("data-layout"); else h.setAttribute("data-layout", view.layout);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-set-size]"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-set-size") === view.size ? "true" : "false"); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-set-layout]"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-set-layout") === view.layout ? "true" : "false"); });
+    if (typeof onViewChange === "function") onViewChange();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("[data-set-size]"), function (b) {
+    b.addEventListener("click", function () { view.size = b.getAttribute("data-set-size"); try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) { } applyView(); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-set-layout]"), function (b) {
+    b.addEventListener("click", function () { view.layout = b.getAttribute("data-set-layout"); try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) { } applyView(); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-set-theme]"), function (b) {
+    b.addEventListener("click", function () { view.theme = b.getAttribute("data-set-theme"); try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) { } withFade(applyView); });
+  });
+  applyView();
+  renderRodents("rodentsS");
+  // FILES START
+  // Data files for the lessons. A file with a path is published next to this page (data/...); a file with ext opens an outside address.
+  // To adapt for another week: replace the entries and keep the field names. who is not needed here: everything is for the student.
+  var BRFSS_URL = "https://data.cdc.gov/resource/hn4x-zwk7.csv?$select=yearstart,yearend,locationabbr,locationdesc,datasource,class,topic,question,data_value_unit,data_value_type,data_value,data_value_alt,data_value_footnote_symbol,data_value_footnote,low_confidence_limit,high_confidence_limit,sample_size,total,age_years,education,sex,income,race_ethnicity,classid,topicid,questionid,datavaluetypeid,locationid,stratificationcategory1,stratification1,stratificationcategoryid1,stratificationid1&$where=classid=%27PA%27&$limit=100000";
+  var FILES = [
+    { name: "Portal_rodents_2016_2026.csv", path: "data/Portal_rodents_2016_2026.csv", when: "שיעור 1",
+      meta: "לכידות מכרסמים מינואר 2016 עד מאי 2026. 15,120 שורות, 1.3MB." },
+    { name: "Portal_species.csv", path: "data/Portal_species.csv", when: "שיעור 1",
+      meta: "קודי המינים ושמותיהם באנגלית. 49 שורות." },
+    { name: "BRFSS_PA.csv", ext: BRFSS_URL, when: "שיעור 4",
+      meta: "סקר הפעילות הגופנית של ה-CDC. 60,060 שורות.",
+      note: "הקובץ הזה מגיע מאתר ה-CDC. אפשר לקבל אותו כאן או מהמודל. אם הדפדפן מציג טקסט במקום להוריד, שומרים עם Ctrl+S בשם BRFSS_PA.csv. בדיקה: ב-Excel השורה האחרונה היא 60,061, כולל שורת הכותרות." },
+    { name: "Portal_rodents_2016_2026_update.csv", path: "data/Portal_rodents_2016_2026_update.csv", when: "רק בשיעור 7", late: true,
+      meta: "גרסה מעודכנת: עוד 61 לכידות מיוני 2026. 15,181 שורות.",
+      note: "מורידים אותו רק כשמגיעים לשיעור 7. הוא נשמר ב-data ליד הקובץ הישן ולא במקומו." }
+  ];
+  var dlApi = null, dlChecked = false;
+  function getDownloads() {
+    if (dlChecked) return Promise.resolve(dlApi);
+    var c = window.claude;
+    if (!c || typeof c.use !== "function") { dlChecked = true; return Promise.resolve(null); }
+    return c.use("downloads").then(function (api) { dlApi = api; dlChecked = true; return api; }, function () { dlChecked = true; return null; });
+  }
+  function renderFiles() {
+    var list = document.getElementById("fileList");
+    if (!list) return;
+    FILES.forEach(function (f) {
+      var row = el("div", "file");
+      var info = el("div", ""); info.style.display = "grid"; info.style.gap = "2px"; info.style.minWidth = "0";
+      var nm = el("span", "file-name", "");
+      f.name.split("_").forEach(function (part, i) { if (i) { nm.appendChild(document.createTextNode("_")); nm.appendChild(document.createElement("wbr")); } nm.appendChild(document.createTextNode(part)); });
+      info.appendChild(nm);
+      var meta = el("p", "file-meta");
+      var when = el("span", "file-when", f.when); if (f.late) when.dataset.late = "1";
+      meta.appendChild(when); meta.appendChild(document.createTextNode(f.meta));
+      info.appendChild(meta);
+      row.appendChild(info);
+      var act = el("div", "file-act");
+      var st = el("span", "dl-status", ""); st.setAttribute("aria-live", "polite");
+      if (f.ext) {
+        var a = el("a", "btn ghost", "פתיחה באתר ה-CDC");
+        a.href = f.ext; a.target = "_blank"; a.rel = "noopener";
+        act.appendChild(a);
+      } else {
+        var b = el("button", "btn", "הורדה"); b.type = "button";
+        b.addEventListener("click", function () {
+          st.textContent = "הקובץ בהכנה...";
+          getDownloads().then(function (api) {
+            if (!api) { st.textContent = "ההורדה לא זמינה בתצוגה הזו. אפשר להוריד את הקובץ מהמודל."; return; }
+            return fetch(f.path).then(function (r) {
+              if (!r.ok) throw new Error("fetch " + r.status);
+              return r.blob();
+            }).then(function (blob) {
+              return api.save({ filename: f.name, data: blob });
+            }).then(function () { st.textContent = "נשמר. עכשיו מעבירים אותו לתיקייה data."; }, function (e) {
+              var code = e && e.code;
+              st.textContent = code === "declined" ? "ההורדה בוטלה." : code === "rate_limited" ? "חלון הורדה כבר פתוח. אפשר לנסות שוב בעוד רגע." : "ההורדה לא הצליחה. אפשר להוריד את הקובץ מהמודל.";
+            });
+          });
+        });
+        act.appendChild(b);
+      }
+      act.appendChild(st);
+      row.appendChild(act);
+      if (f.note) row.appendChild(el("p", "file-note", f.note));
+      list.appendChild(row);
+    });
+  }
+  renderFiles();
+  // FILES END
+
+  var toastEl = document.getElementById("toast"), toastTimer = null;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.hidden = true; }, Math.min(8000, 1800 + msg.length * 45));
+  }
+  var BULB_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.6a4.4 4.4 0 0 0-2.6 7.95c.38.3.6.72.6 1.17v.78h4v-.78c0-.45.22-.88.6-1.17A4.4 4.4 0 0 0 8 1.6Z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6.2 13.6h3.6M6.8 15.1h2.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
+  var COPY_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3.5 10.5h-1V2.5h8v1" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';
+  function selectText(node) {
+    try {
+      var r = document.createRange(); r.selectNodeContents(node);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    } catch (e) { }
+  }
+  // בחלון שבו האפליקציה פתוחה הדפדפן חוסם את Clipboard API, ולכן קודם ההעתקה הישנה והאמינה (execCommand), ורק אחריה ה-API.
+  function execCopyText(text) {
+    var ta = document.createElement("textarea"), ok = false, prev = document.activeElement;
+    ta.value = text; ta.setAttribute("readonly", ""); ta.setAttribute("aria-hidden", "true");
+    ta.style.cssText = "position:fixed;top:0;inset-inline-start:0;width:1px;height:1px;opacity:0;pointer-events:none";
+    document.body.appendChild(ta);
+    try { ta.select(); ta.setSelectionRange(0, text.length); ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    try { if (prev && prev.focus) prev.focus({ preventScroll: true }); } catch (e) { }
+    return ok;
+  }
+  function copyText(text, ok, bad) {
+    if (execCopyText(text)) { ok(); return; }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, bad);
+      else bad();
+    } catch (e) { bad(); }
+  }
+  function copyChip(btn, term) {
+    copyText(term, function () {
+      btn.dataset.copied = "1";
+      toast("הועתק: " + term + ". " + (LOC[term] ? "הכפתור נמצא " + LOC[term] + "." : (PASTE[term] || "הדביקו בחיפוש של Power BI.")));
+      setTimeout(function () { btn.dataset.copied = "0"; }, 1600);
+    }, function () {
+      selectText(btn.querySelector(".term"));
+      toast("סמנו את המונח והעתיקו עם Ctrl+C.");
+    });
+  }
+  function rich(text) {
+    var frag = document.createDocumentFragment();
+    var parts = String(text).split(/(\[\[[^\]]+\]\]|\{\{[^}]+\}\})/);
+    parts.forEach(function (p) {
+      if (!p) return;
+      if (p.indexOf("[[") === 0) {
+        var term = p.slice(2, -2);
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "chip";
+        b.setAttribute("aria-label", "העתקת המונח " + term);
+        b.innerHTML = COPY_ICON;
+        b.appendChild(el("span", "term", term));
+        b.addEventListener("click", function (ev) { ev.stopPropagation(); copyChip(b, term); });
+        frag.appendChild(b);
+      } else if (p.indexOf("{{") === 0) {
+        frag.appendChild(el("code", "", p.slice(2, -2)));
+      } else {
+        frag.appendChild(document.createTextNode(p));
+      }
+    });
+    return frag;
+  }
+  function plain(text) { return String(text).replace(/\[\[|\]\]|\{\{|\}\}/g, ""); }
+  // ---------- Summary box: one box that is both the preview and the copy source ----------
+  // The clipboard gets clean HTML (bold titles, no colors, no backgrounds) plus plain text, so it pastes
+  // well into Moodle, Word and Google Docs even when the page is in dark mode.
+  var lastCopyHandled = false;
+  function sumHost(node) {
+    var n = node && node.nodeType === 1 ? node : node && node.parentNode;
+    return n && n.closest ? n.closest(".report-prev") : null;
+  }
+  function cleanHTML(frag) {
+    var d = document.createElement("div");
+    d.appendChild(frag);
+    var all = d.querySelectorAll("*");
+    for (var i = 0; i < all.length; i++) { while (all[i].attributes.length) all[i].removeAttribute(all[i].attributes[0].name); }
+    return '<div dir="rtl" lang="he">' + d.innerHTML + "</div>";
+  }
+  function exportOf(host, range, selText) {
+    var whole = document.createRange(); whole.selectNodeContents(host);
+    var all = !range || (range.compareBoundaryPoints(Range.START_TO_START, whole) <= 0 && range.compareBoundaryPoints(Range.END_TO_END, whole) >= 0);
+    return { html: cleanHTML((all ? whole : range).cloneContents()), text: all ? host._text : selText };
+  }
+  document.addEventListener("copy", function (ev) {
+    var sel = window.getSelection();
+    if (!sel || sel.isCollapsed || !sel.rangeCount || !ev.clipboardData) return;
+    var r = sel.getRangeAt(0), host = sumHost(r.commonAncestorContainer);
+    if (!host) return;
+    var x = exportOf(host, r, String(sel));
+    ev.clipboardData.setData("text/html", x.html);
+    ev.clipboardData.setData("text/plain", x.text);
+    ev.preventDefault();
+    lastCopyHandled = true;
+  });
+  function fillDoc(host, groups) {
+    host.textContent = "";
+    groups.forEach(function (g) {
+      var p = document.createElement("p");
+      g.forEach(function (ln, i) {
+        if (i) p.appendChild(document.createElement("br"));
+        if (ln.b) p.appendChild(el("b", "", ln.t)); else p.appendChild(document.createTextNode(ln.t));
+      });
+      host.appendChild(p);
+    });
+    host._text = groups.map(function (g) { return g.map(function (l) { return l.t; }).join("\n"); }).join("\n\n");
+  }
+  function docBox(groups, tall) {
+    var host = el("div", "report-prev" + (tall ? " tall" : ""));
+    host.tabIndex = 0;
+    host.setAttribute("role", "group"); host.setAttribute("aria-label", "הסיכום להעתקה");
+    host.setAttribute("dir", "rtl"); host.setAttribute("lang", "he");
+    fillDoc(host, groups);
+    return host;
+  }
+  function copyBox(host, stat, okMsg) {
+    selectText(host);
+    lastCopyHandled = false;
+    var done = false;
+    try { done = document.execCommand("copy") && lastCopyHandled; } catch (e) { done = false; }
+    function good() { stat.textContent = okMsg; }
+    function bad() { stat.textContent = "ההעתקה האוטומטית לא עבדה, אבל הסיכום מסומן. הקישו Ctrl+C (ב-Mac: Cmd+C)."; }
+    if (done) { good(); return; }
+    var x = exportOf(host, null, "");
+    function plainOnly() { try { navigator.clipboard.writeText(x.text).then(good, bad); } catch (e) { bad(); } }
+    try {
+      if (navigator.clipboard && navigator.clipboard.write && window.ClipboardItem) {
+        navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([x.html], { type: "text/html" }), "text/plain": new Blob([x.text], { type: "text/plain" }) })]).then(good, plainOnly);
+        return;
+      }
+    } catch (e) { }
+    plainOnly();
+  }
+
+  function lessonDone(L) { return L.steps.filter(function (s) { return state.done[s.id]; }).length; }
+  function reqQs(L) { return L.qs.filter(function (q) { return !q.opt; }); }
+  function answered(L) { return reqQs(L).filter(function (q) { return (state.ans[q.id] || "").trim(); }).length; }
+  // A summary is a list of paragraphs, and a paragraph is a list of lines: { t: text, b: bold }.
+  function summaryGroups(L, forWeek) {
+    var g = [[
+      { b: 1, t: (forWeek ? "" : "דוח למידה PBI מס' 1, ") + "שיעור " + L.n + ": " + L.title },
+      { t: "סימנתי " + lessonDone(L) + " מתוך " + L.steps.length + " צעדים." + (forWeek ? (state.sub[L.n] ? " הוגש במודל." : " עוד לא הוגש במודל.") : "") }
+    ]];
+    L.qs.forEach(function (q, i) {
+      var a = (state.ans[q.id] || "").trim();
+      if (q.opt && !a) return;
+      var grp = [{ b: 1, t: (i + 1) + ". " + plain(q.q) }];
+      (a ? a.replace(/\r\n?/g, "\n").split("\n") : ["(לא עניתי)"]).forEach(function (ln) { grp.push({ t: ln.replace(/\s+$/, "") }); });
+      g.push(grp);
+    });
+    return g;
+  }
+  function weekGroups() {
+    var g = [[{ b: 1, t: "דוח למידה PBI מס' 1: סיכום השבוע" }]];
+    LESSONS.forEach(function (L) { g = g.concat(summaryGroups(L, true)); });
+    return g;
+  }
+
+  // ---------- Tabs ----------
+  var tabsEl = document.getElementById("tabs");
+  var tourOn = false;
+  function makeTab(n, small, big) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "tab"; b.id = "tab-" + n;
+    b.setAttribute("role", "tab"); b.setAttribute("aria-controls", "panel");
+    b.innerHTML = '<span class="t-l"></span><span class="t-n"></span><span class="t-p"></span>';
+    b.querySelector(".t-l").textContent = small;
+    b.querySelector(".t-n").textContent = big;
+    b.addEventListener("click", function () { openLesson(n, true); });
+    b.addEventListener("keydown", function (ev) {
+      if (tourOn) return;
+      var d = ev.key === "ArrowLeft" ? 1 : ev.key === "ArrowRight" ? -1 : 0;
+      if (!d) return;
+      ev.preventDefault();
+      var nx = ((n - 1 + d + REPORT) % REPORT) + 1;
+      openLesson(nx, true); document.getElementById("tab-" + nx).focus();
+    });
+    tabsEl.appendChild(b);
+  }
+  LESSONS.forEach(function (L) { makeTab(L.n, "שיעור", String(L.n)); });
+  makeTab(REPORT, "השבוע", "סיכום");
+  function renderTabs() {
+    LESSONS.forEach(function (L) {
+      var b = document.getElementById("tab-" + L.n), k = lessonDone(L), t = L.steps.length;
+      b.setAttribute("aria-selected", L.n === state.lesson ? "true" : "false");
+      b.tabIndex = L.n === state.lesson ? 0 : -1;
+      b.dataset.done = k === t ? "1" : "0";
+      b.querySelector(".t-p").textContent = (state.sub[L.n] ? "✓ " : "") + k + "/" + t;
+      b.setAttribute("aria-label", "שיעור " + L.n + ": " + L.title + ". " + k + " מתוך " + t + " צעדים" + (state.sub[L.n] ? ". הוגש" : ""));
+    });
+    var r = document.getElementById("tab-" + REPORT);
+    var subs = LESSONS.filter(function (L) { return state.sub[L.n]; }).length;
+    r.setAttribute("aria-selected", state.lesson === REPORT ? "true" : "false");
+    r.tabIndex = state.lesson === REPORT ? 0 : -1;
+    r.dataset.done = subs === LESSONS.length ? "1" : "0";
+    r.querySelector(".t-p").textContent = subs + "/7 הוגשו";
+    r.setAttribute("aria-label", "סיכום השבוע. " + subs + " מתוך 7 שיעורים הוגשו");
+  }
+
+  // ---------- Lesson panel ----------
+  var panelEl = document.getElementById("panel");
+  function updatePreview() {
+    if (state.lesson === REPORT) return;
+    var p = document.getElementById("prev-" + state.lesson);
+    if (p) fillDoc(p, summaryGroups(LESSONS[state.lesson - 1]));
+  }
+  function pager(prevN, prevLabel, nextN, nextLabel) {
+    var pg = el("div", "pager");
+    if (prevN) {
+      var pv = el("button", "btn ghost", prevLabel); pv.type = "button";
+      pv.addEventListener("click", function () { openLesson(prevN, true); });
+      pg.appendChild(pv);
+    } else pg.appendChild(el("span", ""));
+    if (nextN) {
+      var nx = el("button", "btn ghost", nextLabel); nx.type = "button";
+      nx.addEventListener("click", function () { openLesson(nextN, true); });
+      pg.appendChild(nx);
+    }
+    return pg;
+  }
+  function renderLesson() {
+    if (state.lesson === REPORT) { renderReport(); return; }
+    var L = LESSONS[state.lesson - 1];
+    panelEl.innerHTML = "";
+    panelEl.setAttribute("aria-labelledby", "tab-" + L.n);
+
+    var head = el("div", "head");
+    head.appendChild(el("p", "kicker", "שיעור " + L.n + " מתוך 7, " + (L.data === "Portal" ? "נתוני Portal: מכרסמים במדבר" : "נתוני BRFSS: סקר פעילות גופנית")));
+    head.appendChild(el("h2", "", L.title));
+    if (L.sub) head.appendChild(el("p", "l-sub", L.sub));
+    panelEl.appendChild(head);
+
+    var goal = el("div", "goal");
+    goal.appendChild(el("span", "goal-label", "המטרה של היום"));
+    goal.appendChild(el("p", "", L.goal));
+    panelEl.appendChild(goal);
+    if (L.intro) panelEl.appendChild(el("p", "intro", L.intro));
+    if (L.rod) {
+      var rb = el("button", "btn ghost rod-open", "הכירו את המכרסמים במחקר"); rb.type = "button";
+      rb.addEventListener("click", function () {
+        var d = document.getElementById("h-species");
+        var tl = document.getElementById("tools"); if (tl) tl.open = true;
+        d.open = true;
+        d.scrollIntoView({ block: "start", behavior: reduceMotion ? "auto" : "smooth" });
+        d.querySelector("summary").focus({ preventScroll: true });
+      });
+      panelEl.appendChild(rb);
+    }
+
+    var stepsSec = el("section", "stepsec");
+    var st = el("h3", "sec-title", "הצעדים");
+    var sub = el("span", "sec-sub", ""); sub.id = "stepCount";
+    st.appendChild(sub);
+    stepsSec.appendChild(st);
+    var ol = el("ol", "steps");
+    L.steps.forEach(function (s, i) {
+      var li = el("li", "step");
+      li.dataset.done = state.done[s.id] ? "1" : "0";
+      li.dataset.opt = s.opt ? "1" : "0";
+      var cb = document.createElement("input");
+      cb.type = "checkbox"; cb.id = "cb-" + s.id; cb.checked = !!state.done[s.id];
+      cb.setAttribute("aria-labelledby", "tx-" + s.id);
+      var body = el("div", "step-body");
+      var tx = el("div", "s-text"); tx.id = "tx-" + s.id;
+      tx.appendChild(el("span", "s-num", (i + 1) + ". "));
+      if (s.opt) tx.appendChild(el("span", "s-badge", "אתגר"));
+      tx.appendChild(rich(s.t));
+      var main = el("div", "s-main");
+      main.appendChild(tx);
+      if (s.w) {
+        var wb = el("div", "why");
+        var wl = el("span", "why-label"); wl.innerHTML = BULB_ICON;
+        wl.appendChild(document.createTextNode("למה עושים את זה?"));
+        wb.appendChild(wl); var wp = el("p", ""); wp.appendChild(rich(s.w)); wb.appendChild(wp);
+        main.appendChild(wb);
+      }
+      body.appendChild(main);
+      if (s.e) {
+        var ex = el("p", "expect");
+        ex.appendChild(el("b", "", "מה אמור להופיע: "));
+        ex.appendChild(rich(s.e));
+        body.appendChild(ex);
+      }
+      if (s.h) {
+        var d = el("details", "hint");
+        d.appendChild(el("summary", "", "רמז"));
+        d.appendChild(el("p", "", s.h));
+        body.appendChild(d);
+      }
+      li.appendChild(cb); li.appendChild(body);
+      function set(on) {
+        if (on) state.done[s.id] = true; else delete state.done[s.id];
+        cb.checked = on; li.dataset.done = on ? "1" : "0";
+        save(); renderTabs(); updateCount(); updatePreview();
+      }
+      cb.addEventListener("change", function () { set(cb.checked); });
+      li.addEventListener("click", function (ev) {
+        if (ev.target.closest("button, a, summary, details, input, textarea, code, .why")) return;
+        set(!cb.checked);
+      });
+      ol.appendChild(li);
+    });
+    stepsSec.appendChild(ol);
+    panelEl.appendChild(stepsSec);
+
+    var qSec = el("section", "qs");
+    qSec.appendChild(el("h3", "sec-title", "שאלות לחשיבה"));
+    L.qs.forEach(function (q, i) {
+      var box = el("div", "q");
+      var lab = el("label", "", (i + 1) + ". " + q.q);
+      lab.setAttribute("for", "ta-" + q.id);
+      if (q.opt) { lab.appendChild(document.createTextNode(" ")); lab.appendChild(el("span", "q-opt", "(רשות)")); }
+      var ta = document.createElement("textarea");
+      ta.id = "ta-" + q.id; ta.rows = 3;
+      if (q.ph) ta.placeholder = q.ph;
+      ta.value = state.ans[q.id] || "";
+      ta.addEventListener("input", function () {
+        if (ta.value) state.ans[q.id] = ta.value; else delete state.ans[q.id];
+        save(); updatePreview(); renderTabs();
+      });
+      box.appendChild(lab);
+      if (q.parts) {
+        var pl = el("ul", "q-parts"); pl.id = "qp-" + q.id;
+        q.parts.forEach(function (p) { pl.appendChild(el("li", "", p)); });
+        box.appendChild(pl);
+        ta.setAttribute("aria-describedby", pl.id);
+        ta.rows = 2 + q.parts.length;
+      }
+      box.appendChild(ta);
+      qSec.appendChild(box);
+    });
+    panelEl.appendChild(qSec);
+
+    var sb = el("section", "submit");
+    sb.appendChild(el("span", "submit-label", "מה מגישים במודל"));
+    sb.appendChild(el("p", "submit-what", L.submit));
+    sb.appendChild(el("p", "submit-how", "קודם צלמו את המסך עם Win+Shift+S, לחצו על ההודעה שקופצת ושמרו את התמונה כקובץ. אחר כך לחצו על הכפתור (או סמנו את הסיכום והעתיקו אותו עם Ctrl+C), הדביקו את הסיכום במטלה במודל וצרפו את קובץ התמונה."));
+    sb.appendChild(el("span", "report-label", "הסיכום של השיעור. זה מה שיודבק במודל, ולכן עוברים עליו לפני ההגשה:"));
+    var prev = docBox(summaryGroups(L)); prev.id = "prev-" + L.n;
+    sb.appendChild(prev);
+    var row = el("div", "row");
+    var cbtn = el("button", "btn go", "העתקת הסיכום שלי"); cbtn.type = "button";
+    var stat = el("span", "status", ""); stat.setAttribute("aria-live", "polite");
+    row.appendChild(cbtn); row.appendChild(stat);
+    sb.appendChild(row);
+    cbtn.addEventListener("click", function () { fillDoc(prev, summaryGroups(L)); copyBox(prev, stat, "הסיכום הועתק. עכשיו הדביקו אותו במודל."); });
+    var sl = el("label", "subm");
+    var sc = document.createElement("input"); sc.type = "checkbox"; sc.id = "sub-" + L.n; sc.checked = !!state.sub[L.n];
+    sc.addEventListener("change", function () { if (sc.checked) state.sub[L.n] = true; else delete state.sub[L.n]; save(); renderTabs(); });
+    sl.appendChild(sc); sl.appendChild(el("span", "", "הגשתי את השיעור הזה במודל"));
+    sb.appendChild(sl);
+    panelEl.appendChild(sb);
+
+    panelEl.appendChild(pager(L.n > 1 ? L.n - 1 : 0, "לשיעור " + (L.n - 1), L.n < 7 ? L.n + 1 : REPORT, L.n < 7 ? "לשיעור " + (L.n + 1) : "לסיכום השבוע"));
+    updateCount();
+  }
+  function updateCount() {
+    if (state.lesson === REPORT) return;
+    var L = LESSONS[state.lesson - 1], c = document.getElementById("stepCount");
+    if (c) c.textContent = "סימנתם " + lessonDone(L) + " מתוך " + L.steps.length;
+  }
+
+  // ---------- Learning report for the whole week ----------
+  function renderReport() {
+    panelEl.innerHTML = "";
+    panelEl.setAttribute("aria-labelledby", "tab-" + REPORT);
+    var head = el("div", "head");
+    head.appendChild(el("p", "kicker", "שבוע 1, כל השיעורים"));
+    head.appendChild(el("h2", "", "סיכום השבוע"));
+    panelEl.appendChild(head);
+    panelEl.appendChild(el("p", "intro", "כאן רואים את כל השבוע: כמה צעדים סימנתם, על כמה שאלות עניתם, ומה כבר הגשתם במודל. את ההגשה מסמנים בעצמכם, בסוף כל שיעור. לחיצה על שם של שיעור פותחת אותו."));
+    var wrap = el("div", "rep-table-wrap");
+    var t = el("table", "rep-table");
+    var thead = el("thead", ""), hr = el("tr", "");
+    ["שיעור", "צעדים", "שאלות", "הוגש במודל"].forEach(function (h) { hr.appendChild(el("th", "", h)); });
+    thead.appendChild(hr); t.appendChild(thead);
+    var tb = el("tbody", "");
+    LESSONS.forEach(function (L) {
+      var tr = el("tr", "");
+      var td1 = el("td", "");
+      var b = el("button", "rep-open", L.n + ". " + L.title); b.type = "button";
+      b.addEventListener("click", function () { openLesson(L.n, true); });
+      td1.appendChild(b); tr.appendChild(td1);
+      tr.appendChild(el("td", "", lessonDone(L) + "/" + L.steps.length));
+      tr.appendChild(el("td", "", answered(L) + "/" + reqQs(L).length));
+      tr.appendChild(el("td", state.sub[L.n] ? "ok" : "miss", state.sub[L.n] ? "הוגש" : "עוד לא"));
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb); wrap.appendChild(t); panelEl.appendChild(wrap);
+
+    var sec = el("section", "submit");
+    sec.appendChild(el("span", "submit-label", "כל השבוע בטקסט אחד"));
+    sec.appendChild(el("p", "submit-how", "כל התשובות של השבוע. אם המורה מבקש סיכום שבועי, מעתיקים אותו מכאן ומדביקים במודל. אפשר ללחוץ על הכפתור, או לסמן ולהעתיק עם Ctrl+C."));
+    var prev = docBox(weekGroups(), true);
+    sec.appendChild(prev);
+    var row = el("div", "row");
+    var cb = el("button", "btn go", "העתקת הסיכום של כל השבוע"); cb.type = "button";
+    var stat = el("span", "status", ""); stat.setAttribute("aria-live", "polite");
+    row.appendChild(cb); row.appendChild(stat); sec.appendChild(row);
+    cb.addEventListener("click", function () { fillDoc(prev, weekGroups()); copyBox(prev, stat, "הסיכום הועתק. עכשיו הדביקו אותו במודל."); });
+    panelEl.appendChild(sec);
+    panelEl.appendChild(pager(7, "לשיעור 7", 0, ""));
+  }
+
+  function openLesson(n, scroll) {
+    state.lesson = n; save();
+    renderTabs(); renderLesson();
+    if (scroll && !tourOn) {
+      var top = tabsEl.getBoundingClientRect().top;
+      if (top < 0) tabsEl.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+  }
+
+  // ---------- Reset ----------
+  var confirmBox = document.getElementById("confirmBox");
+  document.getElementById("resetBtn").addEventListener("click", function () { confirmBox.hidden = false; document.getElementById("confirmNo").focus(); });
+  document.getElementById("confirmNo").addEventListener("click", function () { confirmBox.hidden = true; });
+  document.getElementById("confirmYes").addEventListener("click", function () {
+    state.done = {}; state.ans = {}; state.sub = {};
+    try { localStorage.removeItem(KEY); } catch (e) { }
+    confirmBox.hidden = true;
+    renderTabs(); renderLesson();
+    toast("הסימונים והתשובות נמחקו מהמחשב הזה.");
+  });
+
+  // ---------- Guided tour, for projecting on the class board ----------
+  var TOUR = [
+    { view: "lesson", sel: "#viewset", title: "גודל טקסט ורקע כהה", text: "קשה לקרוא? כאן מגדילים את הטקסט, עוברים לרקע כהה ובוחרים פריסה לטלפון. ההגדרה נשמרת במכשיר הזה." },
+    { view: "lesson", sel: "#tabs", title: "בוחרים שיעור", text: "כל שיעור הוא כפתור. המספר הקטן אומר כמה צעדים כבר סימנתם." },
+    { view: "lesson", sel: "#panel .goal", title: "המטרה של היום", text: "מה תדעו לעשות בסוף השיעור. קוראים אותה לפני שמתחילים." },
+    { view: "lesson", sel: "#panel .step", title: "צעד אחרי צעד", text: "מבצעים ב-Power BI את מה שכתוב בצעד, ובודקים שעל המסך מופיע מה שכתוב ב\"מה אמור להופיע\". רק אז מסמנים את הצעד. כדי לסמן צעד, אפשר ללחוץ בכל מקום עליו, ולא רק בתיבה." },
+    { view: "lesson", sel: "#panel .why", title: "למה עושים את זה?", text: "ליד חלק מהצעדים יש הסבר קצר: למה עושים את הפעולה. כדאי לקרוא אותו לפני שממשיכים." },
+    { view: "lesson", sel: "#panel .chip", title: "שם של כפתור", text: "לחיצה על שם של כפתור במסגרת אפורה מעתיקה אותו, ומופיעה הודעה שאומרת איפה הכפתור נמצא. עדיין לא מוצאים? מדביקים את השם בתיבת החיפוש שבראש חלון Power BI." },
+    { view: "lesson", sel: "#panel .hint", title: "רמז", text: "נתקעתם? פותחים את הרמז. לא חייבים." },
+    { view: "lesson", sel: "#panel .qs", title: "שאלות לחשיבה", text: "עונים על כל סעיף במשפט או שניים. את החלק הזה המורה קורא." },
+    { view: "lesson", sel: "#panel .submit", title: "מה מגישים במודל", text: "קודם צילום מסך ושמירה כקובץ. אחר כך העתקת הסיכום, הדבקה במטלה במודל וצירוף התמונה." },
+    { view: "lesson", sel: "#panel .report-prev", title: "הסיכום של השיעור", text: "כך ייראה מה שתדביקו במודל. לפני ההגשה עוברים עליו: נשאר \"(לא עניתי)\"? כל תשובה מובנת למי שלא היה בכיתה?" },
+    { view: "lesson", sel: "#panel .subm", title: "סימון הגשה", text: "אחרי שהגשתם במודל, מסמנים כאן. כך תראו בסיכום השבוע מה כבר הוגש." },
+    { view: "report", sel: "#panel .rep-table-wrap", title: "סיכום השבוע", text: "כל השבוע במקום אחד: כמה צעדים סימנתם, על כמה שאלות עניתם ומה כבר הגשתם. לחיצה על שיעור פותחת אותו." }
+  ];
+  var tourI = 0, tourLesson = 1;
+  var tourbar = document.getElementById("tourbar");
+  var reduceMotion = false;
+  try { reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { }
+  function clearTarget() {
+    Array.prototype.forEach.call(document.querySelectorAll(".tour-target"), function (n) { n.classList.remove("tour-target"); });
+  }
+  function showTour() {
+    var st = TOUR[tourI];
+    if (st.view === "report" && state.lesson !== REPORT) openLesson(REPORT, false);
+    if (st.view === "lesson" && state.lesson === REPORT) openLesson(tourLesson, false);
+    clearTarget();
+    document.getElementById("tourCount").textContent = (tourI + 1) + " מתוך " + TOUR.length;
+    document.getElementById("tourTitle").textContent = st.title;
+    document.getElementById("tourText").textContent = st.text;
+    document.getElementById("tourPrev").disabled = tourI === 0;
+    document.getElementById("tourNext").textContent = tourI === TOUR.length - 1 ? "סיום" : "הבא";
+    var t = document.querySelector(st.sel);
+    if (t) { t.classList.add("tour-target"); scrollToTarget(t); }
+  }
+  // Center the highlighted part in the space above the tour bar. A tall part starts at the top.
+  function scrollToTarget(t) {
+    var r = t.getBoundingClientRect();
+    var room = tourbar.getBoundingClientRect().top || window.innerHeight;
+    var y = r.height > room - 48 ? r.top - 24 : r.top + r.height / 2 - room / 2;
+    window.scrollBy({ top: y, behavior: reduceMotion ? "auto" : "smooth" });
+  }
+  function startTour() {
+    tourOn = true; tourI = 0;
+    tourLesson = state.lesson === REPORT ? 1 : state.lesson;
+    document.documentElement.setAttribute("data-board", "1");
+    tourbar.hidden = false;
+    showTour();
+    document.getElementById("tourNext").focus({ preventScroll: true });
+  }
+  function endTour() {
+    tourOn = false; clearTarget(); tourbar.hidden = true;
+    document.documentElement.removeAttribute("data-board");
+  }
+  function tourNext() { if (tourI < TOUR.length - 1) { tourI++; showTour(); } else endTour(); }
+  function tourPrev() { if (tourI > 0) { tourI--; showTour(); } }
+  document.getElementById("tourBtn").addEventListener("click", startTour);
+  document.getElementById("reportBtn").addEventListener("click", function () { openLesson(REPORT, true); });
+  document.getElementById("tourNext").addEventListener("click", tourNext);
+  document.getElementById("tourPrev").addEventListener("click", tourPrev);
+  document.getElementById("tourExit").addEventListener("click", endTour);
+  document.addEventListener("keydown", function (ev) {
+    if (!tourOn) return;
+    if (ev.target.closest && ev.target.closest("textarea, input")) return;
+    if (ev.key === "ArrowLeft") { ev.preventDefault(); tourNext(); }
+    else if (ev.key === "ArrowRight") { ev.preventDefault(); tourPrev(); }
+    else if (ev.key === "Escape") { endTour(); }
+  });
+
+  // ---------- Deep links: #l1 ... #l7, #report, #board ----------
+  function fromHash() {
+    var h = (location.hash || "").replace("#", "");
+    if (/^l[1-7]$/.test(h)) return Number(h.slice(1));
+    if (h === "report") return REPORT;
+    return 0;
+  }
+  window.addEventListener("hashchange", function () {
+    if ((location.hash || "") === "#board") { startTour(); return; }
+    var n = fromHash(); if (n) openLesson(n, true);
+  });
+
+  var start = fromHash();
+  if (start) state.lesson = start;
+  renderTabs(); renderLesson();
+  if ((location.hash || "") === "#board") setTimeout(startTour, 80);
+  else if (start) setTimeout(function () { tabsEl.scrollIntoView({ block: "start" }); }, 60);
+})();
+</script>
+
+</body></html>

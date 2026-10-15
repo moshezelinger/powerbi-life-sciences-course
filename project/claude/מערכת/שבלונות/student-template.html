@@ -1,0 +1,1319 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!--
+  שבלונה: אפליקציית התלמיד (דוח למידה), קורס Power BI.
+  גרסת שבלונה 5, נגזרה מדוח הלמידה של שבוע 1 (גרסה 10), 9.10.2026.
+  מה חדש בגרסה 5: הצהוב של מערכת העיצוב חזר (כפתור העתקה ראשי ב-.btn.go, קו תחתון לכותרת, קצה למטרת השיעור ולשונית נבחרת). וגם חלון "קבצי הנתונים להורדה" (#h-files) באותו אופן כמו במסע ההכנה למורה: רשימת FILES, כפתור הורדה לקובץ שמצורף לאפליקציה, וקישור חיצוני לקובץ שמורידים מאתר אחר. בשבלונה יש שלוש שורות דוגמה בלי קבצים אמיתיים, והחלון מוסתר רק כשהרשימה ריקה. מה היה בגרסה 4: שכבת תנועה וחומרים לפי apple-design (לחצן מגיב ברגע הלחיצה וחוזר בהדרגה, כרטיסים שנכנסים בהדרגה, מעבר חלק בין רקע בהיר לכהה, חלונות עזרה שנפתחים ונסגרים בהדרגה), וכלל [hidden] משלה, כדי שרכיב מוסתר יישאר מוסתר גם בצופה שלא מוסיף אותו. כרטיס "השיעור הנוכחי" הוסר, כי נשאר בשיעור הראשון ולא התקדם, ואיתו תווית "כעת" בלשוניות. תיבת סיכום אחת להעתקה (במקום שתיים), עם הדבקה נקייה: כותרות מודגשות, כתב כהה בלי צבע רקע, גם ממצב כהה, וגם כשהדפדפן חוסם את הלוח (ואז הסיכום מסומן ל-Ctrl+C). מספר הלשוניות מתאים את עצמו למספר השיעורים. חלון אחד סגור, "עזרה וכלים" (#tools), נשאר. פלטת הצבעים: מערכת העיצוב "מגמת מידע ונתונים" (צהוב לפעולה ולתשומת לב, כחול לקישורים ולהשלמה). בתפריט התצוגה יש כפתור רקע (לפי המכשיר, בהיר, כהה), וברקע הבהיר הכתב במשקל בינוני.
+
+  איך משתמשים (פירוט מלא: "מדריך פיתוח שבוע חדש", פרק 2):
+  1. מעתיקים את הקובץ לשם חדש: week-N-student.html.
+  2. משנים את <title> שלמעלה, ואת הבלוק WEEK שבתחילת הסקריפט (מספר שבוע, שם, מאגרי נתונים).
+  3. ממלאים את LESSONS: שיעור אחד לכל איבר. שדות ומבנה: ראו את שני השיעורים לדוגמה.
+  4. לכל [[כפתור]] שמופיע בצעדים מוסיפים מיקום ב-LOC. ערך להדבקה שאינו כפתור מוסיפים ב-PASTE.
+  5. מעדכנים את "מילים שכדאי להכיר", "איפה הכפתור?" ו"התיקייה שלכם" (בלוקים שמסומנים TEMPLATE).
+  6. אם אין כרטיסי מאגר: מוחקים את #h-cards, את CARDS ואת cards: true.
+  7. אם יש קבצי נתונים להורדה: ממלאים את FILES (בלוק "קבצי נתונים להורדה" בסקריפט). בפרסום מצרפים את הקבצים במפת files, ומצהירים על capabilities: {downloads: {}}.
+  8. מריצים: python3 check_week.py --role student הקובץ.html
+
+  לא משנים: מזהי צעדים ושאלות (lN-k, lN-qk) אחרי שהתלמידים התחילו, ואת KEY. שינוי מוחק להם סימונים.
+  לא מוחקים: את שכבת התנועה והחומרים (בסוף בלוק ה-CSS) ואת הכלל [hidden]. בלעדיהם הלחצנים לא מגיבים בהדרגה, וחלון מוסתר עלול להופיע פתוח.
+  הטקסט שבשבלונה הוא דוגמה לסגנון בלבד. אל תשאירו אותו בשבוע אמיתי.
+-->
+<title>שבלונת דוח למידה לתלמיד</title><!-- TEMPLATE: בשבוע אמיתי: לתלמיד - דוח למידה PBI מס' N -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Secular+One&display=swap">
+<style>
+/* Palette: design system "מגמת מידע ונתונים" (tokens.json, 5.10.2026). Colors only: yellow = action and attention, blue = links, labels and done. */
+/* Layout: a lab worksheet for one lesson at a time. Lesson tabs, a goal card, short checkable steps, questions, and a submission card for Moodle. */
+:root {
+  --paper: #f3f5f6;
+  --paper-line: rgba(43, 40, 41, 0.045);
+  --card: #ffffff;
+  --ink: #2b2829;
+  --ink-2: #3a3738;
+  --ink-3: #4d4a4b;
+  --rule: #d5d8db;
+  --bar: #0b6a97;
+  --bar-soft: rgba(37, 170, 226, 0.11);
+  --tape: #ffca08;
+  --tape-ink: #7a5200;
+  --tape-soft: rgba(255, 202, 8, 0.20);
+  --on-tape: #1f1d1e;
+  --sage: #0b6a97;
+  --sage-soft: rgba(37, 170, 226, 0.17);
+  --chip: #eceff1;
+  --focus: #0b6a97;
+  --shadow: 0 1px 2px rgba(31, 29, 30, 0.10), 0 6px 18px rgba(31, 29, 30, 0.08);
+  --fw: 500;
+  --display: 'Secular One', 'Assistant', system-ui, sans-serif;
+  --body: 'Assistant', 'Segoe UI', Arial, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e0e0f; --paper-line: rgba(244, 242, 242, 0.04); --card: #1b1b1d;
+    --ink: #f4f2f2; --ink-2: #d9d6d6; --ink-3: #bdbabb; --rule: #3a3a3d; --fw: 400;
+    --bar: #25aae2; --bar-soft: rgba(37, 170, 226, 0.16);
+    --tape: #ffca08; --tape-ink: #ffca08; --tape-soft: rgba(255, 202, 8, 0.14); --on-tape: #1f1d1e;
+    --sage: #25aae2; --sage-soft: rgba(37, 170, 226, 0.22);
+    --chip: #2a2a2d; --focus: #ffca08;
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e0e0f; --paper-line: rgba(244, 242, 242, 0.04); --card: #1b1b1d;
+  --ink: #f4f2f2; --ink-2: #d9d6d6; --ink-3: #bdbabb; --rule: #3a3a3d; --fw: 400;
+  --bar: #25aae2; --bar-soft: rgba(37, 170, 226, 0.16);
+  --tape: #ffca08; --tape-ink: #ffca08; --tape-soft: rgba(255, 202, 8, 0.14); --on-tape: #1f1d1e;
+  --sage: #25aae2; --sage-soft: rgba(37, 170, 226, 0.22);
+  --chip: #2a2a2d; --focus: #ffca08;
+  --shadow: none;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--paper-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 1.1875rem;
+  line-height: 1.65;
+  font-weight: var(--fw);
+}
+.app { max-width: 860px; margin: 0 auto; padding-inline: 20px; padding-block: 26px 80px; display: grid; gap: 22px; }
+@media (max-width: 480px) { .app { padding-inline: 16px; } body { font-size: 1.125rem; } }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; margin: 0; line-height: 1.2; text-wrap: balance; }
+h1 { font-size: clamp(1.875rem, 6vw, 2.625rem); }
+h2 { font-size: clamp(1.5rem, 4.4vw, 2rem); }
+h3 { font-size: 1.25rem; }
+p { margin: 0; }
+a { color: var(--bar); text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+code { font-family: var(--mono); font-size: 0.84em; background: var(--chip); border-radius: 4px; padding: 1px 6px; direction: ltr; unicode-bidi: isolate; overflow-wrap: anywhere; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Header */
+.top { display: grid; gap: 8px; }
+.eyebrow { font-size: 0.9375rem; font-weight: 700; letter-spacing: 0.05em; color: var(--ink-3); }
+.lede { color: var(--ink-2); max-width: 60ch; }
+
+/* Helper accordions */
+.helpers { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; align-items: start; }
+@media (min-width: 560px) { .helpers { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.help.wide { grid-column: 1 / -1; }
+.help { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; min-width: 0; }
+.help > summary { cursor: pointer; list-style: none; padding: 12px 14px; font-weight: 700; display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+.help > summary::-webkit-details-marker { display: none; }
+.help > summary::after { content: "+"; font-family: var(--mono); color: var(--bar); font-size: 1.25rem; line-height: 1; }
+.help[open] > summary::after { content: "−"; }
+.help-body { padding: 0 14px 14px; display: grid; gap: 10px; font-size: 1.0625rem; color: var(--ink-2); }
+.help-body ul { margin: 0; padding-inline-start: 20px; display: grid; gap: 6px; }
+.help-body b { color: var(--ink); }
+
+/* Lesson tabs */
+.tabs { display: grid; grid-template-columns: repeat(var(--tabs, 8), minmax(0, 1fr)); gap: 8px; }
+.cards-open { justify-self: start; }
+#h-cards { scroll-margin-top: 12px; }
+.tabs .tab:last-child .t-p { font-family: var(--body); }
+@media (max-width: 620px) { .tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.tab { font: inherit; display: grid; gap: 0; justify-items: center; padding: 8px 4px; background: var(--card); color: var(--ink); border: 1.5px solid var(--rule); border-radius: 12px; cursor: pointer; min-width: 0; }
+.tab .t-n { font-family: var(--display); font-size: 1.375rem; line-height: 1.1; }
+.tab .t-l { font-size: 0.875rem; color: var(--ink-3); }
+.tab .t-p { font-family: var(--mono); font-size: 0.875rem; color: var(--ink-3); }
+.tab[aria-selected="true"] { border-color: var(--bar); }
+.tab[data-done="1"] .t-p { color: var(--sage); font-weight: 500; }
+
+/* Lesson panel */
+.panel { background: var(--card); border: 1px solid var(--rule); border-radius: 16px; box-shadow: var(--shadow); padding: clamp(18px, 3.4vw, 30px); display: grid; gap: 22px; }
+.kicker { font-size: 0.9375rem; font-weight: 700; color: var(--ink-3); letter-spacing: 0.04em; }
+.goal { background: var(--bar-soft); border-radius: 12px; padding: 14px 16px; display: grid; gap: 4px; }
+.goal-label { font-size: 0.875rem; font-weight: 700; color: var(--bar); letter-spacing: 0.05em; }
+.goal p { font-size: 1.1875rem; font-weight: 600; }
+.intro { color: var(--ink-2); max-width: 64ch; }
+.sec-title { font-family: var(--display); font-size: 1.25rem; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.sec-sub { font-family: var(--body); font-size: 0.9375rem; color: var(--ink-3); }
+
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; align-items: start; padding: 12px; border: 1px solid var(--rule); border-radius: 12px; cursor: pointer; transition: background 150ms ease; }
+.step:hover { background: var(--bar-soft); }
+.step input[type="checkbox"] { width: 24px; height: 24px; margin: 2px 0 0; accent-color: var(--sage); cursor: pointer; }
+.step[data-done="1"] { background: var(--sage-soft); border-color: transparent; }
+.step[data-done="1"] .s-text { color: var(--ink-2); }
+.step-body { display: grid; gap: 6px; min-width: 0; }
+.s-num { font-family: var(--mono); font-size: 0.875rem; color: var(--ink-3); }
+.s-text { min-width: 0; }
+.s-badge { display: inline-block; font-size: 0.875rem; font-weight: 700; color: var(--tape-ink); background: var(--tape-soft); border-radius: 4px; padding: 0 8px; margin-inline-end: 6px; }
+.expect { font-size: 1rem; color: var(--ink-2); }
+.expect b { color: var(--sage); font-weight: 700; }
+.hint > summary { cursor: pointer; font-size: 1rem; font-weight: 600; color: var(--bar); width: fit-content; }
+.hint p { font-size: 1rem; color: var(--ink-2); padding-top: 4px; }
+
+/* Copy chips */
+.chip { font: inherit; font-family: var(--mono); font-size: 0.82em; line-height: 1.5; direction: ltr; unicode-bidi: isolate; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; vertical-align: baseline; background: var(--chip); color: var(--ink); border: 1px solid var(--rule); border-radius: 6px; padding: 0 7px; margin: 1px 0; cursor: copy; overflow-wrap: anywhere; text-align: start; }
+.chip:hover { border-color: var(--bar); }
+.chip svg { width: 13px; height: 13px; flex: none; opacity: 0.7; }
+.chip[data-copied="1"] { border-color: var(--sage); background: var(--sage-soft); }
+
+/* Questions */
+.qs { display: grid; gap: 14px; }
+.q { display: grid; gap: 6px; }
+.q label { font-weight: 600; }
+.q .q-opt { font-size: 0.875rem; font-weight: 700; color: var(--tape-ink); }
+.q textarea { font: inherit; font-size: 1.125rem; width: 100%; min-height: 84px; resize: vertical; border: 1.5px solid var(--rule); border-radius: 10px; padding: 10px 12px; background: var(--paper); color: var(--ink); }
+.q textarea:focus { border-color: var(--bar); outline: none; box-shadow: 0 0 0 3px var(--bar-soft); }
+
+/* Submission */
+.submit { border: 2px dashed var(--bar); border-radius: 14px; padding: 16px; display: grid; gap: 10px; }
+.submit-label { font-size: 0.875rem; font-weight: 700; letter-spacing: 0.05em; color: var(--bar); }
+.submit-what { font-size: 1.1875rem; font-weight: 600; }
+.submit-how { font-size: 1rem; color: var(--ink-2); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn { font: inherit; font-weight: 700; font-size: 1.0625rem; border-radius: 999px; border: 1.5px solid var(--bar); background: var(--bar); color: var(--card); padding: 8px 18px; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--bar); }
+.btn.warn { border-color: var(--tape); background: var(--tape); color: var(--on-tape); }
+/* צהוב = פעולה ותשומת לב (מערכת העיצוב): כפתור ראשי אחד בכל מסך, קו תחתון לכותרת, קצה למטרה ולשונית נבחרת */
+.btn.go { border-color: var(--tape); background: var(--tape); color: var(--on-tape); }
+.top h1::after { content: ""; display: block; width: 4.5rem; height: 5px; border-radius: 3px; background: var(--tape); margin-top: 12px; }
+.goal { border-inline-start: 5px solid var(--tape); }
+.tab[aria-selected="true"] { box-shadow: inset 0 -4px 0 var(--tape); }
+.btn:hover { filter: brightness(1.08); }
+.status { font-size: 1rem; color: var(--sage); font-weight: 600; }
+
+.pager { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+
+/* Footer */
+.foot { display: grid; gap: 10px; font-size: 1rem; color: var(--ink-3); }
+.confirm { display: grid; gap: 10px; background: var(--tape-soft); border-radius: 12px; padding: 12px 14px; color: var(--ink); }
+
+.toast { position: fixed; inset-inline: 0; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); margin-inline: auto; width: fit-content; max-width: calc(100% - 32px); background: var(--ink); color: var(--paper); font-size: 1rem; padding: 8px 16px; border-radius: 999px; box-shadow: var(--shadow); }
+
+/* Audience badge and header actions */
+.who { display: inline-block; font-size: 0.875rem; font-weight: 700; letter-spacing: 0.04em; border-radius: 999px; padding: 1px 10px; margin-inline-end: 8px; color: var(--sage); background: var(--sage-soft); }
+.top-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.head { display: grid; gap: 8px; }
+.stepsec { display: grid; gap: 10px; }
+
+/* Learning report */
+.report-label { font-size: 0.9375rem; font-weight: 700; color: var(--ink-2); }
+/* תיבת הסיכום: דף בהיר קבוע (גם במצב כהה), כדי שמה שרואים הוא מה שמודבק: כתב כהה על רקע לבן, כותרות מודגשות */
+.report-prev { margin: 0; padding: 12px 16px; background: #fff; color: #1b1b1b; color-scheme: light; border: 1px solid var(--rule); border-radius: 10px; font-family: var(--body); font-size: 1rem; line-height: 1.6; font-weight: 400; }
+.report-prev p { margin: 0 0 0.9em; }
+.report-prev p:last-child { margin-bottom: 0; }
+.report-prev b { font-weight: 700; }
+.report-prev.tall { max-height: min(32rem, 70vh); overflow: auto; }
+.subm { display: flex; gap: 10px; align-items: center; font-weight: 600; cursor: pointer; width: fit-content; }
+.subm input { width: 22px; height: 22px; accent-color: var(--sage); }
+.rep-table-wrap { overflow-x: auto; border-radius: 12px; }
+.rep-table { border-collapse: collapse; width: 100%; font-size: 1.0625rem; font-variant-numeric: tabular-nums; }
+.rep-table th, .rep-table td { padding: 9px 10px; border-bottom: 1px solid var(--rule); text-align: start; }
+.rep-table th { font-size: 0.875rem; color: var(--ink-3); font-weight: 600; }
+.rep-open { font: inherit; font-weight: 700; color: var(--bar); background: none; border: 0; padding: 0; cursor: pointer; text-align: start; text-decoration: underline; text-underline-offset: 3px; }
+.ok { color: var(--sage); font-weight: 700; }
+.miss { color: var(--tape-ink); font-weight: 700; }
+
+/* Tour, for projecting in class */
+.tour-target { outline: 4px solid var(--focus) !important; outline-offset: 6px; border-radius: 12px; box-shadow: 0 0 0 12px var(--tape-soft) !important; }
+.tourbar { position: fixed; inset-inline: 0; bottom: 0; z-index: 10; background: var(--ink); color: var(--paper); padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -10px 30px -16px var(--ink); }
+.tourbar-in { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px 20px; align-items: center; }
+@media (max-width: 700px) { .tourbar-in { grid-template-columns: 1fr; } }
+.tour-copy { display: grid; gap: 4px; min-width: 0; }
+.tour-count { font-family: var(--mono); font-size: 0.875rem; opacity: 0.8; }
+.tour-title { font-family: var(--display); font-size: 1.5rem; line-height: 1.2; }
+.tour-text { font-size: 1.125rem; }
+.tourbar .btn { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+.tourbar .btn.ghost { background: transparent; color: var(--paper); border-color: var(--paper); }
+.tourbar .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+
+/* Text size and layout settings */
+html { font-size: calc(16px * var(--fs, 1)); }
+html[data-size="l"] { --fs: 1.15; }
+html[data-size="xl"] { --fs: 1.3; }
+.viewset > summary { cursor: pointer; list-style: none; display: inline-flex; gap: 8px; align-items: center; font-weight: 700; font-size: 1rem; color: var(--bar); border: 1.5px solid var(--rule); background: var(--card); border-radius: 999px; padding: 0.3rem 0.95rem; }
+.viewset > summary::-webkit-details-marker { display: none; }
+.viewset[open] > summary { border-color: var(--bar); }
+.viewset-body { margin-top: 8px; display: grid; gap: 12px; background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow); width: fit-content; max-width: 100%; }
+.vs-label { font-size: 0.875rem; font-weight: 700; color: var(--ink-3); margin-bottom: 4px; }
+.vs-seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.vs-btn { font: inherit; font-size: 0.9375rem; font-weight: 600; border: 1.5px solid var(--rule); background: var(--card); color: var(--ink); border-radius: 999px; padding: 0.3rem 0.85rem; cursor: pointer; }
+.vs-btn[aria-pressed="true"] { border-color: var(--bar); background: var(--bar-soft); }
+
+/* Dataset cards */
+.cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+@media (min-width: 600px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.dc { border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; display: grid; gap: 6px; align-content: start; background: var(--card); min-width: 0; color: var(--ink); }
+.dc-top { display: flex; gap: 10px; align-items: center; }
+.dc-code { flex: none; width: 2.75rem; height: 2.75rem; border-radius: 50%; display: grid; place-items: center; font-family: var(--mono); font-weight: 500; font-size: 0.95rem; color: var(--bar); background: var(--bar-soft); }
+.dc-names { min-width: 0; }
+.dc-title { font-family: var(--display); font-weight: 400; font-size: 1.15rem; margin: 0; line-height: 1.25; }
+.dc-sub, .dc-detail { direction: ltr; text-align: right; font-size: 0.9375rem; color: var(--ink-3); line-height: 1.35; }
+.dc-detail { font-size: 0.875rem; }
+.dc-stat { font-size: 0.9375rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.dc-fact { font-size: 1rem; }
+.dc-links { font-size: 0.9375rem; display: flex; flex-wrap: wrap; gap: 6px 8px; margin-top: 2px; }
+.dc-links a { display: inline-flex; align-items: center; min-height: 2.1rem; padding: 0.1rem 0.75rem; border: 1.5px solid var(--rule); border-radius: 999px; font-weight: 600; text-decoration: none; }
+.dc-links a:hover { border-color: var(--bar); }
+.dc-links a.dc-main { background: var(--bar-soft); border-color: transparent; }
+html[data-layout="mobile"] .cards { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 899px) { .vs-btn[data-set-layout="desktop"] { display: none; } }
+
+/* Layout: phone or half a screen */
+html[data-layout="mobile"] .app { max-width: 34rem; }
+html[data-layout="mobile"] .helpers { grid-template-columns: minmax(0, 1fr); }
+html[data-layout="mobile"] .tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+html[data-layout="mobile"] .step { grid-template-columns: 2.25rem minmax(0, 1fr); padding: 14px 12px; }
+html[data-layout="mobile"] .step input[type="checkbox"] { width: 1.75rem; height: 1.75rem; }
+html[data-layout="mobile"] .btn { min-height: 2.75rem; }
+
+/* Layout: computer, wide screens only. Each step shows what should appear next to it */
+@media (min-width: 900px) {
+  html[data-layout="desktop"] .app { max-width: 1180px; }
+  html[data-layout="desktop"] .step-body { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); column-gap: 22px; align-items: start; }
+  html[data-layout="desktop"] .step-body > .s-text { grid-column: 1; grid-row: 1 / span 2; }
+  html[data-layout="desktop"] .step-body > .expect, html[data-layout="desktop"] .step-body > .hint { grid-column: 2; border-inline-start: 2px solid var(--rule); padding-inline-start: 14px; }
+}
+
+/* Board mode: projecting the tour in class. Everything scales up */
+@media (min-width: 701px) { html[data-board="1"]:not([data-size="xl"]) { --fs: 1.25; } }
+.panel, .help-body { overflow-wrap: anywhere; }
+html[data-board="1"] .app { max-width: 1240px; padding-block-end: 16rem; }
+html[data-board="1"] .tools, html[data-board="1"] .foot, html[data-board="1"] .top-tools { display: none; }
+
+/* Lesson subtitle, the why box under a step, sub-questions */
+.l-sub { color: var(--ink-2); font-size: 1.0625rem; max-width: 64ch; }
+.s-main { display: grid; gap: 8px; min-width: 0; }
+.why { background: var(--chip); border-inline-start: 3px solid var(--bar); border-radius: 8px; padding: 8px 12px; display: grid; gap: 2px; color: var(--ink-2); font-size: 1rem; cursor: default; }
+.why-label { display: inline-flex; gap: 6px; align-items: center; font-size: 0.9375rem; font-weight: 700; color: var(--bar); }
+.why-label svg { width: 1.05em; height: 1.05em; flex: none; }
+.q-parts { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; color: var(--ink-2); font-size: 1.0625rem; }
+.toast { border-radius: 14px; text-align: center; line-height: 1.5; }
+@media (min-width: 900px) {
+  html[data-layout="desktop"] .step-body > .s-main { grid-column: 1; grid-row: 1 / span 2; }
+}
+
+/* Button lexicon */
+.lex-cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 760px) { .lex-cols { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } }
+html[data-layout="mobile"] .lex-cols { grid-template-columns: minmax(0, 1fr); }
+.lex { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.lex h4 { font-family: var(--display); font-weight: 400; font-size: 1.125rem; margin: 0; color: var(--ink); }
+.lex ul { margin: 0; padding-inline-start: 20px; display: grid; gap: 6px; }
+.lex bdi { font-family: var(--mono); font-size: 0.9em; }
+
+
+/* Help-and-tools area */
+.step, .q, .submit { scroll-margin-top: 16px; }
+.tools-sub { display: block; font-weight: 500; font-size: 0.9375rem; color: var(--ink-3); }
+.tools-body { gap: 14px; }
+.tools-intro { color: var(--ink-2); }
+
+/* Data files to download (same pattern as the teacher journey app) */
+.files { display: grid; gap: 10px; }
+.file { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; align-items: center; border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; background: var(--card); }
+@media (max-width: 620px) { .file { grid-template-columns: 1fr; } }
+.file-name { font-family: var(--mono); font-size: 1rem; font-weight: 500; color: var(--ink); direction: ltr; unicode-bidi: isolate; overflow-wrap: anywhere; text-align: end; justify-self: start; }
+.file-meta { font-size: 1rem; color: var(--ink-2); }
+.file-when { display: inline-block; font-size: 0.875rem; font-weight: 700; color: var(--bar); background: var(--bar-soft); border-radius: 4px; padding: 0 8px; margin-inline-end: 6px; }
+.file-when[data-late="1"] { color: var(--tape-ink); background: var(--tape-soft); }
+.file-act { display: grid; gap: 4px; justify-items: end; }
+@media (max-width: 620px) { .file-act { justify-items: start; } }
+.dl-status { font-size: 0.875rem; color: var(--ink-3); min-height: 1em; }
+.file-note { grid-column: 1 / -1; font-size: 0.9375rem; color: var(--ink-2); background: var(--paper); border-radius: 8px; padding: 8px 10px; }
+.file a.btn { text-decoration: none; display: inline-block; }
+html[data-layout="mobile"] .file { grid-template-columns: minmax(0, 1fr); }
+html[data-layout="mobile"] .file-act { justify-items: start; }
+
+.top-tools { margin-top: 4px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+/* ===== שכבת תנועה וחומרים לפי apple-design (9.10.2026). CSS בלבד, בלי שינוי בתוכן, במזהים ובמפתחות השמירה ===== */
+:root { --smooth: cubic-bezier(0.22, 1, 0.36, 1); interpolate-size: allow-keywords; }
+/* אלמנט עם hidden נשאר מוסתר גם כשהצופה לא מוסיף את כלל ה-hidden שלו */
+[hidden] { display: none !important; }
+
+/* 1. תגובה מיידית: המשוב מתחיל בלחיצה עצמה, וההחזרה רכה. בלי השהיית נגיעה */
+button, summary, [role="tab"], .step, .checks label, .q label, .dc-links a, .qlinks a, .link-btn { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+button, summary, .step, .checks label, .q label, .dc-links a, .qlinks a, .link-btn {
+  transition: transform 450ms var(--smooth), background-color 160ms ease, border-color 160ms ease, box-shadow 280ms var(--smooth), color 160ms ease, filter 160ms ease, opacity 200ms ease;
+}
+button:not(:disabled):active, .dc-links a:active, .qlinks a:active, .link-btn:active { transform: scale(0.94); transition: transform 70ms ease-out; }
+button.tab:not(:disabled):active, button.wk:not(:disabled):active, button.dot:not(:disabled):active { transform: scale(0.97); }
+button.dot:not(:disabled):active { transform: scale(0.88); }
+summary:active, .step:active:not(:has(:active)), .checks label:active, .q label:active { transform: scale(0.985); transition: transform 70ms ease-out; }
+.tab[aria-selected="true"] { transform: translateY(-2px); }
+button.tab[aria-selected="true"]:not(:disabled):active { transform: translateY(-2px) scale(0.97); }
+
+/* 2. טיפוגרפיה: בעברית אין אותיות גדולות, ולכן אין צורך במרווח אותיות בתוויות. כותרות גדולות מקבלות רווח שורות הדוק */
+.eyebrow, .kicker, .goal-label, .goals-label, .submit-label, .who, .st-kicker, .qg-title, .idea-label, .next-label, .proto { letter-spacing: 0; }
+h1 { line-height: 1.08; }
+h2 { line-height: 1.12; }
+p { text-wrap: pretty; }
+
+/* 3. חומרים: אלמנטים צפים מעומעמים, כדי שהתוכן יישאר מורגש מתחתם */
+.tourbar, .gbar { background: color-mix(in srgb, var(--ink) 92%, transparent); -webkit-backdrop-filter: blur(22px) saturate(160%); backdrop-filter: blur(22px) saturate(160%); border-top: 1px solid color-mix(in srgb, var(--paper) 22%, transparent); transition: transform 460ms var(--smooth), opacity 240ms ease; }
+.toast { background: color-mix(in srgb, var(--ink) 93%, transparent); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); transition: transform 380ms var(--smooth), opacity 200ms ease; }
+.viewset-body { background: color-mix(in srgb, var(--card) 88%, transparent); -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%); }
+
+/* 4. עקביות מרחבית: הסרגל נכנס מלמטה, וההודעה עולה ממקומה */
+@starting-style { .tourbar, .gbar { transform: translateY(100%); opacity: 0; } .toast { transform: translateY(14px) scale(0.96); opacity: 0; } }
+/* חלונות נפתחים וסגורים בתנועה, ולא בקפיצה */
+details::details-content { opacity: 0; block-size: 0; overflow-y: clip; transition: content-visibility 340ms allow-discrete, opacity 240ms ease, block-size 340ms var(--smooth); }
+details[open]::details-content { opacity: 1; block-size: auto; }
+/* מעבר בין רקע בהיר לכהה כמעבר רך של כל העמוד */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 380ms; animation-timing-function: ease; }
+
+/* 5. נגישות: שקיפות, ניגודיות ותנועה לפי הגדרות המכשיר */
+@media (prefers-reduced-transparency: reduce) {
+  .tourbar, .gbar { background: var(--ink); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .toast { background: var(--ink); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .viewset-body { background: var(--card); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  :root { --rule: #6b6b6e; }
+  .step, .tab, .panel, .viewset-body, .wk, .card { border-color: var(--ink-3); }
+}
+@media (prefers-reduced-motion: reduce) {
+  button:not(:disabled):active, .dc-links a:active, .qlinks a:active, .link-btn:active, summary:active, .step:active, .checks label:active, .q label:active { transform: none; opacity: 0.7; }
+  .tab[aria-selected="true"] { transform: none; }
+  details::details-content { transition: none; }
+}
+
+/* תוכן השיעור (תלמיד) נכנס מעט אחרי מעט */
+@keyframes ap-rise { from { opacity: 0; transform: translateY(10px); } }
+.panel > * { animation: ap-rise 460ms var(--smooth) backwards; }
+.panel > :nth-child(2) { animation-delay: 50ms; }
+.panel > :nth-child(3) { animation-delay: 100ms; }
+.panel > :nth-child(4) { animation-delay: 150ms; }
+.panel > :nth-child(5) { animation-delay: 200ms; }
+.panel > :nth-child(n+6) { animation-delay: 250ms; }
+@media (prefers-reduced-motion: reduce) { .panel > * { animation: none; } }
+
+</style>
+
+<div class="app" dir="rtl" lang="he">
+  <header class="top">
+    <p class="eyebrow"><span class="who">לתלמיד</span><span id="wkEyebrow">קורס Power BI</span></p>
+    <h1 id="wkTitle">דוח למידה PBI</h1>
+    <p class="lede">זה דוח הלמידה שלכם לשבוע הזה. בכל שיעור יש מטרה, צעדים לסימון, שאלות והגשה במודל.</p>
+    <div class="top-tools">
+    <details class="viewset" id="viewset">
+      <summary>תצוגה: גודל טקסט ורקע כהה</summary>
+      <div class="viewset-body">
+        <div class="vs-group"><p class="vs-label" id="vsSize">גודל טקסט</p>
+          <div class="vs-seg" role="group" aria-labelledby="vsSize">
+            <button type="button" class="vs-btn" data-set-size="m">רגיל</button>
+            <button type="button" class="vs-btn" data-set-size="l">גדול</button>
+            <button type="button" class="vs-btn" data-set-size="xl">גדול מאוד</button>
+          </div></div>
+        <div class="vs-group"><p class="vs-label" id="vsLayout">פריסה</p>
+          <div class="vs-seg" role="group" aria-labelledby="vsLayout">
+            <button type="button" class="vs-btn" data-set-layout="auto">אוטומטית</button>
+            <button type="button" class="vs-btn" data-set-layout="desktop">מחשב</button>
+            <button type="button" class="vs-btn" data-set-layout="mobile">טלפון או חצי מסך</button>
+          </div></div>
+        <div class="vs-group"><p class="vs-label" id="vsTheme">רקע</p>
+          <div class="vs-seg" role="group" aria-labelledby="vsTheme">
+            <button type="button" class="vs-btn" data-set-theme="auto">לפי המכשיר</button>
+            <button type="button" class="vs-btn" data-set-theme="light">בהיר</button>
+            <button type="button" class="vs-btn" data-set-theme="dark">כהה</button>
+          </div></div>
+      </div>
+    </details>
+    </div>
+  </header>
+
+  <details class="help tools" id="tools">
+    <summary><span>עזרה וכלים<span class="tools-sub">סיור באפליקציה, סיכום השבוע, קבצי נתונים, מילים ואיפה הכפתור</span></span></summary>
+    <div class="help-body tools-body">
+      <p class="tools-intro">לא מוצאים כפתור ב-Power BI? לחצו בדוח על שם הכפתור (הוא מופיע במסגרת אפורה). השם יועתק, ותופיע הודעה שאומרת איפה הכפתור נמצא.</p>
+    <div class="top-actions">
+      <button type="button" class="btn ghost" id="reportBtn">סיכום השבוע</button>
+      <button type="button" class="btn ghost" id="tourBtn">סיור באפליקציה</button>
+    </div>
+  <section class="helpers" aria-label="עזרה">
+    <!-- TEMPLATE: קבצי הנתונים להורדה. הרשימה עצמה נמצאת בבלוק FILES שבסקריפט, ושם מחליפים את שורות הדוגמה. בשבוע בלי קבצים משאירים FILES ריק, והחלון מוסתר. משפט ההסבר מתאים לשמירה בתיקייה data. -->
+    <details class="help wide" id="h-files">
+      <summary>קבצי הנתונים להורדה</summary>
+      <div class="help-body">
+        <p>כל קובץ מורידים רק כשהצעדים בשיעור מבקשים. הקובץ יורד לתיקייה Downloads (הורדות). משם מעבירים אותו לתיקייה <code>data</code> שלכם, ולא משנים את השם שלו.</p>
+        <div class="files" id="fileList"></div>
+      </div>
+    </details>
+    <!-- TEMPLATE: התיקייה שלכם. מתאימים לנתיב ולקבצים של השבוע. -->
+    <details class="help" id="h-folder">
+      <summary>התיקייה שלכם</summary>
+      <div class="help-body">
+        <p>כל השבוע עובדים באותה תיקייה: <code>Documents\PBI_Course\Cohen_Noa</code></p>
+        <p>במקום Cohen_Noa כתבו את השם שלכם באנגלית, בלי רווחים. כך גם בשמות של קובצי Power BI.</p>
+        <ul>
+          <li>בתוכה שתי תיקיות: <code>data</code> לקובצי הנתונים, ו-<code>work</code> לקובצי Power BI.</li>
+          <li>בכל שיעור פותחים את הקובץ שכתוב בצעדים, ושומרים מיד בשם חדש: L01, L02 וכן הלאה. כך תמיד יש גרסה קודמת.</li>
+          <li>בווינדוס בעברית התיקייה Documents נקראת מסמכים.</li>
+          <li>אל תזיזו את הקבצים שב-<code>data</code> ואל תשנו את השמות שלהם. Power BI שומר את המיקום המדויק של כל קובץ.</li>
+        </ul>
+      </div>
+    </details>
+    <!-- TEMPLATE: מילים שכדאי להכיר. רק מונחים שהשבוע משתמש בהם, כל אחד עם הגדרה במשפט אחד. מונחון קבוע: מדריך הפיתוח, פרק 6. -->
+    <details class="help" id="h-words">
+      <summary>מילים שכדאי להכיר</summary>
+      <div class="help-body">
+        <ul>
+          <li><b>שורה (רשומה):</b> פריט מידע אחד בקובץ. מה בדיוק מתועד בשורה, בודקים בכל מאגר מחדש.</li>
+          <li><b>עמודה (משתנה):</b> סוג מידע שנרשם בכל שורה, כמו שנה או משקל.</li>
+          <li><b>מונח של השבוע:</b> הגדרה קצרה, במילים של תלמיד.</li>
+        </ul>
+      </div>
+    </details>
+    <!-- TEMPLATE: איפה הכפתור. כל הכפתורים של השבוע, אותו נוסח כמו ב-LOC. מוסיפים רק כפתורים שמופיעים בצעדים של השבוע הזה. -->
+    <details class="help wide" id="h-buttons">
+      <summary>איפה הכפתור? כל הכפתורים של השבוע</summary>
+      <div class="help-body">
+        <p>לחיצה על שם של כפתור במסגרת אפורה, בתוך הצעדים, מעתיקה אותו ואומרת איפה הוא נמצא. כאן כל המיקומים במקום אחד. הם מתאימים לממשק באנגלית.</p>
+        <div class="lex-cols">
+          <section class="lex">
+            <h4>בחלון Power BI</h4>
+            <ul>
+              <li><b><bdi>Get data</bdi>:</b> בסרגל העליון, בלשונית Home.</li>
+              <li><b><bdi>Text/CSV</bdi>:</b> ברשימה שנפתחת מתחת ל-Get data.</li>
+              <li><b><bdi>Report view</bdi> ו-<bdi>Table view</bdi>:</b> הסמלים העליונים בפס האנכי בצד שמאל של החלון.</li>
+              <li><b><bdi>Card</bdi>:</b> בחלונית Visualizations שבצד ימין.</li>
+              <li><b><bdi>Save as</bdi>:</b> בתפריט File.</li>
+            </ul>
+          </section>
+          <section class="lex">
+            <h4>בחלון Power Query</h4>
+            <ul>
+              <li><b><bdi>Applied Steps</bdi>:</b> בחלונית Query Settings שבצד ימין.</li>
+              <li><b><bdi>Close &amp; Apply</bdi>:</b> בלשונית Home, הכפתור הראשון משמאל.</li>
+            </ul>
+          </section>
+        </div>
+        <p>עזרה עם צילומי מסך, באנגלית: <a href="https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-report-view" target="_blank" rel="noopener">חלון Power BI</a>, <a href="https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-ribbon" target="_blank" rel="noopener">הסרגל העליון ותיבת החיפוש</a>, <a href="https://learn.microsoft.com/en-us/power-query/power-query-ui" target="_blank" rel="noopener">חלון Power Query</a>.</p>
+      </div>
+    </details>
+    <!-- TEMPLATE: כרטיסי מאגר (מושגים, יחידות או קטגוריות שהתלמידים צריכים להכיר). אם אין צורך, מוחקים את הבלוק, את CARDS ואת cards: true בשיעורים. -->
+    <details class="help wide" id="h-cards">
+      <summary>כרטיסי המאגר: שמות, תמונות וקישורים</summary>
+      <div class="help-body">
+        <p>משפט אחד שמסביר מה רואים בכרטיסים ומאיפה הנתונים שבהם. הקישורים נפתחים בלשונית חדשה.</p>
+        <div class="cards" id="cardsS"></div>
+      </div>
+    </details>
+  </section>
+    </div>
+  </details>
+
+  <nav class="tabs" id="tabs" role="tablist" aria-label="השיעורים של השבוע"></nav>
+
+  <main class="panel" id="panel" role="tabpanel" tabindex="-1"></main>
+
+  <footer class="foot">
+    <p>הסימונים והתשובות נשמרים רק בדפדפן הזה, ולא נשלחים לאף אחד. את התוצר מגישים במודל.</p>
+    <div class="row">
+      <button type="button" class="btn ghost" id="resetBtn">ניקוי הסימונים והתשובות במחשב הזה</button>
+    </div>
+    <div class="confirm" id="confirmBox" hidden>
+      <p>למחוק את כל הסימונים והתשובות שנשמרו כאן? אי אפשר לבטל את זה.</p>
+      <div class="row">
+        <button type="button" class="btn warn" id="confirmYes">כן, למחוק</button>
+        <button type="button" class="btn ghost" id="confirmNo">ביטול</button>
+      </div>
+    </div>
+  </footer>
+  <div class="tourbar" id="tourbar" role="region" aria-label="סיור באפליקציה" hidden>
+    <div class="tourbar-in">
+      <div class="tour-copy">
+        <span class="tour-count" id="tourCount"></span>
+        <p class="tour-title" id="tourTitle"></p>
+        <p class="tour-text" id="tourText" aria-live="polite"></p>
+      </div>
+      <div class="row">
+        <button type="button" class="btn ghost" id="tourPrev">הקודם</button>
+        <button type="button" class="btn" id="tourNext">הבא</button>
+        <button type="button" class="btn ghost" id="tourExit">יציאה מהסיור</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // Touch feedback on iOS needs a touch listener on the page. Theme changes cross-fade the whole page.
+  document.addEventListener("touchstart", function () { }, { passive: true });
+  function withFade(fn) {
+    try {
+      if (document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) { document.startViewTransition(fn); return; }
+    } catch (e) { }
+    fn();
+  }
+
+  // ===== TEMPLATE: הגדרות השבוע. כל מה שחוזר בכותרות, בסיכומים ובמפתח השמירה נגזר מכאן. =====
+  var WEEK = {
+    n: 1,                                  // מספר השבוע. קובע את מפתח השמירה pbi-weekN-student-v1
+    name: "דוח למידה PBI מס' 1",           // כותרת וכותרת הסיכום שמועתק למודל
+    datasets: {                            // מפתח data של שיעור -> הכותרת הקטנה מעל שם השיעור
+      A: "נתוני מאגר א: שם קצר ותיאור של המאגר",
+      B: "נתוני מאגר ב: שם קצר ותיאור של המאגר"
+    }
+  };
+  document.getElementById("wkTitle").textContent = WEEK.name;
+  document.title = "לתלמיד - " + WEEK.name;
+
+  // [[term]] = copy chip for Power BI search. {{text}} = inline code (left to right).
+  // w = "למה עושים את זה?" box under the step. parts = sub-questions under a question.
+// ===== TEMPLATE: זה הבלוק שממלאים בכל שבוע. כאן שני שיעורים לדוגמה, כל שדה מופיע לפחות פעם אחת. =====
+  // שיעור: n, data (מפתח מתוך WEEK.datasets), cards (רשות: כפתור שפותח את כרטיסי המאגר), title, sub, goal, intro, steps, qs, submit.
+  // צעד: id, t (מה עושים), e (מה אמור להופיע, חובה), h (רמז, רשות), w ("למה עושים את זה?", רשות), opt (אתגר, רשות).
+  // שאלה: id, q, ph (טקסט רמז בתיבה), parts (סעיפים), opt (רשות).
+  var LESSONS = [
+    { n: 1, data: "A", cards: true, title: "שאלה שהשיעור עונה עליה",
+      sub: "משפט אחד על מה שעושים היום",
+      goal: "היום תטענו ל-Power BI קובץ, ותבדקו מה מתועד בכל שורה.",
+      intro: "פסקה קצרה של הקשר: מי אסף את הנתונים, למה, ומה כדאי לדעת לפני שמתחילים.",
+      steps: [
+        { id: "l1-1", t: "צרו את התיקייה {{Documents\\PBI_Course\\Cohen_Noa}}, ובתוכה שתי תיקיות: {{data}} ו-{{work}}.", e: "שתי תיקיות ריקות.", h: "במקום Cohen_Noa כתבו את השם שלכם באנגלית, בלי רווחים." },
+        { id: "l1-2", t: "הורידו את הקובץ של השיעור מהחלון \"קבצי הנתונים להורדה\" (בתוך \"עזרה וכלים\") לתיקייה {{data}}.", e: "הקובץ נמצא ב-data. ירד לתיקייה Downloads (הורדות)? העבירו אותו ל-data." },
+        { id: "l1-3", t: "פתחו את Power BI, ובחרו [[Get data]] ואז [[Text/CSV]]. בחרו את הקובץ של השבוע.", e: "נפתח חלון שמציג את תוכן הקובץ." },
+        { id: "l1-4", t: "עברו ל-[[Table view]]. כמה שורות יש בקובץ?", e: "מספר השורות מופיע בתחתית החלון.", w: "קודם סופרים, ורק אחר כך מנקים. כך אפשר לראות מה הניקוי שינה." },
+        { id: "l1-5", t: "אתגר: הוסיפו [[Card]] שמציג כמה ערכים שונים יש בעמודה אחת.", e: "כרטיס עם מספר אחד.", opt: true },
+        { id: "l1-6", t: "שמרו: [[Save as]] בתיקייה {{work}}, בשם {{L01_Cohen_Noa.pbix}}, עם השם שלכם.", e: "הקובץ מופיע ב-work." }
+      ],
+      qs: [
+        { id: "l1-q1", q: "מה מייצגת כל שורה בקובץ?", ph: "א.\nב.",
+          parts: ["א. ב-Table view בחרו שורה אחת. מה רשום בה?",
+                  "ב. האם כל שורה מתעדת פריט חדש? נמקו."] },
+        { id: "l1-q2", q: "שאלה אחת שאפשר לענות עליה במשפט." },
+        { id: "l1-q3", q: "אתגר: שאלה לחשיבה מעמיקה.", opt: true }
+      ],
+      submit: "צילום מסך של הכרטיס, ותשובות לשאלות 1 ו-2." },
+
+    { n: 2, data: "A", title: "שיעור שני: ניקוי הנתונים",
+      sub: "מסננים שורות לפי כלל, ורואים איך הפעולה נרשמת",
+      goal: "היום תנקו את הנתונים ב-Power Query, ותבדקו איך זה משנה את המספרים.",
+      steps: [
+        { id: "l2-1", t: "פתחו את הקובץ מהשיעור הקודם ושמרו אותו מיד בשם {{L02_Cohen_Noa.pbix}}.", e: "בשורת הכותרת מופיע השם החדש." },
+        { id: "l2-2", t: "פתחו את Power Query, ובחלונית [[Applied Steps]] בדקו אילו צעדים כבר מופיעים.", e: "רשימה של צעדים בצד ימין.", h: "לא רואים את החלונית? בלשונית View סמנו Query Settings." },
+        { id: "l2-3", t: "בחרו עמודה, ובחץ שבכותרת סננו שורות לפי הכלל של היום. אחר כך לחצו על [[Close & Apply]].", e: "מספר השורות קטן ממה שהיה בשיעור הקודם.", w: "הסינון נרשם כצעד ברשימה, ולכן אפשר לבטל אותו או להריץ אותו שוב על קובץ חדש." }
+      ],
+      qs: [
+        { id: "l2-q1", q: "כמה שורות הוסרו, ולמה בחרנו להסיר אותן?" }
+      ],
+      submit: "צילום מסך של רשימת הצעדים, ותשובה לשאלה 1." }
+  ];
+
+  // איפה כל כפתור ב-Power BI (ממשק באנגלית). מוצג בהודעה אחרי ההעתקה וב"איפה הכפתור?". אותו נוסח ב-#h-buttons.
+  var LOC = {
+    "Get data": "בסרגל העליון, בלשונית Home",
+    "Text/CSV": "ברשימה שנפתחת מתחת ל-Get data",
+    "Report view": "בפס האנכי שבצד שמאל של החלון, הסמל הראשון מלמעלה",
+    "Table view": "בפס האנכי שבצד שמאל של החלון, הסמל השני מלמעלה",
+    "Card": "בחלונית Visualizations שבצד ימין",
+    "Save as": "בתפריט File",
+    "Applied Steps": "ב-Power Query, בחלונית Query Settings שבצד ימין",
+    "Close & Apply": "ב-Power Query, בלשונית Home, הכפתור הראשון משמאל"
+  };
+  // ערכים להדבקה (לא כפתורים). אם אין כאלה, משאירים אובייקט ריק.
+  var PASTE = {
+    "ערך להדבקה": "הדביקו בחלון המתאים, בשדה Value To Find."
+  };
+
+  // ---------- State (this browser only) ----------
+  document.getElementById("wkEyebrow").textContent = "קורס Power BI, שבוע " + WEEK.n + ", " + LESSONS.length + " שיעורים";
+  var KEY = "pbi-week" + WEEK.n + "-student-v1";
+  var REPORT = LESSONS.length + 1;
+  var state = { done: {}, ans: {}, sub: {}, lesson: 1 };
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw) {
+      var s = JSON.parse(raw);
+      if (s && typeof s === "object") {
+        state.done = s.done || {};
+        state.ans = s.ans || {};
+        state.sub = s.sub || {};
+        if (s.lesson >= 1 && s.lesson <= REPORT) state.lesson = s.lesson;
+      }
+    }
+  } catch (e) { /* storage blocked: the page still works */ }
+  var saveTimer = null;
+  function save() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { }
+    }, 250);
+  }
+
+  // ---------- Helpers ----------
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  // TEMPLATE: כרטיסי מאגר. כרטיס אחד לכל מושג, יחידה או קטגוריה שהתלמידים צריכים להכיר (מין, יישוב, משתנה, מוצר). אם אין כאלה בשבוע הזה, מוחקים את הבלוק, את #h-cards ואת cards: true בשיעורים.
+  // שדות: code (שתיים או שלוש אותיות, או סימן), title (שם בעברית), sub (שם באנגלית, רשות), detail (שורה נוספת, רשות),
+  //       stat (נתון אחד מהקובץ של הכיתה, כל מספר מחושב בקוד ולא מהזיכרון, רשות), fact (עובדה אחת שנבדקה במקור, רשות),
+  //       links: [{ t: "טקסט הקישור", u: "https://...", main: true }]. main מסמן את הקישור הבולט, ואפשר להשמיט אותו.
+  var CARDS = [
+    { code: "AA", title: "שם בעברית", sub: "English name", detail: "שם נוסף או פירוט קצר", stat: "נתון אחד מהקובץ של הכיתה: 0.0",
+      fact: "עובדה אחת שנבדקה במקור.",
+      links: [{ t: "תמונות", u: "https://example.org/images", main: true }, { t: "קריאה נוספת (באנגלית)", u: "https://example.org/about" }] },
+    { code: "BB", title: "שם בעברית", sub: "English name", stat: "נתון אחד מהקובץ של הכיתה: 0.0",
+      fact: "עובדה אחת שנבדקה במקור.",
+      links: [{ t: "קריאה נוספת (באנגלית)", u: "https://example.org/about" }] }
+  ];
+  function renderCards(id) {
+    var box = document.getElementById(id);
+    if (!box) return;
+    CARDS.forEach(function (r) {
+      var c = el("article", "dc");
+      var top = el("div", "dc-top");
+      top.appendChild(el("span", "dc-code", r.code));
+      var names = el("div", "dc-names");
+      names.appendChild(el("h4", "dc-title", r.title));
+      if (r.sub) names.appendChild(el("p", "dc-sub", r.sub));
+      if (r.detail) names.appendChild(el("p", "dc-detail", r.detail));
+      top.appendChild(names);
+      c.appendChild(top);
+      if (r.stat) c.appendChild(el("p", "dc-stat", r.stat));
+      if (r.fact) c.appendChild(el("p", "dc-fact", r.fact));
+      if (r.links && r.links.length) {
+        var links = el("p", "dc-links");
+        r.links.forEach(function (l) {
+          var a = el("a", l.main ? "dc-main" : "", l.t);
+          a.href = l.u; a.target = "_blank"; a.rel = "noopener";
+          a.setAttribute("aria-label", l.t + ": " + r.title + ", בלשונית חדשה");
+          links.appendChild(a);
+        });
+        c.appendChild(links);
+      }
+      box.appendChild(c);
+    });
+  }
+
+  // Display settings: text size and layout (this browser only)
+  var VIEW_KEY = "pbi-view-v1";
+  var onViewChange = null;
+  var view = { size: "m", layout: "auto", theme: "auto" };
+  var hostTheme = document.documentElement.getAttribute("data-theme");
+  try {
+    var vraw = JSON.parse(localStorage.getItem(VIEW_KEY) || "null");
+    if (vraw && typeof vraw === "object") { view.size = vraw.size || "m"; view.layout = vraw.layout || "auto"; view.theme = vraw.theme || "auto"; }
+  } catch (e) { }
+  function applyView() {
+    var h = document.documentElement;
+    if (view.size === "m") h.removeAttribute("data-size"); else h.setAttribute("data-size", view.size);
+    if (view.theme === "light" || view.theme === "dark") h.setAttribute("data-theme", view.theme); else if (hostTheme) h.setAttribute("data-theme", hostTheme); else h.removeAttribute("data-theme");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-set-theme]"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-set-theme") === view.theme ? "true" : "false"); });
+    if (view.layout === "auto") h.removeAttribute("data-layout"); else h.setAttribute("data-layout", view.layout);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-set-size]"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-set-size") === view.size ? "true" : "false"); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-set-layout]"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-set-layout") === view.layout ? "true" : "false"); });
+    if (typeof onViewChange === "function") onViewChange();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("[data-set-size]"), function (b) {
+    b.addEventListener("click", function () { view.size = b.getAttribute("data-set-size"); try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) { } applyView(); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-set-layout]"), function (b) {
+    b.addEventListener("click", function () { view.layout = b.getAttribute("data-set-layout"); try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) { } applyView(); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-set-theme]"), function (b) {
+    b.addEventListener("click", function () { view.theme = b.getAttribute("data-set-theme"); try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) { } withFade(applyView); });
+  });
+  applyView();
+  renderCards("cardsS");
+  // FILES START
+  // TEMPLATE: קבצי נתונים להורדה, באותו אופן כמו במסע ההכנה למורה. השורות כאן הן דוגמה בלבד: מחליפים אותן בקבצים של השבוע.
+  // שדות: name (שם הקובץ בדיוק כפי שכתוב בצעדים), path (קובץ שמצורף לאפליקציה בתיקייה data/) או ext (קישור חיצוני להורדה),
+  //       when (תווית: מתי מורידים, למשל "שיעור 1"), late (רשות, true לקובץ שמורידים רק בהמשך השבוע), meta (תיאור קצר: מה יש בקובץ, כמה שורות), note (רשות, הוראה או בדיקה).
+  // קובץ עם path חייב להיות מצורף בפרסום (מפת files של Artifact), והאפליקציה חייבת להצהיר על היכולת downloads. בשבלונה אין קבצים, ולכן ההורדה בדוגמה לא תעבוד.
+  // בשבוע בלי קבצים להורדה: משאירים FILES ריק (var FILES = [];), והחלון מוסתר.
+  var FILES = [
+    { name: "dataset_a.csv", path: "data/dataset_a.csv", when: "שיעור 1",
+      meta: "תיאור קצר: מה יש בקובץ, כמה שורות." },
+    { name: "dataset_b.csv", ext: "https://example.org/dataset_b.csv", when: "שיעור 2",
+      meta: "קובץ שמורידים מאתר חיצוני.",
+      note: "בדיקה: כמה שורות אמורות להיות בקובץ." },
+    { name: "dataset_a_update.csv", path: "data/dataset_a_update.csv", when: "רק בשיעור 3", late: true,
+      meta: "קובץ שמורידים רק בהמשך השבוע.",
+      note: "מורידים אותו רק כשמגיעים לשיעור 3." }
+  ];
+  var dlApi = null, dlChecked = false;
+  function getDownloads() {
+    if (dlChecked) return Promise.resolve(dlApi);
+    var c = window.claude;
+    if (!c || typeof c.use !== "function") { dlChecked = true; return Promise.resolve(null); }
+    return c.use("downloads").then(function (api) { dlApi = api; dlChecked = true; return api; }, function () { dlChecked = true; return null; });
+  }
+  function renderFiles() {
+    var list = document.getElementById("fileList");
+    if (!list) return;
+    if (!FILES.length) { var hf = document.getElementById("h-files"); if (hf) hf.hidden = true; return; }
+    FILES.forEach(function (f) {
+      var row = el("div", "file");
+      var info = el("div", ""); info.style.display = "grid"; info.style.gap = "2px"; info.style.minWidth = "0";
+      var nm = el("span", "file-name", "");
+      f.name.split("_").forEach(function (part, i) { if (i) { nm.appendChild(document.createTextNode("_")); nm.appendChild(document.createElement("wbr")); } nm.appendChild(document.createTextNode(part)); });
+      info.appendChild(nm);
+      var meta = el("p", "file-meta");
+      var when = el("span", "file-when", f.when); if (f.late) when.dataset.late = "1";
+      meta.appendChild(when); meta.appendChild(document.createTextNode(f.meta));
+      info.appendChild(meta);
+      row.appendChild(info);
+      var act = el("div", "file-act");
+      var st = el("span", "dl-status", ""); st.setAttribute("aria-live", "polite");
+      if (f.ext) {
+        var a = el("a", "btn ghost", "פתיחה באתר המקור");
+        a.href = f.ext; a.target = "_blank"; a.rel = "noopener";
+        act.appendChild(a);
+      } else {
+        var b = el("button", "btn", "הורדה"); b.type = "button";
+        b.addEventListener("click", function () {
+          st.textContent = "הקובץ בהכנה...";
+          getDownloads().then(function (api) {
+            if (!api) { st.textContent = "ההורדה לא זמינה בתצוגה הזו. אפשר להוריד את הקובץ מהמודל."; return; }
+            return fetch(f.path).then(function (r) {
+              if (!r.ok) throw new Error("fetch " + r.status);
+              return r.blob();
+            }).then(function (blob) {
+              return api.save({ filename: f.name, data: blob });
+            }).then(function () { st.textContent = "נשמר. עכשיו מעבירים אותו לתיקייה data."; }, function (e) {
+              var code = e && e.code;
+              st.textContent = code === "declined" ? "ההורדה בוטלה." : code === "rate_limited" ? "חלון הורדה כבר פתוח. אפשר לנסות שוב בעוד רגע." : "ההורדה לא הצליחה. אפשר להוריד את הקובץ מהמודל.";
+            });
+          });
+        });
+        act.appendChild(b);
+      }
+      act.appendChild(st);
+      row.appendChild(act);
+      if (f.note) row.appendChild(el("p", "file-note", f.note));
+      list.appendChild(row);
+    });
+  }
+  renderFiles();
+  // FILES END
+
+  var toastEl = document.getElementById("toast"), toastTimer = null;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.hidden = true; }, Math.min(8000, 1800 + msg.length * 45));
+  }
+  var BULB_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.6a4.4 4.4 0 0 0-2.6 7.95c.38.3.6.72.6 1.17v.78h4v-.78c0-.45.22-.88.6-1.17A4.4 4.4 0 0 0 8 1.6Z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6.2 13.6h3.6M6.8 15.1h2.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
+  var COPY_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3.5 10.5h-1V2.5h8v1" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';
+  function selectText(node) {
+    try {
+      var r = document.createRange(); r.selectNodeContents(node);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    } catch (e) { }
+  }
+  // בחלון שבו האפליקציה פתוחה הדפדפן חוסם את Clipboard API, ולכן קודם ההעתקה הישנה והאמינה (execCommand), ורק אחריה ה-API.
+  function execCopyText(text) {
+    var ta = document.createElement("textarea"), ok = false, prev = document.activeElement;
+    ta.value = text; ta.setAttribute("readonly", ""); ta.setAttribute("aria-hidden", "true");
+    ta.style.cssText = "position:fixed;top:0;inset-inline-start:0;width:1px;height:1px;opacity:0;pointer-events:none";
+    document.body.appendChild(ta);
+    try { ta.select(); ta.setSelectionRange(0, text.length); ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    try { if (prev && prev.focus) prev.focus({ preventScroll: true }); } catch (e) { }
+    return ok;
+  }
+  function copyText(text, ok, bad) {
+    if (execCopyText(text)) { ok(); return; }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, bad);
+      else bad();
+    } catch (e) { bad(); }
+  }
+  function copyChip(btn, term) {
+    copyText(term, function () {
+      btn.dataset.copied = "1";
+      toast("הועתק: " + term + ". " + (LOC[term] ? "הכפתור נמצא " + LOC[term] + "." : (PASTE[term] || "הדביקו בחיפוש של Power BI.")));
+      setTimeout(function () { btn.dataset.copied = "0"; }, 1600);
+    }, function () {
+      selectText(btn.querySelector(".term"));
+      toast("סמנו את המונח והעתיקו עם Ctrl+C.");
+    });
+  }
+  function rich(text) {
+    var frag = document.createDocumentFragment();
+    var parts = String(text).split(/(\[\[[^\]]+\]\]|\{\{[^}]+\}\})/);
+    parts.forEach(function (p) {
+      if (!p) return;
+      if (p.indexOf("[[") === 0) {
+        var term = p.slice(2, -2);
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "chip";
+        b.setAttribute("aria-label", "העתקת המונח " + term);
+        b.innerHTML = COPY_ICON;
+        b.appendChild(el("span", "term", term));
+        b.addEventListener("click", function (ev) { ev.stopPropagation(); copyChip(b, term); });
+        frag.appendChild(b);
+      } else if (p.indexOf("{{") === 0) {
+        frag.appendChild(el("code", "", p.slice(2, -2)));
+      } else {
+        frag.appendChild(document.createTextNode(p));
+      }
+    });
+    return frag;
+  }
+  function plain(text) { return String(text).replace(/\[\[|\]\]|\{\{|\}\}/g, ""); }
+  // ---------- Summary box: one box that is both the preview and the copy source ----------
+  // The clipboard gets clean HTML (bold titles, no colors, no backgrounds) plus plain text, so it pastes
+  // well into Moodle, Word and Google Docs even when the page is in dark mode.
+  var lastCopyHandled = false;
+  function sumHost(node) {
+    var n = node && node.nodeType === 1 ? node : node && node.parentNode;
+    return n && n.closest ? n.closest(".report-prev") : null;
+  }
+  function cleanHTML(frag) {
+    var d = document.createElement("div");
+    d.appendChild(frag);
+    var all = d.querySelectorAll("*");
+    for (var i = 0; i < all.length; i++) { while (all[i].attributes.length) all[i].removeAttribute(all[i].attributes[0].name); }
+    return '<div dir="rtl" lang="he">' + d.innerHTML + "</div>";
+  }
+  function exportOf(host, range, selText) {
+    var whole = document.createRange(); whole.selectNodeContents(host);
+    var all = !range || (range.compareBoundaryPoints(Range.START_TO_START, whole) <= 0 && range.compareBoundaryPoints(Range.END_TO_END, whole) >= 0);
+    return { html: cleanHTML((all ? whole : range).cloneContents()), text: all ? host._text : selText };
+  }
+  document.addEventListener("copy", function (ev) {
+    var sel = window.getSelection();
+    if (!sel || sel.isCollapsed || !sel.rangeCount || !ev.clipboardData) return;
+    var r = sel.getRangeAt(0), host = sumHost(r.commonAncestorContainer);
+    if (!host) return;
+    var x = exportOf(host, r, String(sel));
+    ev.clipboardData.setData("text/html", x.html);
+    ev.clipboardData.setData("text/plain", x.text);
+    ev.preventDefault();
+    lastCopyHandled = true;
+  });
+  function fillDoc(host, groups) {
+    host.textContent = "";
+    groups.forEach(function (g) {
+      var p = document.createElement("p");
+      g.forEach(function (ln, i) {
+        if (i) p.appendChild(document.createElement("br"));
+        if (ln.b) p.appendChild(el("b", "", ln.t)); else p.appendChild(document.createTextNode(ln.t));
+      });
+      host.appendChild(p);
+    });
+    host._text = groups.map(function (g) { return g.map(function (l) { return l.t; }).join("\n"); }).join("\n\n");
+  }
+  function docBox(groups, tall) {
+    var host = el("div", "report-prev" + (tall ? " tall" : ""));
+    host.tabIndex = 0;
+    host.setAttribute("role", "group"); host.setAttribute("aria-label", "הסיכום להעתקה");
+    host.setAttribute("dir", "rtl"); host.setAttribute("lang", "he");
+    fillDoc(host, groups);
+    return host;
+  }
+  function copyBox(host, stat, okMsg) {
+    selectText(host);
+    lastCopyHandled = false;
+    var done = false;
+    try { done = document.execCommand("copy") && lastCopyHandled; } catch (e) { done = false; }
+    function good() { stat.textContent = okMsg; }
+    function bad() { stat.textContent = "ההעתקה האוטומטית לא עבדה, אבל הסיכום מסומן. הקישו Ctrl+C (ב-Mac: Cmd+C)."; }
+    if (done) { good(); return; }
+    var x = exportOf(host, null, "");
+    function plainOnly() { try { navigator.clipboard.writeText(x.text).then(good, bad); } catch (e) { bad(); } }
+    try {
+      if (navigator.clipboard && navigator.clipboard.write && window.ClipboardItem) {
+        navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([x.html], { type: "text/html" }), "text/plain": new Blob([x.text], { type: "text/plain" }) })]).then(good, plainOnly);
+        return;
+      }
+    } catch (e) { }
+    plainOnly();
+  }
+
+  function lessonDone(L) { return L.steps.filter(function (s) { return state.done[s.id]; }).length; }
+  function reqQs(L) { return L.qs.filter(function (q) { return !q.opt; }); }
+  function answered(L) { return reqQs(L).filter(function (q) { return (state.ans[q.id] || "").trim(); }).length; }
+  // A summary is a list of paragraphs, and a paragraph is a list of lines: { t: text, b: bold }.
+  function summaryGroups(L, forWeek) {
+    var g = [[
+      { b: 1, t: (forWeek ? "" : WEEK.name + ", ") + "שיעור " + L.n + ": " + L.title },
+      { t: "סימנתי " + lessonDone(L) + " מתוך " + L.steps.length + " צעדים." + (forWeek ? (state.sub[L.n] ? " הוגש במודל." : " עוד לא הוגש במודל.") : "") }
+    ]];
+    L.qs.forEach(function (q, i) {
+      var a = (state.ans[q.id] || "").trim();
+      if (q.opt && !a) return;
+      var grp = [{ b: 1, t: (i + 1) + ". " + plain(q.q) }];
+      (a ? a.replace(/\r\n?/g, "\n").split("\n") : ["(לא עניתי)"]).forEach(function (ln) { grp.push({ t: ln.replace(/\s+$/, "") }); });
+      g.push(grp);
+    });
+    return g;
+  }
+  function weekGroups() {
+    var g = [[{ b: 1, t: WEEK.name + ": סיכום השבוע" }]];
+    LESSONS.forEach(function (L) { g = g.concat(summaryGroups(L, true)); });
+    return g;
+  }
+
+  // ---------- Tabs ----------
+  var tabsEl = document.getElementById("tabs");
+  var tourOn = false;
+  function makeTab(n, small, big) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "tab"; b.id = "tab-" + n;
+    b.setAttribute("role", "tab"); b.setAttribute("aria-controls", "panel");
+    b.innerHTML = '<span class="t-l"></span><span class="t-n"></span><span class="t-p"></span>';
+    b.querySelector(".t-l").textContent = small;
+    b.querySelector(".t-n").textContent = big;
+    b.addEventListener("click", function () { openLesson(n, true); });
+    b.addEventListener("keydown", function (ev) {
+      if (tourOn) return;
+      var d = ev.key === "ArrowLeft" ? 1 : ev.key === "ArrowRight" ? -1 : 0;
+      if (!d) return;
+      ev.preventDefault();
+      var nx = ((n - 1 + d + REPORT) % REPORT) + 1;
+      openLesson(nx, true); document.getElementById("tab-" + nx).focus();
+    });
+    tabsEl.appendChild(b);
+  }
+  LESSONS.forEach(function (L) { makeTab(L.n, "שיעור", String(L.n)); });
+  makeTab(REPORT, "השבוע", "סיכום");
+  tabsEl.style.setProperty("--tabs", String(REPORT));
+  function renderTabs() {
+    LESSONS.forEach(function (L) {
+      var b = document.getElementById("tab-" + L.n), k = lessonDone(L), t = L.steps.length;
+      b.setAttribute("aria-selected", L.n === state.lesson ? "true" : "false");
+      b.tabIndex = L.n === state.lesson ? 0 : -1;
+      b.dataset.done = k === t ? "1" : "0";
+      b.querySelector(".t-p").textContent = (state.sub[L.n] ? "✓ " : "") + k + "/" + t;
+      b.setAttribute("aria-label", "שיעור " + L.n + ": " + L.title + ". " + k + " מתוך " + t + " צעדים" + (state.sub[L.n] ? ". הוגש" : ""));
+    });
+    var r = document.getElementById("tab-" + REPORT);
+    var subs = LESSONS.filter(function (L) { return state.sub[L.n]; }).length;
+    r.setAttribute("aria-selected", state.lesson === REPORT ? "true" : "false");
+    r.tabIndex = state.lesson === REPORT ? 0 : -1;
+    r.dataset.done = subs === LESSONS.length ? "1" : "0";
+    r.querySelector(".t-p").textContent = subs + "/" + LESSONS.length + " הוגשו";
+    r.setAttribute("aria-label", "סיכום השבוע. " + subs + " מתוך " + LESSONS.length + " שיעורים הוגשו");
+  }
+
+  // ---------- Lesson panel ----------
+  var panelEl = document.getElementById("panel");
+  function updatePreview() {
+    if (state.lesson === REPORT) return;
+    var p = document.getElementById("prev-" + state.lesson);
+    if (p) fillDoc(p, summaryGroups(LESSONS[state.lesson - 1]));
+  }
+  function pager(prevN, prevLabel, nextN, nextLabel) {
+    var pg = el("div", "pager");
+    if (prevN) {
+      var pv = el("button", "btn ghost", prevLabel); pv.type = "button";
+      pv.addEventListener("click", function () { openLesson(prevN, true); });
+      pg.appendChild(pv);
+    } else pg.appendChild(el("span", ""));
+    if (nextN) {
+      var nx = el("button", "btn ghost", nextLabel); nx.type = "button";
+      nx.addEventListener("click", function () { openLesson(nextN, true); });
+      pg.appendChild(nx);
+    }
+    return pg;
+  }
+  function renderLesson() {
+    if (state.lesson === REPORT) { renderReport(); return; }
+    var L = LESSONS[state.lesson - 1];
+    panelEl.innerHTML = "";
+    panelEl.setAttribute("aria-labelledby", "tab-" + L.n);
+
+    var head = el("div", "head");
+    head.appendChild(el("p", "kicker", "שיעור " + L.n + " מתוך " + LESSONS.length + ", " + (WEEK.datasets[L.data] || "")));
+    head.appendChild(el("h2", "", L.title));
+    if (L.sub) head.appendChild(el("p", "l-sub", L.sub));
+    panelEl.appendChild(head);
+
+    var goal = el("div", "goal");
+    goal.appendChild(el("span", "goal-label", "המטרה של היום"));
+    goal.appendChild(el("p", "", L.goal));
+    panelEl.appendChild(goal);
+    if (L.intro) panelEl.appendChild(el("p", "intro", L.intro));
+    if (L.cards) {
+      var rb = el("button", "btn ghost cards-open", "הכירו את כרטיסי המאגר"); rb.type = "button";
+      rb.addEventListener("click", function () {
+        var d = document.getElementById("h-cards");
+        var tl = document.getElementById("tools"); if (tl) tl.open = true;
+        d.open = true;
+        d.scrollIntoView({ block: "start", behavior: reduceMotion ? "auto" : "smooth" });
+        d.querySelector("summary").focus({ preventScroll: true });
+      });
+      panelEl.appendChild(rb);
+    }
+
+    var stepsSec = el("section", "stepsec");
+    var st = el("h3", "sec-title", "הצעדים");
+    var sub = el("span", "sec-sub", ""); sub.id = "stepCount";
+    st.appendChild(sub);
+    stepsSec.appendChild(st);
+    var ol = el("ol", "steps");
+    L.steps.forEach(function (s, i) {
+      var li = el("li", "step");
+      li.dataset.done = state.done[s.id] ? "1" : "0";
+      li.dataset.opt = s.opt ? "1" : "0";
+      var cb = document.createElement("input");
+      cb.type = "checkbox"; cb.id = "cb-" + s.id; cb.checked = !!state.done[s.id];
+      cb.setAttribute("aria-labelledby", "tx-" + s.id);
+      var body = el("div", "step-body");
+      var tx = el("div", "s-text"); tx.id = "tx-" + s.id;
+      tx.appendChild(el("span", "s-num", (i + 1) + ". "));
+      if (s.opt) tx.appendChild(el("span", "s-badge", "אתגר"));
+      tx.appendChild(rich(s.t));
+      var main = el("div", "s-main");
+      main.appendChild(tx);
+      if (s.w) {
+        var wb = el("div", "why");
+        var wl = el("span", "why-label"); wl.innerHTML = BULB_ICON;
+        wl.appendChild(document.createTextNode("למה עושים את זה?"));
+        wb.appendChild(wl); var wp = el("p", ""); wp.appendChild(rich(s.w)); wb.appendChild(wp);
+        main.appendChild(wb);
+      }
+      body.appendChild(main);
+      if (s.e) {
+        var ex = el("p", "expect");
+        ex.appendChild(el("b", "", "מה אמור להופיע: "));
+        ex.appendChild(rich(s.e));
+        body.appendChild(ex);
+      }
+      if (s.h) {
+        var d = el("details", "hint");
+        d.appendChild(el("summary", "", "רמז"));
+        d.appendChild(el("p", "", s.h));
+        body.appendChild(d);
+      }
+      li.appendChild(cb); li.appendChild(body);
+      function set(on) {
+        if (on) state.done[s.id] = true; else delete state.done[s.id];
+        cb.checked = on; li.dataset.done = on ? "1" : "0";
+        save(); renderTabs(); updateCount(); updatePreview();
+      }
+      cb.addEventListener("change", function () { set(cb.checked); });
+      li.addEventListener("click", function (ev) {
+        if (ev.target.closest("button, a, summary, details, input, textarea, code, .why")) return;
+        set(!cb.checked);
+      });
+      ol.appendChild(li);
+    });
+    stepsSec.appendChild(ol);
+    panelEl.appendChild(stepsSec);
+
+    var qSec = el("section", "qs");
+    qSec.appendChild(el("h3", "sec-title", "שאלות לחשיבה"));
+    L.qs.forEach(function (q, i) {
+      var box = el("div", "q");
+      var lab = el("label", "", (i + 1) + ". " + q.q);
+      lab.setAttribute("for", "ta-" + q.id);
+      if (q.opt) { lab.appendChild(document.createTextNode(" ")); lab.appendChild(el("span", "q-opt", "(רשות)")); }
+      var ta = document.createElement("textarea");
+      ta.id = "ta-" + q.id; ta.rows = 3;
+      if (q.ph) ta.placeholder = q.ph;
+      ta.value = state.ans[q.id] || "";
+      ta.addEventListener("input", function () {
+        if (ta.value) state.ans[q.id] = ta.value; else delete state.ans[q.id];
+        save(); updatePreview(); renderTabs();
+      });
+      box.appendChild(lab);
+      if (q.parts) {
+        var pl = el("ul", "q-parts"); pl.id = "qp-" + q.id;
+        q.parts.forEach(function (p) { pl.appendChild(el("li", "", p)); });
+        box.appendChild(pl);
+        ta.setAttribute("aria-describedby", pl.id);
+        ta.rows = 2 + q.parts.length;
+      }
+      box.appendChild(ta);
+      qSec.appendChild(box);
+    });
+    panelEl.appendChild(qSec);
+
+    var sb = el("section", "submit");
+    sb.appendChild(el("span", "submit-label", "מה מגישים במודל"));
+    sb.appendChild(el("p", "submit-what", L.submit));
+    sb.appendChild(el("p", "submit-how", "קודם צלמו את המסך עם Win+Shift+S, לחצו על ההודעה שקופצת ושמרו את התמונה כקובץ. אחר כך לחצו על הכפתור (או סמנו את הסיכום והעתיקו אותו עם Ctrl+C), הדביקו את הסיכום במטלה במודל וצרפו את קובץ התמונה."));
+    sb.appendChild(el("span", "report-label", "הסיכום של השיעור. זה מה שיודבק במודל, ולכן עוברים עליו לפני ההגשה:"));
+    var prev = docBox(summaryGroups(L)); prev.id = "prev-" + L.n;
+    sb.appendChild(prev);
+    var row = el("div", "row");
+    var cbtn = el("button", "btn go", "העתקת הסיכום שלי"); cbtn.type = "button";
+    var stat = el("span", "status", ""); stat.setAttribute("aria-live", "polite");
+    row.appendChild(cbtn); row.appendChild(stat);
+    sb.appendChild(row);
+    cbtn.addEventListener("click", function () { fillDoc(prev, summaryGroups(L)); copyBox(prev, stat, "הסיכום הועתק. עכשיו הדביקו אותו במודל."); });
+    var sl = el("label", "subm");
+    var sc = document.createElement("input"); sc.type = "checkbox"; sc.id = "sub-" + L.n; sc.checked = !!state.sub[L.n];
+    sc.addEventListener("change", function () { if (sc.checked) state.sub[L.n] = true; else delete state.sub[L.n]; save(); renderTabs(); });
+    sl.appendChild(sc); sl.appendChild(el("span", "", "הגשתי את השיעור הזה במודל"));
+    sb.appendChild(sl);
+    panelEl.appendChild(sb);
+
+    panelEl.appendChild(pager(L.n > 1 ? L.n - 1 : 0, "לשיעור " + (L.n - 1), L.n < LESSONS.length ? L.n + 1 : REPORT, L.n < LESSONS.length ? "לשיעור " + (L.n + 1) : "לסיכום השבוע"));
+    updateCount();
+  }
+  function updateCount() {
+    if (state.lesson === REPORT) return;
+    var L = LESSONS[state.lesson - 1], c = document.getElementById("stepCount");
+    if (c) c.textContent = "סימנתם " + lessonDone(L) + " מתוך " + L.steps.length;
+  }
+
+  // ---------- Learning report for the whole week ----------
+  function renderReport() {
+    panelEl.innerHTML = "";
+    panelEl.setAttribute("aria-labelledby", "tab-" + REPORT);
+    var head = el("div", "head");
+    head.appendChild(el("p", "kicker", "שבוע " + WEEK.n + ", כל השיעורים"));
+    head.appendChild(el("h2", "", "סיכום השבוע"));
+    panelEl.appendChild(head);
+    panelEl.appendChild(el("p", "intro", "כאן רואים את כל השבוע: כמה צעדים סימנתם, על כמה שאלות עניתם, ומה כבר הגשתם במודל. את ההגשה מסמנים בעצמכם, בסוף כל שיעור. לחיצה על שם של שיעור פותחת אותו."));
+    var wrap = el("div", "rep-table-wrap");
+    var t = el("table", "rep-table");
+    var thead = el("thead", ""), hr = el("tr", "");
+    ["שיעור", "צעדים", "שאלות", "הוגש במודל"].forEach(function (h) { hr.appendChild(el("th", "", h)); });
+    thead.appendChild(hr); t.appendChild(thead);
+    var tb = el("tbody", "");
+    LESSONS.forEach(function (L) {
+      var tr = el("tr", "");
+      var td1 = el("td", "");
+      var b = el("button", "rep-open", L.n + ". " + L.title); b.type = "button";
+      b.addEventListener("click", function () { openLesson(L.n, true); });
+      td1.appendChild(b); tr.appendChild(td1);
+      tr.appendChild(el("td", "", lessonDone(L) + "/" + L.steps.length));
+      tr.appendChild(el("td", "", answered(L) + "/" + reqQs(L).length));
+      tr.appendChild(el("td", state.sub[L.n] ? "ok" : "miss", state.sub[L.n] ? "הוגש" : "עוד לא"));
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb); wrap.appendChild(t); panelEl.appendChild(wrap);
+
+    var sec = el("section", "submit");
+    sec.appendChild(el("span", "submit-label", "כל השבוע בטקסט אחד"));
+    sec.appendChild(el("p", "submit-how", "כל התשובות של השבוע. אם המורה מבקש סיכום שבועי, מעתיקים אותו מכאן ומדביקים במודל. אפשר ללחוץ על הכפתור, או לסמן ולהעתיק עם Ctrl+C."));
+    var prev = docBox(weekGroups(), true);
+    sec.appendChild(prev);
+    var row = el("div", "row");
+    var cb = el("button", "btn go", "העתקת הסיכום של כל השבוע"); cb.type = "button";
+    var stat = el("span", "status", ""); stat.setAttribute("aria-live", "polite");
+    row.appendChild(cb); row.appendChild(stat); sec.appendChild(row);
+    cb.addEventListener("click", function () { fillDoc(prev, weekGroups()); copyBox(prev, stat, "הסיכום הועתק. עכשיו הדביקו אותו במודל."); });
+    panelEl.appendChild(sec);
+    panelEl.appendChild(pager(7, "לשיעור 7", 0, ""));
+  }
+
+  function openLesson(n, scroll) {
+    state.lesson = n; save();
+    renderTabs(); renderLesson();
+    if (scroll && !tourOn) {
+      var top = tabsEl.getBoundingClientRect().top;
+      if (top < 0) tabsEl.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+  }
+
+  // ---------- Reset ----------
+  var confirmBox = document.getElementById("confirmBox");
+  document.getElementById("resetBtn").addEventListener("click", function () { confirmBox.hidden = false; document.getElementById("confirmNo").focus(); });
+  document.getElementById("confirmNo").addEventListener("click", function () { confirmBox.hidden = true; });
+  document.getElementById("confirmYes").addEventListener("click", function () {
+    state.done = {}; state.ans = {}; state.sub = {};
+    try { localStorage.removeItem(KEY); } catch (e) { }
+    confirmBox.hidden = true;
+    renderTabs(); renderLesson();
+    toast("הסימונים והתשובות נמחקו מהמחשב הזה.");
+  });
+
+  // ---------- Guided tour, for projecting on the class board ----------
+  var TOUR = [
+    { view: "lesson", sel: "#viewset", title: "גודל טקסט ורקע כהה", text: "קשה לקרוא? כאן מגדילים את הטקסט, עוברים לרקע כהה ובוחרים פריסה לטלפון. ההגדרה נשמרת במכשיר הזה." },
+    { view: "lesson", sel: "#tabs", title: "בוחרים שיעור", text: "כל שיעור הוא כפתור. המספר הקטן אומר כמה צעדים כבר סימנתם." },
+    { view: "lesson", sel: "#panel .goal", title: "המטרה של היום", text: "מה תדעו לעשות בסוף השיעור. קוראים אותה לפני שמתחילים." },
+    { view: "lesson", sel: "#panel .step", title: "צעד אחרי צעד", text: "מבצעים ב-Power BI את מה שכתוב בצעד, ובודקים שעל המסך מופיע מה שכתוב ב\"מה אמור להופיע\". רק אז מסמנים את הצעד. כדי לסמן צעד, אפשר ללחוץ בכל מקום עליו, ולא רק בתיבה." },
+    { view: "lesson", sel: "#panel .why", title: "למה עושים את זה?", text: "ליד חלק מהצעדים יש הסבר קצר: למה עושים את הפעולה. כדאי לקרוא אותו לפני שממשיכים." },
+    { view: "lesson", sel: "#panel .chip", title: "שם של כפתור", text: "לחיצה על שם של כפתור במסגרת אפורה מעתיקה אותו, ומופיעה הודעה שאומרת איפה הכפתור נמצא. עדיין לא מוצאים? מדביקים את השם בתיבת החיפוש שבראש חלון Power BI." },
+    { view: "lesson", sel: "#panel .hint", title: "רמז", text: "נתקעתם? פותחים את הרמז. לא חייבים." },
+    { view: "lesson", sel: "#panel .qs", title: "שאלות לחשיבה", text: "עונים על כל סעיף במשפט או שניים. את החלק הזה המורה קורא." },
+    { view: "lesson", sel: "#panel .submit", title: "מה מגישים במודל", text: "קודם צילום מסך ושמירה כקובץ. אחר כך העתקת הסיכום, הדבקה במטלה במודל וצירוף התמונה." },
+    { view: "lesson", sel: "#panel .report-prev", title: "הסיכום של השיעור", text: "כך ייראה מה שתדביקו במודל. לפני ההגשה עוברים עליו: נשאר \"(לא עניתי)\"? כל תשובה מובנת למי שלא היה בכיתה?" },
+    { view: "lesson", sel: "#panel .subm", title: "סימון הגשה", text: "אחרי שהגשתם במודל, מסמנים כאן. כך תראו בסיכום השבוע מה כבר הוגש." },
+    { view: "report", sel: "#panel .rep-table-wrap", title: "סיכום השבוע", text: "כל השבוע במקום אחד: כמה צעדים סימנתם, על כמה שאלות עניתם ומה כבר הגשתם. לחיצה על שיעור פותחת אותו." }
+  ];
+  var tourI = 0, tourLesson = 1;
+  var tourbar = document.getElementById("tourbar");
+  var reduceMotion = false;
+  try { reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { }
+  function clearTarget() {
+    Array.prototype.forEach.call(document.querySelectorAll(".tour-target"), function (n) { n.classList.remove("tour-target"); });
+  }
+  function showTour() {
+    var st = TOUR[tourI];
+    if (st.view === "report" && state.lesson !== REPORT) openLesson(REPORT, false);
+    if (st.view === "lesson" && state.lesson === REPORT) openLesson(tourLesson, false);
+    clearTarget();
+    document.getElementById("tourCount").textContent = (tourI + 1) + " מתוך " + TOUR.length;
+    document.getElementById("tourTitle").textContent = st.title;
+    document.getElementById("tourText").textContent = st.text;
+    document.getElementById("tourPrev").disabled = tourI === 0;
+    document.getElementById("tourNext").textContent = tourI === TOUR.length - 1 ? "סיום" : "הבא";
+    var t = document.querySelector(st.sel);
+    if (t) { t.classList.add("tour-target"); scrollToTarget(t); }
+  }
+  // Center the highlighted part in the space above the tour bar. A tall part starts at the top.
+  function scrollToTarget(t) {
+    var r = t.getBoundingClientRect();
+    var room = tourbar.getBoundingClientRect().top || window.innerHeight;
+    var y = r.height > room - 48 ? r.top - 24 : r.top + r.height / 2 - room / 2;
+    window.scrollBy({ top: y, behavior: reduceMotion ? "auto" : "smooth" });
+  }
+  function startTour() {
+    tourOn = true; tourI = 0;
+    tourLesson = state.lesson === REPORT ? 1 : state.lesson;
+    document.documentElement.setAttribute("data-board", "1");
+    tourbar.hidden = false;
+    showTour();
+    document.getElementById("tourNext").focus({ preventScroll: true });
+  }
+  function endTour() {
+    tourOn = false; clearTarget(); tourbar.hidden = true;
+    document.documentElement.removeAttribute("data-board");
+  }
+  function tourNext() { if (tourI < TOUR.length - 1) { tourI++; showTour(); } else endTour(); }
+  function tourPrev() { if (tourI > 0) { tourI--; showTour(); } }
+  document.getElementById("tourBtn").addEventListener("click", startTour);
+  document.getElementById("reportBtn").addEventListener("click", function () { openLesson(REPORT, true); });
+  document.getElementById("tourNext").addEventListener("click", tourNext);
+  document.getElementById("tourPrev").addEventListener("click", tourPrev);
+  document.getElementById("tourExit").addEventListener("click", endTour);
+  document.addEventListener("keydown", function (ev) {
+    if (!tourOn) return;
+    if (ev.target.closest && ev.target.closest("textarea, input")) return;
+    if (ev.key === "ArrowLeft") { ev.preventDefault(); tourNext(); }
+    else if (ev.key === "ArrowRight") { ev.preventDefault(); tourPrev(); }
+    else if (ev.key === "Escape") { endTour(); }
+  });
+
+  // ---------- Deep links: #l1 ... #lN, #report, #board ----------
+  function fromHash() {
+    var h = (location.hash || "").replace("#", "");
+    if (/^l[1-7]$/.test(h)) return Number(h.slice(1));
+    if (h === "report") return REPORT;
+    return 0;
+  }
+  window.addEventListener("hashchange", function () {
+    if ((location.hash || "") === "#board") { startTour(); return; }
+    var n = fromHash(); if (n) openLesson(n, true);
+  });
+
+  var start = fromHash();
+  if (start) state.lesson = start;
+  renderTabs(); renderLesson();
+  if ((location.hash || "") === "#board") setTimeout(startTour, 80);
+  else if (start) setTimeout(function () { tabsEl.scrollIntoView({ block: "start" }); }, 60);
+})();
+</script>
+
+</body></html>

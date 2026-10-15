@@ -1,0 +1,115 @@
+{
+ "v": 4,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-03T13:20:00Z"
+ },
+ "lists": "css",
+ "title": "שבוע 1: מצגות השיעורים",
+ "cover": "m1-1",
+ "order": [
+  "m1-1",
+  "m1-2",
+  "m1-3",
+  "m1-4",
+  "m1-5",
+  "m1-6",
+  "m1-7",
+  "m1-8",
+  "m1-9",
+  "m2-1",
+  "m2-2",
+  "m2-3",
+  "m2-4",
+  "m2-5",
+  "m2-6",
+  "m2-7",
+  "m2-8",
+  "m3-1",
+  "m3-2",
+  "m3-3",
+  "m3-4",
+  "m3-5",
+  "m3-5b",
+  "m3-6",
+  "m3-7",
+  "m3-8",
+  "m4-1",
+  "m4-2",
+  "m4-3",
+  "m4-4",
+  "m4-5",
+  "m5-1",
+  "m5-2",
+  "m5-3",
+  "m5-4",
+  "m5-5",
+  "m6-1",
+  "m6-2",
+  "m6-3",
+  "m6-4",
+  "m6-5",
+  "m7-1",
+  "m7-2",
+  "m7-3",
+  "m7-4",
+  "m7-5"
+ ],
+ "sections": {
+  "s1": {
+   "description": "שיעור 1: מה מייצגת כל שורה בקובץ?",
+   "start": "m1-1"
+  },
+  "s2": {
+   "description": "שיעור 2: ניקוי נתונים ו\"מתכון\" הצעדים",
+   "start": "m2-1"
+  },
+  "s3": {
+   "description": "שיעור 3: השוואה הוגנת ומאמץ דגימה",
+   "start": "m3-1"
+  },
+  "s4": {
+   "description": "שיעור 4: מאגר חדש, אותו מתכון",
+   "start": "m4-1"
+  },
+  "s5": {
+   "description": "שיעור 5: ניקוי נתונים עצמאי",
+   "start": "m5-1"
+  },
+  "s6": {
+   "description": "שיעור 6: בדיקת איכות הנתונים בגרף קווים",
+   "start": "m6-1"
+  },
+  "s7": {
+   "description": "שיעור 7: המתכון עובד גם מחר",
+   "start": "m7-1"
+  }
+ },
+ "faces": {
+  "rubik": {
+   "family": "Rubik",
+   "href": "https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700&display=swap"
+  },
+  "heebo": {
+   "family": "Heebo",
+   "href": "https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap"
+  },
+  "gveret-levin": {
+   "family": "Gveret Levin",
+   "href": "https://fonts.googleapis.com/css2?family=Gveret+Levin&display=swap"
+  },
+  "jetbrains-mono": {
+   "family": "JetBrains Mono",
+   "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap"
+  }
+ },
+ "designSystems": [
+  {
+   "title": "מגמת מידע ונתונים",
+   "namespace": "data-analysis",
+   "artifact": "https://claude.ai/code/artifact/2806df31-bb67-4787-aeba-0aaaba91bec5",
+   "version": null,
+   "copiedAt": "2026-10-03T13:20:00Z"
+  }
+ ]
+}

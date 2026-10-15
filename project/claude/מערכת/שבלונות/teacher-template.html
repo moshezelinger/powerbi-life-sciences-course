@@ -1,0 +1,1599 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!--
+  שבלונה: אפליקציית המורה (מסע ההכנה), קורס Power BI.
+  גרסת שבלונה 4, נגזרה ממסע ההכנה של שבוע 1 (גרסה 7), 9.10.2026.
+  מה חדש בגרסה 4: שכבת תנועה וחומרים לפי apple-design (לחצן מגיב ברגע הלחיצה וחוזר בהדרגה, כרטיסים שנכנסים בהדרגה, מעבר חלק בין רקע בהיר לכהה, חלונות עזרה שנפתחים ונסגרים בהדרגה), וכלל [hidden] משלה. הכלל חשוב: בצופה שלא מוסיף אותו, מפת המסע נשארה פתוחה כי display: grid של המפה גבר על ההסתרה. בשבלונה המפה מצומצמת כברירת מחדל, וכפתור אחד פותח אותה.
+  מסך הבית מכוון להחלטה: "הצעד הבא" במרכז, התקדמות קומפקטית עם מפת מסע מתקפלת, וקיצורי דרך בארבע קבוצות. פלטת הצבעים: מערכת העיצוב "מגמת מידע ונתונים" (צהוב לפעולה ולתשומת לב, כחול לקישורים ולהשלמה). בתפריט התצוגה יש כפתור רקע (לפי המכשיר, בהיר, כהה), וברקע הבהיר הכתב במשקל בינוני.
+
+  איך משתמשים (פירוט מלא: "מדריך פיתוח שבוע חדש", פרק 3):
+  1. מעתיקים את הקובץ לשם חדש: week-N-journey.html.
+  2. משנים את <title> שלמעלה, ואת הבלוק WEEK שבתחילת הסקריפט (מספר שבוע, שם, מאגרי נתונים, קישורים).
+  3. ממלאים את FILES (קבצים למודל) ואת STATIONS: תחנה 0 (לפני השבוע) ותחנה לכל שיעור. שלוש התחנות לדוגמה מראות כל שדה.
+  4. בכל תחנה: items הם משימות ההכנה (מזהה, נוסח, דקות כפולה של 5). הזמן המצטבר מחושב לבד.
+  5. כל [[כפתור]] בצעדים צריך מיקום ב-LOC. מעדכנים גם את הסעיף "איפה הכפתור?" ואת הסעיף "על הנתונים".
+  6. הסימולטור של שבוע 1 הוצא מהשבלונה. אם השבוע צריך הדגמה של רעיון מופשט, בונים אותו לפי הסימולטור באפליקציית המורה של שבוע 1, ומוסיפים st.sim: true לתחנה.
+  7. מריצים: python3 check_week.py --role teacher הקובץ.html
+
+  לא משנים: מזהי משימות (sN-k), מפתח השמירה (STORE_KEY) ומסמך ה-db. שינוי מאפס את הסימונים של המורה.
+  לא מוחקים: את שכבת התנועה והחומרים (בסוף בלוק ה-CSS) ואת הכלל [hidden]. בלעדיהם הלחצנים לא מגיבים בהדרגה, והמפה עלולה להופיע פתוחה.
+  הטקסט שבשבלונה הוא דוגמה לסגנון בלבד. אל תשאירו אותו בשבוע אמיתי.
+-->
+<title>שבלונת מסע ההכנה למורה</title><!-- TEMPLATE: בשבוע אמיתי: למורה - מסע ההכנה לשבוע N -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Secular+One&display=swap">
+<style>
+/* Palette: design system "מגמת מידע ונתונים" (tokens.json, 5.10.2026). Colors only: yellow = action and attention, blue = links, labels and done. */
+/* Layout: a researcher's field notebook. Graph-paper ground, a grid of dots as the progress meter, one lesson open at a time, details folded into accordions. */
+:root {
+  --paper: #f3f5f6;
+  --paper-line: rgba(43, 40, 41, 0.045);
+  --card: #ffffff;
+  --ink: #2b2829;
+  --ink-2: #3a3738;
+  --ink-3: #4d4a4b;
+  --rule: #d5d8db;
+  --bar: #0b6a97;
+  --bar-soft: rgba(37, 170, 226, 0.11);
+  --tape: #ffca08;
+  --tape-ink: #7a5200;
+  --tape-soft: rgba(255, 202, 8, 0.20);
+  --on-tape: #1f1d1e;
+  --sage: #0b6a97;
+  --sage-soft: rgba(37, 170, 226, 0.17);
+  --chip: #eceff1;
+  --focus: #0b6a97;
+  --shadow: 0 1px 2px rgba(31, 29, 30, 0.10), 0 6px 18px rgba(31, 29, 30, 0.08);
+  --bar-muted: #b5def2;
+  --amber-ink: #7a5200;
+  --amber-soft: rgba(255, 202, 8, 0.20);
+  --neutral-seg: #cfd3d6;
+  --neutral-seg-2: #e4e7e9;
+  --fw: 500;
+  --display: 'Secular One', 'Assistant', system-ui, sans-serif;
+  --body: 'Assistant', 'Segoe UI', Arial, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e0e0f; --paper-line: rgba(244, 242, 242, 0.04); --card: #1b1b1d;
+    --ink: #f4f2f2; --ink-2: #d9d6d6; --ink-3: #bdbabb; --rule: #3a3a3d; --fw: 400;
+    --bar: #25aae2; --bar-soft: rgba(37, 170, 226, 0.16);
+    --tape: #ffca08; --tape-ink: #ffca08; --tape-soft: rgba(255, 202, 8, 0.14); --on-tape: #1f1d1e;
+    --sage: #25aae2; --sage-soft: rgba(37, 170, 226, 0.22);
+    --chip: #2a2a2d; --focus: #ffca08;
+    --shadow: none;
+    --bar-muted: #1f5b78; --amber-ink: #ffca08; --amber-soft: rgba(255, 202, 8, 0.14); --neutral-seg: #3a3a3d; --neutral-seg-2: #2a2a2d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e0e0f; --paper-line: rgba(244, 242, 242, 0.04); --card: #1b1b1d;
+  --ink: #f4f2f2; --ink-2: #d9d6d6; --ink-3: #bdbabb; --rule: #3a3a3d; --fw: 400;
+  --bar: #25aae2; --bar-soft: rgba(37, 170, 226, 0.16);
+  --tape: #ffca08; --tape-ink: #ffca08; --tape-soft: rgba(255, 202, 8, 0.14); --on-tape: #1f1d1e;
+  --sage: #25aae2; --sage-soft: rgba(37, 170, 226, 0.22);
+  --chip: #2a2a2d; --focus: #ffca08;
+  --shadow: none;
+  --bar-muted: #1f5b78; --amber-ink: #ffca08; --amber-soft: rgba(255, 202, 8, 0.14); --neutral-seg: #3a3a3d; --neutral-seg-2: #2a2a2d;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--paper-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  font-weight: var(--fw);
+}
+.app { max-width: 1060px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 72px; display: grid; gap: 26px; }
+@media (max-width: 480px) { .app { padding-inline: 16px; } body { font-size: 1.0625rem; } }
+
+h1, h2, h3 { font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0; line-height: 1.2; }
+h1 { font-size: clamp(1.875rem, 5vw, 2.75rem); }
+h2 { font-size: clamp(1.5rem, 3.4vw, 1.875rem); }
+h3 { font-size: 1.25rem; }
+p { margin: 0; }
+a { color: var(--bar); text-underline-offset: 3px; }
+code { font-family: var(--mono); font-size: 0.84em; background: var(--chip); border-radius: 4px; padding: 1px 6px; direction: ltr; unicode-bidi: isolate; overflow-wrap: anywhere; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+.card { background: var(--card); border: 1px solid var(--rule); border-radius: 16px; box-shadow: var(--shadow); padding: clamp(18px, 3vw, 28px); display: grid; gap: 16px; min-width: 0; }
+.sec-head { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; }
+.sub { font-size: 1rem; color: var(--ink-3); }
+.muted { color: var(--ink-2); }
+
+/* Header */
+.top { display: grid; gap: 10px; }
+.eyebrow { font-size: 0.875rem; letter-spacing: 0.06em; color: var(--ink-3); font-weight: 700; }
+.intro { display: grid; gap: 10px; min-width: 0; }
+.lede { color: var(--ink-2); max-width: 60ch; }
+.save-status { font-size: 0.9375rem; color: var(--ink-3); display: flex; gap: 8px; align-items: center; }
+.save-status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ink-3); flex: none; }
+.save-status[data-mode="remote"]::before { background: var(--sage); }
+.save-status[data-mode="retry"]::before { background: var(--tape); }
+.quick { display: flex; flex-wrap: wrap; gap: 8px; }
+.who { display: inline-block; font-size: 0.875rem; font-weight: 700; letter-spacing: 0.04em; border-radius: 999px; padding: 1px 10px; margin-inline-end: 6px; white-space: nowrap; }
+.who[data-w="t"] { color: var(--amber-ink); background: var(--amber-soft); }
+.who[data-w="s"] { color: var(--sage); background: var(--sage-soft); }
+.board-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 760px) { .board-grid { grid-template-columns: 1fr; } }
+.board-grid ol { margin: 0; padding-inline-start: 22px; display: grid; gap: 6px; color: var(--ink-2); }
+.link-btn { text-decoration: none; display: inline-block; text-align: center; }
+.quick a { font-size: 1rem; font-weight: 600; text-decoration: none; color: var(--bar); border: 1.5px solid var(--rule); background: var(--card); border-radius: 999px; padding: 4px 12px; }
+.quick a:hover { border-color: var(--bar); }
+
+.plot { margin: 0; display: grid; gap: 8px; justify-items: center; background: var(--card); border: 1px solid var(--rule); border-radius: 14px; padding: 16px 18px 12px; box-shadow: var(--shadow); }
+.plot-frame { padding: 10px; border: 2px dashed var(--ink-3); border-radius: 6px; }
+.dots { display: grid; grid-template-columns: repeat(7, 24px); gap: 6px; direction: ltr; }
+.dot { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--ink-3); background: transparent; padding: 0; cursor: pointer; display: grid; place-items: center; transition: transform 160ms ease; }
+.dot:hover { transform: scale(1.12); }
+.dot[data-on="1"] { background: var(--bar); border-color: var(--bar); }
+.dot[data-on="1"]::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--card); }
+.dot[data-cur="1"] { box-shadow: 0 0 0 3px var(--bar-soft); border-color: var(--bar); }
+.plot figcaption { font-size: 0.9375rem; color: var(--ink-2); text-align: center; display: grid; gap: 2px; }
+.plot figcaption strong { font-family: var(--mono); font-size: 1.1875rem; color: var(--ink); font-weight: 500; }
+.plot .why7 { font-size: 0.875rem; color: var(--ink-3); }
+
+/* Next step */
+.btn { font: inherit; font-weight: 700; font-size: 1rem; border-radius: 999px; border: 1.5px solid var(--bar); background: var(--bar); color: var(--card); padding: 7px 16px; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--bar); }
+.btn:hover { filter: brightness(1.08); }
+.btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* Downloads */
+.files { display: grid; gap: 10px; }
+.file { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; align-items: center; border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; }
+@media (max-width: 620px) { .file { grid-template-columns: 1fr; } }
+.file-name { font-family: var(--mono); font-size: 1rem; font-weight: 500; direction: ltr; unicode-bidi: isolate; overflow-wrap: anywhere; text-align: end; justify-self: start; }
+.file-meta { font-size: 1rem; color: var(--ink-2); }
+.file-when { display: inline-block; font-size: 0.875rem; font-weight: 700; color: var(--bar); background: var(--bar-soft); border-radius: 4px; padding: 0 8px; margin-inline-end: 6px; }
+.file-when[data-late="1"] { color: var(--amber-ink); background: var(--amber-soft); }
+.file-act { display: grid; gap: 4px; justify-items: end; }
+@media (max-width: 620px) { .file-act { justify-items: start; } }
+.dl-status { font-size: 0.875rem; color: var(--ink-3); min-height: 1em; }
+.file-note { grid-column: 1 / -1; font-size: 0.9375rem; color: var(--ink-2); background: var(--paper); border-radius: 8px; padding: 8px 10px; }
+
+/* Accordions */
+details.more { border: 1px solid var(--rule); border-radius: 12px; background: var(--card); min-width: 0; }
+details.more > summary { cursor: pointer; list-style: none; padding: 11px 14px; font-weight: 700; display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+details.more > summary::-webkit-details-marker { display: none; }
+details.more > summary::after { content: "+"; font-family: var(--mono); color: var(--bar); font-size: 1.25rem; line-height: 1; flex: none; }
+details.more[open] > summary::after { content: "−"; }
+.more-body { padding: 0 14px 14px; display: grid; gap: 8px; color: var(--ink-2); font-size: 1.0625rem; }
+.more-body ol, .more-body ul { margin: 0; padding-inline-start: 22px; display: grid; gap: 8px; }
+.more-body b { color: var(--ink); }
+.more-stack { display: grid; gap: 8px; }
+
+/* Week overview */
+.week { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.wk { font: inherit; text-align: start; display: grid; gap: 4px; align-content: start; background: var(--card); color: var(--ink); border: 1.5px solid var(--rule); border-radius: 12px; padding: 12px 14px; cursor: pointer; min-width: 0; }
+.wk:hover { border-color: var(--bar); }
+.wk-top { display: flex; justify-content: space-between; gap: 8px; font-size: 0.875rem; color: var(--ink-3); font-weight: 700; }
+.wk-title { font-family: var(--display); font-size: 1.1875rem; }
+.wk-gist { font-size: 1rem; color: var(--ink-2); }
+.wk-sub { font-size: 0.875rem; color: var(--ink-3); }
+.wk-sub b { color: var(--ink-2); font-weight: 600; }
+
+/* Rail */
+.rail { display: flex; flex-wrap: wrap; gap: 8px; }
+.tab { font: inherit; display: grid; gap: 2px; text-align: start; min-width: 104px; background: var(--card); color: var(--ink); border: 1.5px solid var(--rule); border-radius: 12px; padding: 8px 12px; cursor: pointer; }
+.tab .t-num { font-size: 0.875rem; color: var(--ink-3); font-weight: 600; }
+.tab .t-name { font-weight: 700; font-size: 1rem; }
+.tab .t-prog { font-family: var(--mono); font-size: 0.875rem; color: var(--ink-3); }
+.tab[aria-selected="true"] { border-color: var(--bar); box-shadow: inset 0 -3px 0 var(--bar); }
+.tab[data-done="1"] .t-prog { color: var(--sage); font-weight: 500; }
+
+/* Station panel */
+.panel { background: var(--card); border: 1px solid var(--rule); border-radius: 16px; padding: clamp(18px, 3vw, 30px); box-shadow: var(--shadow); display: grid; gap: 24px; }
+.st-head { display: grid; gap: 8px; }
+.st-kicker { font-size: 0.875rem; color: var(--ink-3); font-weight: 700; letter-spacing: 0.05em; }
+.done-tag { justify-self: start; font-size: 0.875rem; font-weight: 700; color: var(--sage); background: var(--sage-soft); border-radius: 999px; padding: 2px 12px; }
+.goals { background: var(--bar-soft); border-radius: 12px; padding: 14px 16px; display: grid; gap: 6px; }
+.goals-label { font-size: 0.875rem; font-weight: 700; color: var(--bar); letter-spacing: 0.05em; }
+.goals ul { margin: 0; padding-inline-start: 20px; display: grid; gap: 4px; font-size: 1.125rem; font-weight: 600; }
+
+.timebar { display: grid; gap: 6px; }
+.tb-track { display: flex; height: 26px; border-radius: 6px; overflow: hidden; gap: 2px; background: var(--card); }
+.tb-seg { min-width: 0; display: grid; place-items: center; font-family: var(--mono); font-size: 0.875rem; color: var(--ink); }
+.tb-seg[data-kind="practice"] { background: var(--bar); color: var(--card); }
+.tb-seg[data-kind="teach"] { background: var(--neutral-seg); }
+.tb-seg[data-kind="wrap"] { background: var(--neutral-seg-2); }
+.tb-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.9375rem; color: var(--ink-2); }
+.tb-legend b { font-family: var(--mono); font-weight: 500; color: var(--ink); }
+
+.block { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.block-title { font-family: var(--display); font-size: 1.1875rem; }
+.block-sub { font-size: 0.9375rem; color: var(--ink-3); }
+.cols { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 26px; }
+@media (max-width: 820px) { .cols { grid-template-columns: 1fr; } }
+
+.chall { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.chall li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; align-items: start; border-top: 1px solid var(--rule); padding-top: 8px; }
+.kind { font-size: 0.875rem; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-top: 3px; white-space: nowrap; }
+.kind[data-k="הבנה"] { color: var(--tape-ink); background: var(--tape-soft); }
+.kind[data-k="תוכנה"] { color: var(--bar); background: var(--bar-soft); }
+.chall .p { font-weight: 700; }
+.chall .f { color: var(--ink-2); }
+
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: step; }
+.steps li { counter-increment: step; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: start; }
+.steps li::before { content: counter(step); font-family: var(--mono); font-size: 0.875rem; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--bar); color: var(--bar); display: grid; place-items: center; margin-top: 1px; }
+.step-body { display: grid; gap: 4px; min-width: 0; }
+.expect { justify-self: start; max-width: 100%; font-size: 0.9375rem; color: var(--sage); background: var(--sage-soft); border-radius: 6px; padding: 2px 8px; overflow-wrap: anywhere; }
+.expect::before { content: "מה אמור להופיע: "; font-weight: 700; }
+
+.chip { font: inherit; font-family: var(--mono); font-size: 0.82em; line-height: 1.5; direction: ltr; unicode-bidi: isolate; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; vertical-align: baseline; background: var(--chip); color: var(--ink); border: 1px solid var(--rule); border-radius: 6px; padding: 0 7px; margin: 1px 0; cursor: copy; overflow-wrap: anywhere; text-align: start; }
+.chip:hover { border-color: var(--bar); }
+.chip svg { width: 13px; height: 13px; flex: none; opacity: 0.7; }
+.chip[data-copied="1"] { border-color: var(--sage); background: var(--sage-soft); }
+
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.checks label { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; cursor: pointer; padding: 6px 8px; border-radius: 8px; }
+.checks label:hover { background: var(--bar-soft); }
+.checks input { width: 20px; height: 20px; margin: 3px 0 0; accent-color: var(--sage); }
+.checks input:checked + span { color: var(--ink-2); text-decoration: line-through; text-decoration-color: var(--ink-3); }
+.checks .flash { animation: flash 1.2s ease; }
+@keyframes flash { 0% { background: var(--tape-soft); } 100% { background: transparent; } }
+
+.submit { border: 2px dashed var(--bar); border-radius: 12px; padding: 12px 14px; display: grid; gap: 4px; }
+.submit-label { font-size: 0.875rem; font-weight: 700; letter-spacing: 0.05em; color: var(--bar); }
+.submit p { font-weight: 600; }
+
+.quiz { display: grid; gap: 14px; }
+.q { border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; margin: 0; display: grid; gap: 6px; min-width: 0; }
+.q legend { font-weight: 700; padding: 0 6px; max-width: 100%; color: var(--ink); }
+.q label { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; padding: 4px 6px; border-radius: 8px; color: var(--ink); }
+.q label:hover { background: var(--bar-soft); }
+.q input { margin-top: 5px; accent-color: var(--bar); }
+.feedback { font-size: 1rem; border-radius: 8px; padding: 8px 12px; color: var(--ink); }
+.feedback[data-ok="1"] { background: var(--sage-soft); }
+.feedback[data-ok="0"] { background: var(--tape-soft); }
+.feedback b { display: block; }
+
+/* Simulator */
+.proto { justify-self: start; font-size: 0.875rem; font-weight: 700; letter-spacing: 0.05em; color: var(--tape-ink); border: 1.5px dashed var(--tape); border-radius: 4px; padding: 2px 8px; }
+.controls { display: grid; gap: 10px; }
+.ctl-label { font-size: 0.875rem; font-weight: 700; color: var(--ink-3); }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill { font: inherit; font-size: 0.9375rem; font-weight: 600; border: 1.5px solid var(--rule); background: var(--card); color: var(--ink); border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+.pill[aria-pressed="true"] { border-color: var(--bar); background: var(--bar-soft); }
+.pill .code { font-family: var(--mono); font-size: 0.875rem; color: var(--ink-3); margin-inline-start: 4px; }
+.chart-title { font-family: var(--display); font-size: 1.25rem; }
+.finding { color: var(--ink-2); max-width: 72ch; }
+.chart-wrap { position: relative; overflow-x: auto; }
+.chart-wrap svg { display: block; width: 100%; min-width: 520px; height: auto; }
+.tooltip { position: absolute; pointer-events: none; background: var(--ink); color: var(--paper); font-size: 0.875rem; padding: 6px 10px; border-radius: 6px; white-space: nowrap; transform: translate(-50%, -110%); }
+.chart-note { font-size: 0.9375rem; color: var(--ink-3); }
+.tv-wrap { overflow-x: auto; }
+table { border-collapse: collapse; font-size: 0.9375rem; font-variant-numeric: tabular-nums; }
+th, td { padding: 4px 10px; border-bottom: 1px solid var(--rule); text-align: center; }
+th { color: var(--ink-3); font-weight: 600; }
+tr[data-hl="1"] td { font-weight: 700; color: var(--ink); background: var(--bar-soft); }
+
+/* Data + footer */
+.data-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-items: start; }
+@media (min-width: 700px) { .data-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.data-grid > .wide { grid-column: 1 / -1; }
+#cards { scroll-margin-top: 12px; }
+.foot { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.foot section { background: var(--card); border: 1px solid var(--rule); border-radius: 14px; padding: 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.foot ul { margin: 0; padding-inline-start: 18px; display: grid; gap: 6px; font-size: 1rem; }
+.foot h3 { font-size: 1.1875rem; }
+.small { font-size: 0.875rem; color: var(--ink-3); }
+.toast { position: fixed; inset-inline: 0; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); margin-inline: auto; width: fit-content; max-width: calc(100% - 32px); background: var(--ink); color: var(--paper); font-size: 1rem; padding: 8px 16px; border-radius: 999px; box-shadow: var(--shadow); z-index: 5; }
+
+/* Text size and layout settings */
+html { font-size: calc(16px * var(--fs, 1)); }
+html[data-size="l"] { --fs: 1.15; }
+html[data-size="xl"] { --fs: 1.3; }
+.viewset > summary { cursor: pointer; list-style: none; display: inline-flex; gap: 8px; align-items: center; font-weight: 700; font-size: 1rem; color: var(--bar); border: 1.5px solid var(--rule); background: var(--card); border-radius: 999px; padding: 0.3rem 0.95rem; }
+.viewset > summary::-webkit-details-marker { display: none; }
+.viewset[open] > summary { border-color: var(--bar); }
+.viewset-body { margin-top: 8px; display: grid; gap: 12px; background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow); width: fit-content; max-width: 100%; }
+.vs-label { font-size: 0.875rem; font-weight: 700; color: var(--ink-3); margin-bottom: 4px; }
+.vs-seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.vs-btn { font: inherit; font-size: 0.9375rem; font-weight: 600; border: 1.5px solid var(--rule); background: var(--card); color: var(--ink); border-radius: 999px; padding: 0.3rem 0.85rem; cursor: pointer; }
+.vs-btn[aria-pressed="true"] { border-color: var(--bar); background: var(--bar-soft); }
+
+/* Dataset cards */
+.cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+@media (min-width: 600px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.dc { border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; display: grid; gap: 6px; align-content: start; background: var(--card); min-width: 0; color: var(--ink); }
+.dc-top { display: flex; gap: 10px; align-items: center; }
+.dc-code { flex: none; width: 2.75rem; height: 2.75rem; border-radius: 50%; display: grid; place-items: center; font-family: var(--mono); font-weight: 500; font-size: 0.95rem; color: var(--bar); background: var(--bar-soft); }
+.dc-names { min-width: 0; }
+.dc-title { font-family: var(--display); font-weight: 400; font-size: 1.15rem; margin: 0; line-height: 1.25; }
+.dc-sub, .dc-detail { direction: ltr; text-align: right; font-size: 0.9375rem; color: var(--ink-3); line-height: 1.35; }
+.dc-detail { font-size: 0.875rem; }
+.dc-stat { font-size: 0.9375rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.dc-fact { font-size: 1rem; }
+.dc-links { font-size: 0.9375rem; display: flex; flex-wrap: wrap; gap: 6px 8px; margin-top: 2px; }
+.dc-links a { display: inline-flex; align-items: center; min-height: 2.1rem; padding: 0.1rem 0.75rem; border: 1.5px solid var(--rule); border-radius: 999px; font-weight: 600; text-decoration: none; }
+.dc-links a:hover { border-color: var(--bar); }
+.dc-links a.dc-main { background: var(--bar-soft); border-color: transparent; }
+html[data-layout="mobile"] .cards { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 899px) { .vs-btn[data-set-layout="desktop"] { display: none; } }
+.viewset { margin-top: 0; }
+.panel, .more-body { overflow-wrap: anywhere; }
+
+/* Layout: phone or half a screen */
+html[data-layout="mobile"] .app { max-width: 36rem; }
+html[data-layout="mobile"] .top, html[data-layout="mobile"] .cols, html[data-layout="mobile"] .board-grid, html[data-layout="mobile"] .file, html[data-layout="mobile"] .data-grid, html[data-layout="mobile"] .foot, html[data-layout="mobile"] .week { grid-template-columns: minmax(0, 1fr); }
+html[data-layout="mobile"] .file-act { justify-items: start; }
+html[data-layout="mobile"] .checks input { width: 1.5rem; height: 1.5rem; }
+html[data-layout="mobile"] .btn { min-height: 2.75rem; }
+
+/* Layout: computer, wide screens only */
+@media (min-width: 900px) {
+  html[data-layout="desktop"] .app { max-width: 1320px; }
+  html[data-layout="desktop"] .week { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  html[data-layout="desktop"] .foot { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Station subtitle, prep time, the lesson idea, minutes per task */
+.st-sub { color: var(--ink-2); font-size: 1.0625rem; max-width: 70ch; }
+.st-prep { justify-self: start; font-size: 0.9375rem; font-weight: 600; color: var(--amber-ink); background: var(--amber-soft); border-radius: 6px; padding: 2px 10px; }
+.idea { border-inline-start: 4px solid var(--tape); background: var(--tape-soft); border-radius: 10px; padding: 12px 16px; display: grid; gap: 4px; }
+.idea-label { font-size: 0.875rem; font-weight: 700; color: var(--tape-ink); letter-spacing: 0.04em; }
+.idea p { font-size: 1.0625rem; color: var(--ink); }
+.checks label { grid-template-columns: 22px minmax(0, 1fr) auto; }
+.mins { font-family: var(--mono); font-size: 0.875rem; color: var(--ink-3); white-space: nowrap; align-self: start; padding-top: 2px; }
+.toast { border-radius: 14px; text-align: center; line-height: 1.5; }
+
+/* Button lexicon */
+.lex-cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 760px) { .lex-cols { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } }
+html[data-layout="mobile"] .lex-cols { grid-template-columns: minmax(0, 1fr); }
+.lex { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.lex h4 { font-family: var(--display); font-weight: 400; font-size: 1.125rem; margin: 0; color: var(--ink); }
+.lex ul { margin: 0; padding-inline-start: 20px; display: grid; gap: 6px; }
+.lex bdi { font-family: var(--mono); font-size: 0.9em; }
+
+/* Decision-first home screen (UX pass, 6.10.2026): next step, compact progress, grouped shortcuts */
+.next { display: grid; gap: 10px; background: var(--card); border: 1px solid var(--rule); border-inline-start: 6px solid var(--tape); border-radius: 16px; box-shadow: var(--shadow); padding: clamp(16px, 3vw, 24px); min-width: 0; }
+.next-head { display: flex; flex-wrap: wrap; gap: 2px 12px; align-items: baseline; }
+.next-label { font-size: 0.9375rem; font-weight: 700; color: var(--bar); letter-spacing: 0.04em; }
+.next-where { font-size: 0.9375rem; color: var(--ink-3); }
+.next-task { font-size: clamp(1.1875rem, 3.4vw, 1.4375rem); font-weight: 600; line-height: 1.4; max-width: 60ch; }
+.next-acts { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; margin-top: 4px; }
+.next .btn.go { background: var(--tape); border-color: var(--tape); color: var(--on-tape); font-size: 1.125rem; padding: 9px 26px; }
+.next-link { font: inherit; font-weight: 700; color: var(--bar); background: none; border: 0; padding: 6px 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-align: start; }
+.next-up { font-size: 0.9375rem; color: var(--ink-2); }
+@media (max-width: 560px) { .next .btn.go { width: 100%; min-height: 2.75rem; } }
+html[data-layout="mobile"] .next .btn.go { width: 100%; min-height: 2.75rem; }
+.prog { display: grid; gap: 12px; }
+.prog-bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; }
+.prog-line { font-size: 1.0625rem; color: var(--ink-2); }
+.prog-line strong { font-family: var(--mono); font-size: 1.1875rem; font-weight: 500; color: var(--ink); }
+.prog .plot { justify-self: start; }
+.navmore > summary small { display: block; font-weight: 500; font-size: 0.9375rem; color: var(--ink-3); }
+.quick { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px 24px; }
+@media (min-width: 700px) { .quick { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+html[data-layout="mobile"] .quick { grid-template-columns: minmax(0, 1fr); }
+.qgroup { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.qg-title { font-size: 0.875rem; font-weight: 700; letter-spacing: 0.05em; color: var(--ink-3); }
+.qlinks { display: flex; flex-wrap: wrap; gap: 8px; }
+.meta-row { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: flex-start; justify-content: space-between; }
+
+/* Status line in the header, view settings up top, and the dot preview (UX pass 2) */
+.top-tools { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: flex-start; }
+.status { font-size: 1.0625rem; color: var(--ink-2); }
+.status strong { font-family: var(--mono); font-size: 1.1875rem; font-weight: 500; color: var(--ink); }
+.dot[data-pick="1"] { outline: 2.5px solid var(--ink); outline-offset: 3px; }
+.dot-pop { display: grid; gap: 8px; width: 100%; max-width: 46ch; text-align: start; border-top: 1px solid var(--rule); padding-top: 12px; }
+.dp-where { font-size: 0.9375rem; font-weight: 700; color: var(--bar); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.dp-state { color: var(--ink-3); font-weight: 600; }
+.dp-text { font-size: 1.0625rem; line-height: 1.45; }
+.dp-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.dot-pop .btn.go { background: var(--tape); border-color: var(--tape); color: var(--on-tape); }
+.dot-pop[hidden] { display: none; }
+
+/* Guided journey: one prep task at a time, same pattern as the student's tour for the class board (UX pass 3) */
+.top-tools .btn { padding: 0.3rem 0.95rem; }
+.map-close { justify-self: end; padding: 0.3rem 0.95rem; }
+.tour-target { outline: 4px solid var(--focus) !important; outline-offset: 6px; border-radius: 12px; box-shadow: 0 0 0 12px var(--tape-soft) !important; }
+.gbar { position: fixed; inset-inline: 0; bottom: 0; z-index: 10; background: var(--ink); color: var(--paper); padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -10px 30px -16px var(--ink); }
+.gbar[hidden] { display: none; }
+.gbar-in { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px 20px; align-items: center; }
+@media (max-width: 760px) { .gbar-in { grid-template-columns: 1fr; } }
+.gbar-copy { display: grid; gap: 4px; min-width: 0; }
+.g-count { font-family: var(--mono); font-size: 0.9375rem; opacity: 0.85; }
+.g-title { font-family: var(--display); font-size: clamp(1.1875rem, 3.2vw, 1.5rem); line-height: 1.3; }
+.g-text { font-size: 1.0625rem; opacity: 0.9; }
+.g-bar { height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.22); overflow: hidden; }
+.g-bar > span { display: block; height: 100%; background: var(--tape); }
+.gbar-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.gbar .btn { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+.gbar .btn.ghost { background: transparent; color: var(--paper); border-color: var(--paper); }
+.gbar .btn.go { background: var(--tape); border-color: var(--tape); color: var(--on-tape); }
+.gbar .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+@media (max-width: 760px) { .gbar { padding-block: 12px; max-height: 60vh; overflow-y: auto; } .g-text { display: none; } .gbar-acts { gap: 6px; } .gbar-acts .btn { flex: 1 1 20%; min-height: 2.75rem; padding-inline: 8px; font-size: 0.9375rem; } .gbar-acts .btn.go { flex-basis: 100%; order: -1; font-size: 1.0625rem; } }
+html[data-guided="1"] body { padding-bottom: 15rem; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ===== שכבת תנועה וחומרים לפי apple-design (9.10.2026). CSS בלבד, בלי שינוי בתוכן, במזהים ובמפתחות השמירה ===== */
+:root { --smooth: cubic-bezier(0.22, 1, 0.36, 1); interpolate-size: allow-keywords; }
+/* אלמנט עם hidden נשאר מוסתר גם כשהצופה לא מוסיף את כלל ה-hidden שלו */
+[hidden] { display: none !important; }
+
+/* 1. תגובה מיידית: המשוב מתחיל בלחיצה עצמה, וההחזרה רכה. בלי השהיית נגיעה */
+button, summary, [role="tab"], .step, .checks label, .q label, .dc-links a, .qlinks a, .link-btn { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+button, summary, .step, .checks label, .q label, .dc-links a, .qlinks a, .link-btn {
+  transition: transform 450ms var(--smooth), background-color 160ms ease, border-color 160ms ease, box-shadow 280ms var(--smooth), color 160ms ease, filter 160ms ease, opacity 200ms ease;
+}
+button:not(:disabled):active, .dc-links a:active, .qlinks a:active, .link-btn:active { transform: scale(0.94); transition: transform 70ms ease-out; }
+button.tab:not(:disabled):active, button.wk:not(:disabled):active, button.dot:not(:disabled):active { transform: scale(0.97); }
+button.dot:not(:disabled):active { transform: scale(0.88); }
+summary:active, .step:active:not(:has(:active)), .checks label:active, .q label:active { transform: scale(0.985); transition: transform 70ms ease-out; }
+.tab[aria-selected="true"] { transform: translateY(-2px); }
+button.tab[aria-selected="true"]:not(:disabled):active { transform: translateY(-2px) scale(0.97); }
+
+/* 2. טיפוגרפיה: בעברית אין אותיות גדולות, ולכן אין צורך במרווח אותיות בתוויות. כותרות גדולות מקבלות רווח שורות הדוק */
+.eyebrow, .kicker, .goal-label, .goals-label, .submit-label, .who, .st-kicker, .qg-title, .idea-label, .next-label, .cont-label, .proto { letter-spacing: 0; }
+h1 { line-height: 1.08; }
+h2 { line-height: 1.12; }
+p { text-wrap: pretty; }
+
+/* 3. חומרים: אלמנטים צפים מעומעמים, כדי שהתוכן יישאר מורגש מתחתם */
+.tourbar, .gbar { background: color-mix(in srgb, var(--ink) 92%, transparent); -webkit-backdrop-filter: blur(22px) saturate(160%); backdrop-filter: blur(22px) saturate(160%); border-top: 1px solid color-mix(in srgb, var(--paper) 22%, transparent); transition: transform 460ms var(--smooth), opacity 240ms ease; }
+.toast { background: color-mix(in srgb, var(--ink) 93%, transparent); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); transition: transform 380ms var(--smooth), opacity 200ms ease; }
+.viewset-body { background: color-mix(in srgb, var(--card) 88%, transparent); -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%); }
+
+/* 4. עקביות מרחבית: הסרגל נכנס מלמטה, וההודעה עולה ממקומה */
+@starting-style { .tourbar, .gbar { transform: translateY(100%); opacity: 0; } .toast { transform: translateY(14px) scale(0.96); opacity: 0; } }
+/* חלונות נפתחים וסגורים בתנועה, ולא בקפיצה */
+details::details-content { opacity: 0; block-size: 0; overflow-y: clip; transition: content-visibility 340ms allow-discrete, opacity 240ms ease, block-size 340ms var(--smooth); }
+details[open]::details-content { opacity: 1; block-size: auto; }
+/* מעבר בין רקע בהיר לכהה כמעבר רך של כל העמוד */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 380ms; animation-timing-function: ease; }
+
+/* 5. נגישות: שקיפות, ניגודיות ותנועה לפי הגדרות המכשיר */
+@media (prefers-reduced-transparency: reduce) {
+  .tourbar, .gbar { background: var(--ink); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .toast { background: var(--ink); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .viewset-body { background: var(--card); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  :root { --rule: #6b6b6e; }
+  .step, .tab, .panel, .viewset-body, .wk, .card { border-color: var(--ink-3); }
+}
+@media (prefers-reduced-motion: reduce) {
+  button:not(:disabled):active, .dc-links a:active, .qlinks a:active, .link-btn:active, summary:active, .step:active, .checks label:active, .q label:active { transform: none; opacity: 0.7; }
+  .tab[aria-selected="true"] { transform: none; }
+  details::details-content { transition: none; }
+}
+</style>
+
+<div class="app" dir="rtl" lang="he">
+  <header class="top">
+    <div class="intro">
+      <p class="eyebrow"><span class="who" data-w="t">למורה</span><span id="wkEyebrow">קורס Power BI</span></p>
+      <h1 id="wkTitle">מסע ההכנה</h1>
+      <p class="lede">ההכנה שלך לשיעורי השבוע הזה, שיעור אחרי שיעור. כל סעיף בעמוד נפתח בלחיצה על הכותרת שלו.</p>
+    </div>
+    <p class="status prog-line"><strong id="countNum">0</strong> מתוך <span id="countTotal">49</span> משימות הכנה, <bdi><span id="pctNum">0</span>%</bdi> הושלמו</p>
+    <div class="top-tools">
+    <details class="viewset" id="viewset">
+        <summary>תצוגה: גודל טקסט ורקע כהה</summary>
+        <div class="viewset-body">
+          <div class="vs-group"><p class="vs-label" id="vsSize">גודל טקסט</p>
+            <div class="vs-seg" role="group" aria-labelledby="vsSize">
+              <button type="button" class="vs-btn" data-set-size="m">רגיל</button>
+              <button type="button" class="vs-btn" data-set-size="l">גדול</button>
+              <button type="button" class="vs-btn" data-set-size="xl">גדול מאוד</button>
+            </div></div>
+          <div class="vs-group"><p class="vs-label" id="vsLayout">פריסה</p>
+            <div class="vs-seg" role="group" aria-labelledby="vsLayout">
+              <button type="button" class="vs-btn" data-set-layout="auto">אוטומטית</button>
+              <button type="button" class="vs-btn" data-set-layout="desktop">מחשב</button>
+              <button type="button" class="vs-btn" data-set-layout="mobile">טלפון או חצי מסך</button>
+            </div></div>
+        <div class="vs-group"><p class="vs-label" id="vsTheme">רקע</p>
+          <div class="vs-seg" role="group" aria-labelledby="vsTheme">
+            <button type="button" class="vs-btn" data-set-theme="auto">לפי המכשיר</button>
+            <button type="button" class="vs-btn" data-set-theme="light">בהיר</button>
+            <button type="button" class="vs-btn" data-set-theme="dark">כהה</button>
+          </div></div>
+        </div>
+      </details>
+      <button type="button" class="btn ghost" id="guideBtn">מסע מודרך: משימה אחרי משימה</button>
+    </div>
+  </header>
+
+  <section class="next" id="next" aria-live="polite"></section>
+
+  <section class="prog" aria-label="התקדמות ההכנה">
+    <div class="prog-bar">
+      <button type="button" class="btn ghost" id="mapBtn" aria-expanded="false" aria-controls="mapBox">להציג את מפת המסע</button>
+    </div>
+    <figure class="plot" id="mapBox" aria-labelledby="plotCap" hidden>
+      <button type="button" class="btn ghost map-close" id="mapClose">לצמצום המפה</button>
+      <div class="plot-frame"><div class="dots" id="dots" role="group" aria-label="משימות ההכנה"></div></div>
+      <div class="dot-pop" id="dotPop" hidden aria-live="polite"></div>
+      <figcaption id="plotCap"><span>כל עיגול הוא משימת הכנה אחת. לחיצה על עיגול מציגה אותה כאן, והכפתור פתיחת המשימה עובר אליה.</span><span class="why7" id="plotNote"></span></figcaption>
+    </figure>
+  </section>
+
+  <details class="more navmore" id="navMore">
+    <summary><span>קיצורי דרך<small>הכנה לשיעור, הוראה בכיתה, קבצים וחומרים, משאבי עזר</small></span></summary>
+    <div class="more-body">
+        <nav class="quick" aria-label="קיצורים">
+          <div class="qgroup" role="group" aria-labelledby="qgPrep"><p class="qg-title" id="qgPrep">הכנה לשיעור</p>
+            <div class="qlinks">
+              <a href="#week">השבוע במבט אחד</a>
+              <a href="#stations">ההכנה לפי שיעור</a>
+            </div></div>
+          <div class="qgroup" role="group" aria-labelledby="qgClass"><p class="qg-title" id="qgClass">הוראה בכיתה</p>
+            <div class="qlinks">
+              <a href="#board">הקרנה בכיתה</a>
+              <a id="studentLink" href="#" target="_blank" rel="noopener">דוח הלמידה לתלמיד</a>
+            </div></div>
+          <div class="qgroup" role="group" aria-labelledby="qgFiles"><p class="qg-title" id="qgFiles">קבצים וחומרים</p>
+            <div class="qlinks">
+              <a href="#files">קבצים להורדה</a>
+              <a href="#data">על הנתונים</a>
+            </div></div>
+          <div class="qgroup" role="group" aria-labelledby="qgHelp"><p class="qg-title" id="qgHelp">משאבי עזר</p>
+            <div class="qlinks">
+              <a href="#buttons">איפה הכפתור?</a>
+              <a href="#cards">כרטיסי המאגר</a>
+            </div></div>
+        </nav>
+    </div>
+  </details>
+
+  <div class="meta-row">
+    <p class="save-status" id="saveStatus" data-mode="local">ההתקדמות נשמרת בדפדפן הזה.</p>
+  </div>
+
+  <section class="card" id="files" aria-labelledby="filesTitle">
+    <div class="sec-head">
+      <h2 id="filesTitle">קבצים להורדה</h2>
+      <p class="sub">הקבצים שמיועדים לתלמידים: מעלים אותם למודל, והתלמידים מורידים משם לתיקייה data שלהם.</p>
+    </div>
+    <div class="files" id="fileList"></div>
+    <details class="more">
+      <summary>איך להעלות למודל ומתי</summary>
+      <div class="more-body">
+        <ul>
+          <!-- TEMPLATE: מתי מעלים כל קובץ, ומה קורה אם מעלים מוקדם מדי. -->
+          <li>לפני שיעור 1 מעלים את קובצי הנתונים של השבוע. קובץ מעודכן, אם יש, מעלים רק לפני השיעור שבו משתמשים בו.</li>
+          <li>לא משנים את שמות הקבצים. כל ההוראות בדוח הלמידה של התלמידים מתייחסות לשמות האלה.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <section class="card" id="week" aria-labelledby="weekTitle">
+    <div class="sec-head">
+      <h2 id="weekTitle">השבוע במבט אחד</h2>
+      <p class="sub">לחיצה על שיעור פותחת את ההכנה שלו. זמן ההכנה לכל השבוע: <span id="weekTotal"></span>.</p>
+    </div>
+    <div class="week" id="weekGrid"></div>
+  </section>
+
+  <section class="card" id="board" aria-labelledby="boardTitle">
+    <div class="sec-head">
+      <h2 id="boardTitle">הקרנה בכיתה: איך עובדים עם דוח הלמידה</h2>
+      <p class="sub">פותחים במחשב ההקרנה. בערך שתי דקות.</p>
+    </div>
+    <div class="board-grid">
+      <div style="display:grid; gap:10px; min-width:0;">
+        <p class="muted">בסיור, דוח הלמידה מוצג בטקסט גדול, ובכל פעם מודגש בו חלק אחד, עם הסבר בפס שבתחתית המסך. מעבר בין החלקים: הכפתורים בפס, או החיצים במקלדת.</p>
+        <ol>
+          <li>בוחרים שיעור, וקוראים את המטרה של היום.</li>
+          <li>מבצעים ב-Power BI את מה שכתוב בצעד, בודקים שמופיע מה שכתוב ב"מה אמור להופיע", ומסמנים.</li>
+          <li>לוחצים על שם של כפתור: הוא מועתק, ומופיעה הודעה שאומרת איפה הוא נמצא.</li>
+          <li>עונים על השאלות, ועוברים על הסיכום של השיעור לפני ההגשה.</li>
+          <li>מגישים במודל, מסמנים "הגשתי", ובודקים את סיכום השבוע.</li>
+        </ol>
+        <p class="small">הצעה: בשיעור הראשון של השבוע מקרינים את הסיור בתחילת התרגול. בסוף השיעור חוזרים לסיכום שבתחתית השיעור, ומראים איך עוברים עליו לפני ההגשה.</p>
+      </div>
+      <div style="display:grid; gap:10px; align-content:start;">
+        <a class="btn link-btn" id="boardLink" href="#" target="_blank" rel="noopener">פתיחת הסיור להקרנה</a>
+        <a class="btn ghost link-btn" id="reportLink" href="#" target="_blank" rel="noopener">סיכום השבוע בדוח הלמידה</a>
+        <p class="small">בסיור מופיעות רק התשובות שנשמרו בדפדפן של מחשב ההקרנה. התשובות של התלמידים נשארות במחשבים שלהם.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="stations" style="display:grid; gap:14px;">
+    <div class="sec-head">
+      <h2>ההכנה לפי שיעור</h2>
+      <div class="row">
+        <button type="button" class="btn ghost" id="copyAll">העתקת כל משימות ההכנה</button>
+      </div>
+    </div>
+    <nav class="rail" id="rail" role="tablist" aria-label="תחנות ההכנה"></nav>
+    <main class="panel" id="panel" role="tabpanel" tabindex="-1"></main>
+  </section>
+
+  <section class="card" id="data" aria-labelledby="dataTitle">
+    <div class="sec-head">
+      <h2 id="dataTitle">על הנתונים: מה נבדק ומה יש בהם</h2>
+      <p class="sub">TEMPLATE: משפט אחד שאומר מה נבדק בקובץ עצמו ומה נבדק רק מבחוץ.</p>
+    </div>
+    <div class="data-grid">
+      <!-- TEMPLATE: פרט אחד לכל מאגר. אותו סדר בכל מאגר: מה זה, למה חשוב, מה נבדק בקובץ, מה אפשר לחקור, מגבלות. מספרים רק מהקובץ עצמו. -->
+      <details class="more">
+        <summary>מאגר א: שם קצר (שיעורים 1 ו-2)</summary>
+        <div class="more-body">
+          <p>מה המאגר, מי אסף אותו ולמה.</p>
+          <p><b>למה המאגר חשוב:</b> משפט אחד.</p>
+          <p><b>נבדק בקובץ:</b> מספר שורות ועמודות, טווח תאריכים, בעיות איכות שנמצאו, ומה קורה למספר השורות אחרי הניקוי.</p>
+          <p><b>מה אפשר לחקור בו:</b></p>
+          <ul>
+            <li>שאלה ראשונה שהנתונים תומכים בה.</li>
+            <li>שאלה שנייה.</li>
+          </ul>
+          <p><b>מגבלות:</b> מה הנתונים לא מאפשרים להסיק.</p>
+        </div>
+      </details>
+      <details class="more">
+        <summary>מאגר ב: שם קצר (שיעור 3)</summary>
+        <div class="more-body">
+          <p>מאגר שני, באותו מבנה. אם עוד לא נבדק בקובץ עצמו, כותבים את זה במפורש כאן.</p>
+        </div>
+      </details>
+      <details class="more wide" id="buttons">
+        <summary>איפה הכפתור? לקט הכפתורים של השבוע</summary>
+        <div class="more-body">
+          <p>TEMPLATE: אותו לקט כמו ב"איפה הכפתור?" שבאפליקציית התלמיד, ואותו נוסח כמו ב-LOC.</p>
+          <div class="lex-cols">
+            <section class="lex">
+              <h4>בחלון Power BI</h4>
+              <ul>
+                <li><b><bdi>Get data</bdi>:</b> בסרגל העליון, בלשונית Home.</li>
+                <li><b><bdi>Text/CSV</bdi>:</b> ברשימה שנפתחת מתחת ל-Get data.</li>
+                <li><b><bdi>Report view</bdi> ו-<bdi>Table view</bdi>:</b> הסמלים העליונים בפס האנכי בצד שמאל של החלון.</li>
+                <li><b><bdi>Card</bdi>:</b> בחלונית Visualizations שבצד ימין.</li>
+                <li><b><bdi>Save as</bdi>:</b> בתפריט File.</li>
+              </ul>
+            </section>
+            <section class="lex">
+              <h4>בחלון Power Query</h4>
+              <ul>
+                <li><b><bdi>Applied Steps</bdi>:</b> בחלונית Query Settings שבצד ימין.</li>
+                <li><b><bdi>Close &amp; Apply</bdi>:</b> בלשונית Home, הכפתור הראשון משמאל.</li>
+              </ul>
+            </section>
+          </div>
+          <p>עזרה עם צילומי מסך, באנגלית: <a href="https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-report-view" target="_blank" rel="noopener">חלון Power BI</a>, <a href="https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-ribbon" target="_blank" rel="noopener">הסרגל העליון ותיבת החיפוש</a>, <a href="https://learn.microsoft.com/en-us/power-query/power-query-ui" target="_blank" rel="noopener">חלון Power Query</a>.</p>
+        </div>
+      </details>
+      <details class="more wide" id="cards">
+        <summary>כרטיסי המאגר: שמות, תמונות וקישורים</summary>
+        <div class="more-body">
+          <p>TEMPLATE: אותם כרטיסים מופיעים גם בדוח הלמידה של התלמידים. אם אין כרטיסים בשבוע הזה, מוחקים את הסעיף, את CARDS ואת הקישור לסעיף בראש העמוד.</p>
+          <div class="cards" id="cardsT"></div>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <section>
+      <h3>החומרים של השבוע</h3>
+      <ul>
+        <!-- TEMPLATE: קישורים לחומרים של השבוע. כתובות אמיתיות רק אחרי הפרסום. -->
+        <li><span class="who" data-w="s">לתלמידים</span><a id="footStudent" href="#" target="_blank" rel="noopener">לתלמיד - דוח למידה PBI</a>: האפליקציה של התלמידים, עם מטרה, צעדים, שאלות והגשה</li>
+        <li><span class="who" data-w="s">לתלמידים</span><a href="#" target="_blank" rel="noopener">הצ'קליסט להדפסה</a>: אותם צעדים על נייר</li>
+        <li><span class="who" data-w="t">למורה</span>העמוד הזה: ההכנה שלך לשבוע</li>
+        <li><span class="who" data-w="t">למורה</span><a href="#" target="_blank" rel="noopener">המדריך המלא</a>: אותו תוכן בפירוט, לעיון</li>
+        <li><span class="who" data-w="t">למורה</span><a href="#" target="_blank" rel="noopener">מתווה המצגות</a>: טקסט לשקפים</li>
+      </ul>
+    </section>
+    <section>
+      <h3>מה עוד צריך לבדוק בתוכנה</h3>
+      <ul>
+        <!-- TEMPLATE: רק דברים שלא נבדקו בפועל ב-Power BI. מוחקים שורה אחרי שנבדקה. -->
+        <li>שמות התפריטים בגרסה המותקנת, ובמיוחד אם הממשק בעברית</li>
+        <li>המיקומים בלקט "איפה הכפתור?"</li>
+      </ul>
+    </section>
+    <section>
+      <h3>מקורות</h3>
+      <ul>
+        <li><a href="#" target="_blank" rel="noopener">שם המקור</a>, רישיון</li>
+      </ul>
+      <p class="small">כל המספרים בעמוד חושבו מהקבצים עצמם או מהמקור שצוין.</p>
+    </section>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <div class="gbar" id="gbar" role="region" aria-label="מסע מודרך" hidden>
+    <div class="gbar-in">
+      <div class="gbar-copy">
+        <span class="g-count" id="gCount"></span>
+        <p class="g-title" id="gTitle"></p>
+        <p class="g-text" id="gText" aria-live="polite"></p>
+        <div class="g-bar" aria-hidden="true"><span id="gFill"></span></div>
+      </div>
+      <div class="gbar-acts">
+        <button type="button" class="btn go" id="gDone">בוצע, ולמשימה הבאה</button>
+        <button type="button" class="btn ghost" id="gPrev">הקודמת</button>
+        <button type="button" class="btn ghost" id="gSkip">דילוג</button>
+        <button type="button" class="btn ghost" id="gDemo">להדגמה</button>
+        <button type="button" class="btn ghost" id="gExit">יציאה</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // Touch feedback on iOS needs a touch listener on the page. Theme changes cross-fade the whole page.
+  document.addEventListener("touchstart", function () { }, { passive: true });
+  function withFade(fn) {
+    try {
+      if (document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) { document.startViewTransition(fn); return; }
+    } catch (e) { }
+    fn();
+  }
+
+  // ===== TEMPLATE: הגדרות השבוע. כל מה שחוזר בכותרות, בקישורים ובמפתחות השמירה נגזר מכאן. =====
+  var WEEK = {
+    n: 1,                                  // מספר השבוע. קובע את STORE_KEY ואת מסמך ה-db
+    name: "מסע ההכנה לשבוע 1",             // כותרת העמוד
+    lessonMinutes: 45,                     // אורך שיעור, לבדיקת times
+    plotNote: "",                          // שורה קטנה ליד מונה המשימות (רשות)
+    datasets: {                            // מפתח data של תחנה -> הכותרת הקטנה
+      A: "נתוני מאגר א",
+      B: "נתוני מאגר ב"
+    },
+    studentApp: "https://claude.ai/artifact/XXGpniVw1JSCKNAKjWSWbf"  // TEMPLATE: הכתובת של אפליקציית התלמיד של השבוע
+  };
+  var STUDENT_APP = WEEK.studentApp;
+
+  // TEMPLATE: קבצים למודל. שדות: name, path (קובץ שמצורף לאפליקציה בתיקייה data/) או ext (קישור חיצוני),
+  // who: "s" לתלמידים או "t" למורה, when, late (רשות, מסמן קובץ שמעלים מאוחר), meta, note (רשות).
+  var FILES = [
+    { name: "dataset_a.csv", path: "data/dataset_a.csv", who: "s", when: "למודל לפני שיעור 1",
+      meta: "תיאור קצר: מה יש בקובץ, כמה שורות." },
+    { name: "dataset_b.csv", ext: "https://example.org/dataset_b.csv", who: "s", when: "למודל לפני שיעור 2",
+      meta: "קובץ שמורידים מאתר חיצוני.",
+      note: "הוראת הורדה ובדיקה: כמה שורות אמורות להיות בקובץ." },
+    { name: "CP_L01.pbix עד CP_L02.pbix", who: "t", when: "לא מעלים למודל",
+      meta: "קובצי הגיבוי, שנשמרים בסוף החזרה על כל שיעור",
+      note: "את הקבצים האלה יוצרים בזמן החזרה, ואין מה להוריד כאן." }
+  ];
+
+  // איפה כל כפתור ב-Power BI (ממשק באנגלית). מוצג בהודעה אחרי ההעתקה. אותו נוסח כמו באפליקציית התלמיד.
+  var LOC = {
+    "Get data": "בסרגל העליון, בלשונית Home",
+    "Text/CSV": "ברשימה שנפתחת מתחת ל-Get data",
+    "Report view": "בפס האנכי שבצד שמאל של החלון, הסמל הראשון מלמעלה",
+    "Table view": "בפס האנכי שבצד שמאל של החלון, הסמל השני מלמעלה",
+    "Card": "בחלונית Visualizations שבצד ימין",
+    "Save as": "בתפריט File",
+    "Applied Steps": "ב-Power Query, בחלונית Query Settings שבצד ימין",
+    "Close & Apply": "ב-Power Query, בלשונית Home, הכפתור הראשון משמאל"
+  };
+  // ערכים להדבקה (לא כפתורים). אם אין כאלה, משאירים אובייקט ריק.
+  var PASTE = {
+    "ערך להדבקה": "הדביקו בחלון המתאים, בשדה Value To Find."
+  };
+
+  // ===== TEMPLATE: התחנות. תחנה 0 היא "לפני השבוע", ואחריה תחנה לכל שיעור. =====
+  // שדות חובה: n, tab, title, data, goals, challenges, steps, items, quiz.
+  // שדות רשות: sub, gist, subShort (ללוח "השבוע במבט אחד"), idea, times או timeNote, submit, more, sim, goalsLabel, stepsTitle.
+  // challenges: k הוא "הבנה" (קושי בהסקת מסקנה) או "תוכנה" (קושי בתפעול). p הבעיה, f מה עושים.
+  // steps: t (מה מדגימים, אפשר [[כפתור]] ו-{{קוד}}), e (מה אמור להופיע).
+  // items: [מזהה, נוסח, דקות (כפולה של 5), "after" (רשות: משימה שנעשית אחרי השבוע)]. המזהה לא משתנה אחרי שמתחילים.
+  // times: [[שם, דקות, "teach" | "practice" | "wrap"]]. הסכום צריך להיות WEEK.lessonMinutes.
+  var STATIONS = [
+    { n: 0, tab: "לפני השבוע", title: "מכינים את הכיתה", data: "", gist: "",
+      goalsLabel: "מה צריך לקרות לפני שיעור 1",
+      goals: ["Power BI נפתח בכל מחשב בכיתה ובמחשב ההקרנה.", "קובצי הנתונים במודל, והתלמידים יודעים לאן להוריד אותם."],
+      timeNote: "הבדיקות בכיתה: בערך חצי שעה, פעם אחת, לפני שיעור 1.",
+      challenges: [
+        { k: "תוכנה", p: "יש מחשבים שמוחקים קבצים בכל הפעלה מחדש.", f: "חשוב לבדוק את זה עכשיו. אם זה קורה, צריך מקום אחר לתיקייה האישית." },
+        { k: "תוכנה", p: "הממשק של Power BI בעברית.", f: "שמות התפריטים לא יתאימו למונחים באנגלית שבדוח הלמידה. כדאי לבדוק את שפת הממשק." }
+      ],
+      stepsTitle: "בדיקות בכיתה",
+      steps: [
+        { t: "פותחים את Power BI Desktop במחשב ההקרנה ובשני מחשבים של תלמידים.", e: "נפתח בלי הודעת שגיאה" },
+        { t: "שומרים קובץ ניסיון ב-Documents ומפעילים את המחשב מחדש.", e: "הקובץ עדיין שם" }
+      ],
+      items: [
+        ["s0-1", "לוודא ש-Power BI Desktop נפתח בכל מחשבי הכיתה ובמחשב ההקרנה", 15],
+        ["s0-2", "בדיקת שמירה: קובץ ניסיון ב-Documents, הפעלה מחדש, הקובץ נשאר", 5],
+        ["s0-m1", "להעלות למודל את קובצי הנתונים של שיעורים 1 ו-2", 5]
+      ],
+      quiz: [
+        { q: "למה כל תלמיד שומר את קובצי הנתונים בתיקייה data קבועה?",
+          o: ["כך קל יותר למצוא אותם", "Power BI זוכר את המיקום המלא של הקובץ, וקובץ שזז שובר את הרענון", "כך הקובץ שוקל פחות"], a: 1,
+          why: "Power BI שומר את הנתיב המלא של קובץ המקור. אם הקובץ זז, השאילתה לא מוצאת אותו, ומתקנים ב-Data source settings." }
+      ],
+      more: [
+        { h: "איך התלמידים שומרים את העבודה", p: [
+          "לכל תלמיד תיקייה אישית: {{Documents\\PBI_Course\\Cohen_Noa}} (עם השם שלו באנגלית), ובתוכה שתי תיקיות: {{data}} ו-{{work}}.",
+          "בכל שיעור התלמיד פותח את הקובץ שכתוב באפליקציה ושומר מיד בשם חדש עם מספר השיעור, למשל {{L02_Cohen_Noa.pbix}}."] }
+      ] },
+
+    // תחנת שיעור מלאה: כל השדות.
+    { n: 1, tab: "שיעור 1", title: "שאלה שהשיעור עונה עליה", sub: "משפט אחד על מה שעושים היום", data: "A",
+      gist: "משפט אחד ללוח של השבוע", subShort: "כרטיס ותשובה",
+      idea: "הרעיון של השיעור במשפט או שניים: מה התלמידים צריכים להבין, ולא מה הם לוחצים.",
+      goals: ["התלמידים טוענים קובץ CSV ל-Power BI ושומרים אותו בתיקייה הנכונה.", "הם מסבירים מה מייצגת שורה אחת בקובץ."],
+      times: [["פתיחה", 5, "teach"], ["הדגמה", 10, "teach"], ["תרגול", 23, "practice"], ["סיכום", 7, "wrap"]],
+      challenges: [
+        { k: "הבנה", p: "התלמידים יניחו ששורה היא פריט אחד.", f: "מראים שורה שאינה פריט, ושואלים מה היא מייצגת." },
+        { k: "תוכנה", p: "בכרטיס מופיע מספר ענק עם bn או B בסוף.", f: "Power BI חיבר את המספרים. בחץ שליד השדה בוחרים Count." }
+      ],
+      steps: [
+        { t: "במסך הפתיחה בוחרים [[Get data]] ואז [[Text/CSV]]. בוחרים את הקובץ מהתיקייה data.", e: "נפתח חלון שמציג את תוכן הקובץ" },
+        { t: "עוברים ל-[[Table view]] ומראים כמה שורות יש.", e: "מספר השורות מופיע בתחתית החלון" },
+        { t: "שומרים: [[Save as]] בתיקייה work, בשם {{L01_Cohen_Noa.pbix}}.", e: "הקובץ מופיע ב-work" }
+      ],
+      items: [
+        ["s1-1", "לחזור על ההדגמה עם הקובץ: טעינה, Table view וכרטיס", 10],
+        ["s1-2", "לבדוק מה הכרטיס מראה, ולתרגל את המעבר ל-Count", 5],
+        ["s1-3", "לשמור עותק גיבוי בשם CP_L01.pbix", 5],
+        ["s1-4", "לצלם צילומי מסך למצגת של השיעור", 10]
+      ],
+      submit: "צילום מסך של הכרטיס, ותשובה לשאלה: מה מייצגת כל שורה בקובץ?",
+      quiz: [
+        { q: "תלמיד גרר מזהה לכרטיס וקיבל מספר ענק. מה קרה?",
+          o: ["Power BI חיבר את ערכי המזהה", "הקובץ ניזוק", "הכרטיס מציג את הממוצע"], a: 0,
+          why: "ברירת המחדל לעמודה מספרית היא סכום. למזהה אין טעם לסכום, ולכן סופרים." }
+      ],
+      more: [
+        { h: "רקע לשיעור", p: ["פסקה אחת של רקע שהמורה צריך לדעת כדי להסביר, ולא כדי להקריא."] }
+      ] },
+
+    // תחנה מינימלית: רק שדות חובה. מספיקה לשיעור פשוט.
+    { n: 2, tab: "שיעור 2", title: "שיעור שני: ניקוי הנתונים", data: "A",
+      gist: "מנקים ורואים מה השתנה", subShort: "צילום מסך",
+      goals: ["התלמידים מסננים שורות לפי כלל ורואים איך הפעולה נרשמת ב-[[Applied Steps]]."],
+      challenges: [
+        { k: "הבנה", p: "התלמידים ימחקו שורות בלי לנמק.", f: "לפני כל מחיקה שואלים: מה השורה הזאת מייצגת, ולמה היא לא שייכת?" }
+      ],
+      steps: [
+        { t: "פותחים את Power Query, ובחלונית [[Applied Steps]] מראים את הצעדים.", e: "רשימה של צעדים בצד ימין" }
+      ],
+      items: [
+        ["s2-1", "לחזור על ההדגמה של הסינון ושל רשימת הצעדים", 10],
+        ["s2-2", "לשמור עותק גיבוי בשם CP_L02.pbix", 5]
+      ],
+      quiz: [
+        { q: "מה קורה לצעד שמחקנו מרשימת הצעדים?",
+          o: ["הוא נשאר בקובץ", "הוא לא מתבצע יותר ברענון", "הוא מוחק את הקובץ"], a: 1,
+          why: "הרשימה היא המתכון. צעד שנמחק לא מתבצע בפעם הבאה." }
+      ] }
+  ];
+
+  var ORDER = [];
+  STATIONS.forEach(function (st) {
+    st.items.forEach(function (it) { ORDER.push({ id: it[0], st: st.n, text: it[1], min: it[2] || 0, after: it[3] === "after" }); });
+  });
+  var TOTAL = ORDER.length;
+  document.getElementById("countTotal").textContent = TOTAL;
+
+  // Prep time, per station and cumulative. Tasks done after the week are not counted.
+  function stMin(n) { return ORDER.filter(function (m) { return m.st === n && !m.after; }).reduce(function (a, m) { return a + m.min; }, 0); }
+  function cumMin(n) { var t = 0; STATIONS.forEach(function (x) { if (x.n <= n) t += stMin(x.n); }); return t; }
+  function hm(min) { var h = Math.floor(min / 60), m = min % 60; return h + ":" + (m < 10 ? "0" : "") + m; }
+  function longDur(min) {
+    var h = Math.floor(min / 60), m = min % 60;
+    var hs = h === 0 ? "" : h === 1 ? "שעה" : h === 2 ? "שעתיים" : h + " שעות";
+    if (!m) return hs;
+    return hs ? hs + " ו-" + m + " דקות" : m + " דקות";
+  }
+  var LAST = STATIONS.length - 1;
+  document.getElementById("wkTitle").textContent = WEEK.name;
+  document.title = "למורה - " + WEEK.name;
+  document.getElementById("wkEyebrow").textContent = "קורס Power BI, שבוע " + WEEK.n + ", " + LAST + " שיעורים של " + WEEK.lessonMinutes + " דקות";
+  document.getElementById("plotNote").textContent = WEEK.plotNote;
+  ["studentLink", "footStudent"].forEach(function (id) { var a = document.getElementById(id); if (a) a.href = STUDENT_APP; });
+  document.getElementById("boardLink").href = STUDENT_APP + "#board";
+  document.getElementById("reportLink").href = STUDENT_APP + "#report";
+  document.getElementById("weekTotal").textContent = "בערך " + longDur(cumMin(LAST)) + ", כולל ההכנה לפני השבוע";
+
+  // ---------- Persistence: account (db) when available, this browser otherwise ----------
+  var STORE_KEY = "pbi-week" + WEEK.n + "-journey-v1";
+  var state = { checked: {}, quiz: {}, station: 0 };
+  var remote = null, writeTimer = null, writing = false, dirty = false;
+
+  function loadLocal() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) {
+        var s = JSON.parse(raw);
+        if (s && typeof s === "object") {
+          state.checked = s.checked || {};
+          state.quiz = s.quiz || {};
+          if (typeof s.station === "number") state.station = s.station;
+        }
+      }
+    } catch (e) { /* storage blocked: the page works without it */ }
+  }
+  function saveLocal() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { }
+  }
+  var statusEl = document.getElementById("saveStatus");
+  function setStatus(mode) {
+    statusEl.dataset.mode = mode;
+    statusEl.textContent = mode === "remote" ? "ההתקדמות נשמרת בחשבון שלך, וגם תופיע במכשיר אחר."
+      : mode === "retry" ? "השמירה בחשבון נכשלה. ננסה שוב בלחיצה הבאה."
+      : "ההתקדמות נשמרת בדפדפן הזה.";
+  }
+  function scheduleWrite() {
+    if (!remote) return;
+    dirty = true;
+    clearTimeout(writeTimer);
+    writeTimer = setTimeout(flush, 900);
+  }
+  function flush() {
+    if (!remote || writing || !dirty) return;
+    writing = true; dirty = false;
+    remote.set({ checked: state.checked, quiz: state.quiz }).then(function () {
+      setStatus("remote");
+    }).catch(function (e) {
+      if (e && e.code === "invalid_argument") { remote = null; setStatus("local"); }
+      else { setStatus("retry"); }
+    }).then(function () {
+      writing = false;
+      if (dirty && remote) writeTimer = setTimeout(flush, 1500);
+    });
+  }
+  function initRemote() {
+    var c = window.claude;
+    if (!c || typeof c.use !== "function") return;
+    Promise.all([c.use("db"), c.use("user")]).then(function (res) {
+      var db = res[0], user = res[1];
+      if (!db || !user) return null;
+      return user.id().then(function (uid) {
+        if (!uid) return null;
+        var ref = db.doc("data/users/" + uid + "/week" + WEEK.n);
+        return ref.get().then(function (snap) {
+          if (snap && snap.exists) {
+            var d = snap.data() || {};
+            state.checked = Object.assign({}, d.checked || {});
+            state.quiz = Object.assign({}, d.quiz || {});
+            saveLocal();
+            renderAll();
+          }
+          remote = ref;
+          setStatus("remote");
+          var hasLocal = Object.keys(state.checked).length || Object.keys(state.quiz).length;
+          if (!(snap && snap.exists) && hasLocal) scheduleWrite();
+        });
+      });
+    }).catch(function () { remote = null; setStatus("local"); });
+  }
+
+  function isOn(id) { return state.checked[id] === true; }
+  function countOn(stN) { return ORDER.filter(function (m) { return (stN === undefined || m.st === stN) && isOn(m.id); }).length; }
+  function stationTotal(stN) { return ORDER.filter(function (m) { return m.st === stN; }).length; }
+  function toggle(id, on) {
+    if (on) state.checked[id] = true; else delete state.checked[id];
+    saveLocal(); scheduleWrite();
+    renderDots(); renderNext(); renderRail(); renderDone();
+  }
+
+  // ---------- Small helpers ----------
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  // TEMPLATE: כרטיסי מאגר. כרטיס אחד לכל מושג, יחידה או קטגוריה שהתלמידים צריכים להכיר (מין, יישוב, משתנה, מוצר). אם אין כאלה בשבוע הזה, מוחקים את הבלוק, את #h-cards ואת cards: true בשיעורים.
+  // שדות: code (שתיים או שלוש אותיות, או סימן), title (שם בעברית), sub (שם באנגלית, רשות), detail (שורה נוספת, רשות),
+  //       stat (נתון אחד מהקובץ של הכיתה, כל מספר מחושב בקוד ולא מהזיכרון, רשות), fact (עובדה אחת שנבדקה במקור, רשות),
+  //       links: [{ t: "טקסט הקישור", u: "https://...", main: true }]. main מסמן את הקישור הבולט, ואפשר להשמיט אותו.
+  var CARDS = [
+    { code: "AA", title: "שם בעברית", sub: "English name", detail: "שם נוסף או פירוט קצר", stat: "נתון אחד מהקובץ של הכיתה: 0.0",
+      fact: "עובדה אחת שנבדקה במקור.",
+      links: [{ t: "תמונות", u: "https://example.org/images", main: true }, { t: "קריאה נוספת (באנגלית)", u: "https://example.org/about" }] },
+    { code: "BB", title: "שם בעברית", sub: "English name", stat: "נתון אחד מהקובץ של הכיתה: 0.0",
+      fact: "עובדה אחת שנבדקה במקור.",
+      links: [{ t: "קריאה נוספת (באנגלית)", u: "https://example.org/about" }] }
+  ];
+  function renderCards(id) {
+    var box = document.getElementById(id);
+    if (!box) return;
+    CARDS.forEach(function (r) {
+      var c = el("article", "dc");
+      var top = el("div", "dc-top");
+      top.appendChild(el("span", "dc-code", r.code));
+      var names = el("div", "dc-names");
+      names.appendChild(el("h4", "dc-title", r.title));
+      if (r.sub) names.appendChild(el("p", "dc-sub", r.sub));
+      if (r.detail) names.appendChild(el("p", "dc-detail", r.detail));
+      top.appendChild(names);
+      c.appendChild(top);
+      if (r.stat) c.appendChild(el("p", "dc-stat", r.stat));
+      if (r.fact) c.appendChild(el("p", "dc-fact", r.fact));
+      if (r.links && r.links.length) {
+        var links = el("p", "dc-links");
+        r.links.forEach(function (l) {
+          var a = el("a", l.main ? "dc-main" : "", l.t);
+          a.href = l.u; a.target = "_blank"; a.rel = "noopener";
+          a.setAttribute("aria-label", l.t + ": " + r.title + ", בלשונית חדשה");
+          links.appendChild(a);
+        });
+        c.appendChild(links);
+      }
+      box.appendChild(c);
+    });
+  }
+
+  // Display settings: text size and layout (this browser only)
+  var VIEW_KEY = "pbi-view-v1";
+  var onViewChange = null;
+  var view = { size: "m", layout: "auto", theme: "auto" };
+  var hostTheme = document.documentElement.getAttribute("data-theme");
+  try {
+    var vraw = JSON.parse(localStorage.getItem(VIEW_KEY) || "null");
+    if (vraw && typeof vraw === "object") { view.size = vraw.size || "m"; view.layout = vraw.layout || "auto"; view.theme = vraw.theme || "auto"; }
+  } catch (e) { }
+  function applyView() {
+    var h = document.documentElement;
+    if (view.size === "m") h.removeAttribute("data-size"); else h.setAttribute("data-size", view.size);
+    if (view.theme === "light" || view.theme === "dark") h.setAttribute("data-theme", view.theme); else if (hostTheme) h.setAttribute("data-theme", hostTheme); else h.removeAttribute("data-theme");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-set-theme]"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-set-theme") === view.theme ? "true" : "false"); });
+    if (view.layout === "auto") h.removeAttribute("data-layout"); else h.setAttribute("data-layout", view.layout);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-set-size]"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-set-size") === view.size ? "true" : "false"); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-set-layout]"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-set-layout") === view.layout ? "true" : "false"); });
+    if (typeof onViewChange === "function") onViewChange();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("[data-set-size]"), function (b) {
+    b.addEventListener("click", function () { view.size = b.getAttribute("data-set-size"); try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) { } applyView(); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-set-layout]"), function (b) {
+    b.addEventListener("click", function () { view.layout = b.getAttribute("data-set-layout"); try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) { } applyView(); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-set-theme]"), function (b) {
+    b.addEventListener("click", function () { view.theme = b.getAttribute("data-set-theme"); try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) { } withFade(applyView); });
+  });
+  applyView();
+  renderCards("cardsT");
+  Array.prototype.forEach.call(document.querySelectorAll('a[href="#cards"]'), function (a) {
+    a.addEventListener("click", function () { document.getElementById("cards").open = true; });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('a[href="#buttons"]'), function (a) {
+    a.addEventListener("click", function () { document.getElementById("buttons").open = true; });
+  });
+
+  var toastEl = document.getElementById("toast"), toastTimer = null;
+  function toast(msg) {
+    toastEl.textContent = msg; toastEl.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.hidden = true; }, Math.min(8000, 2000 + msg.length * 45));
+  }
+  function selectText(node) {
+    try { var r = document.createRange(); r.selectNodeContents(node); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) { }
+  }
+  function copyText(text, onOk, onFail) {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(onOk, onFail);
+      else onFail();
+    } catch (e) { onFail(); }
+  }
+  var COPY_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3.5 10.5h-1V2.5h8v1" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';
+  function rich(text) {
+    var frag = document.createDocumentFragment();
+    String(text).split(/(\[\[[^\]]+\]\]|\{\{[^}]+\}\})/).forEach(function (p) {
+      if (!p) return;
+      if (p.indexOf("[[") === 0) {
+        var term = p.slice(2, -2);
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "chip";
+        b.setAttribute("aria-label", "העתקת המונח " + term);
+        b.innerHTML = COPY_ICON;
+        var t = el("span", "term", term); b.appendChild(t);
+        b.addEventListener("click", function (ev) {
+          ev.stopPropagation();
+          copyText(term, function () {
+            b.dataset.copied = "1"; toast("הועתק: " + term + ". " + (LOC[term] ? "הכפתור נמצא " + LOC[term] + "." : (PASTE[term] || "אפשר להדביק בחיפוש של Power BI.")));
+            setTimeout(function () { b.dataset.copied = "0"; }, 1600);
+          }, function () { selectText(t); toast("אפשר לסמן את המונח ולהעתיק עם Ctrl+C."); });
+        });
+        frag.appendChild(b);
+      } else if (p.indexOf("{{") === 0) {
+        frag.appendChild(el("code", "", p.slice(2, -2)));
+      } else frag.appendChild(document.createTextNode(p));
+    });
+    return frag;
+  }
+
+  // ---------- Progress dots ----------
+  // ---------- Dot preview: a click picks a task and shows it here; only "פתיחת המשימה" jumps to it ----------
+  var picked = -1;
+  var popEl = document.getElementById("dotPop");
+  function renderPop() {
+    if (!popEl) return;
+    popEl.innerHTML = "";
+    if (!(picked >= 0) || !ORDER[picked]) { popEl.hidden = true; return; }
+    var m = ORDER[picked], on = isOn(m.id);
+    popEl.hidden = false;
+    var w = el("p", "dp-where", (m.st === 0 ? "לפני השבוע" : "שיעור " + m.st) + (m.min ? ", " + m.min + " דק'" : ""));
+    w.appendChild(el("span", "dp-state", on ? "בוצע" : "עוד לא בוצע"));
+    var t = el("p", "dp-text", m.text);
+    var open = el("button", "btn go", "פתיחת המשימה"); open.type = "button";
+    open.addEventListener("click", function () { openStation(m.st, m.id); });
+    var tg = el("button", "btn ghost", on ? "ביטול סימון" : "סימון כבוצע"); tg.type = "button";
+    tg.addEventListener("click", function () { toggle(m.id, !isOn(m.id)); });
+    var acts = el("div", "dp-acts"); acts.appendChild(open); acts.appendChild(tg);
+    popEl.appendChild(w); popEl.appendChild(t); popEl.appendChild(acts);
+  }
+
+  var dotsEl = document.getElementById("dots");
+  function renderDots() {
+    if (!dotsEl.children.length) {
+      ORDER.forEach(function (m) {
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "dot";
+        b.addEventListener("click", function () { picked = picked === ORDER.indexOf(m) ? -1 : ORDER.indexOf(m); renderDots(); });
+        dotsEl.appendChild(b);
+      });
+    }
+    Array.prototype.forEach.call(dotsEl.children, function (b, i) {
+      var m = ORDER[i];
+      b.dataset.on = isOn(m.id) ? "1" : "0";
+      b.dataset.cur = m.st === state.station ? "1" : "0";
+      b.dataset.pick = i === picked ? "1" : "0";
+      b.setAttribute("aria-pressed", i === picked ? "true" : "false");
+      var where = m.st === 0 ? "לפני השבוע" : "שיעור " + m.st;
+      b.setAttribute("aria-label", (i + 1) + ". " + where + ": " + m.text + (isOn(m.id) ? ". בוצע" : ". עוד לא"));
+      b.title = where + ": " + m.text;
+    });
+    document.getElementById("countNum").textContent = countOn();
+    var pe = document.getElementById("pctNum"); if (pe) pe.textContent = TOTAL ? Math.round(100 * countOn() / TOTAL) : 0;
+    renderPop();
+  }
+
+  // ---------- Next step ----------
+  var nextEl = document.getElementById("next");
+  function renderNext() {
+    var m = ORDER.find(function (x) { return !isOn(x.id); });
+    nextEl.innerHTML = "";
+    var head = el("div", "next-head");
+    var lab = el("p", "next-label"), txt = el("p", "next-task");
+    if (!m) {
+      lab.textContent = "כל משימות ההכנה בוצעו";
+      txt.textContent = "השבוע מוכן. אחרי השיעורים מספרים מה קרה בכיתה, ומתכננים לפי זה את שבוע " + (WEEK.n + 1) + ".";
+      head.appendChild(lab); nextEl.appendChild(head); nextEl.appendChild(txt);
+      return;
+    }
+    lab.textContent = "הצעד הבא";
+    var where = el("span", "next-where", (m.st === 0 ? "לפני השבוע" : "שיעור " + m.st) + (m.min ? ", " + m.min + " דק'" : ""));
+    head.appendChild(lab); head.appendChild(where);
+    txt.textContent = m.text;
+    var done = el("button", "btn go", "סימון כבוצע"); done.type = "button";
+    done.addEventListener("click", function () { toggle(m.id, true); if (m.st === state.station) renderStation(); });
+    var go = el("button", "next-link", m.st > 0 ? "הכנה לשיעור הקרוב ←" : "ההכנה לפני השבוע ←"); go.type = "button";
+    go.addEventListener("click", function () { openStation(m.st, m.id); });
+    var acts = el("div", "next-acts"); acts.appendChild(done); acts.appendChild(go);
+    nextEl.appendChild(head); nextEl.appendChild(txt); nextEl.appendChild(acts);
+    var up = STATIONS[m.st > 0 ? m.st : 1];
+    if (up) nextEl.appendChild(el("p", "next-up", "השיעור הקרוב: שיעור " + up.n + ", " + up.title));
+  }
+
+  // ---------- Downloads ----------
+  var dlApi = null, dlChecked = false;
+  function getDownloads() {
+    if (dlChecked) return Promise.resolve(dlApi);
+    var c = window.claude;
+    if (!c || typeof c.use !== "function") { dlChecked = true; return Promise.resolve(null); }
+    return c.use("downloads").then(function (api) { dlApi = api; dlChecked = true; return api; }, function () { dlChecked = true; return null; });
+  }
+  function renderFiles() {
+    var list = document.getElementById("fileList");
+    FILES.forEach(function (f) {
+      var row = el("div", "file");
+      var info = el("div", ""); info.style.display = "grid"; info.style.gap = "2px"; info.style.minWidth = "0";
+      info.appendChild(el("span", "file-name", f.name));
+      var meta = el("p", "file-meta");
+      var who = el("span", "who", f.who === "t" ? "למורה" : "לתלמידים"); who.dataset.w = f.who;
+      var when = el("span", "file-when", f.when); if (f.late) when.dataset.late = "1";
+      meta.appendChild(who); meta.appendChild(when); meta.appendChild(document.createTextNode(f.meta));
+      info.appendChild(meta);
+      row.appendChild(info);
+      var act = el("div", "file-act");
+      var st = el("span", "dl-status", ""); st.setAttribute("aria-live", "polite");
+      if (!f.path && !f.ext) {
+        act.appendChild(el("span", "dl-status", "נוצרים בחזרה"));
+      } else if (f.ext) {
+        var a = el("a", "btn ghost", "פתיחה באתר המקור");
+        a.href = f.ext; a.target = "_blank"; a.rel = "noopener";
+        a.style.textDecoration = "none";
+        act.appendChild(a);
+      } else {
+        var b = el("button", "btn", "הורדה"); b.type = "button";
+        b.addEventListener("click", function () {
+          st.textContent = "הקובץ בהכנה...";
+          getDownloads().then(function (api) {
+            if (!api) { st.textContent = "ההורדה לא זמינה בתצוגה הזו. הקבצים נשלחו גם בשיחה."; return; }
+            return fetch(f.path).then(function (r) {
+              if (!r.ok) throw new Error("fetch " + r.status);
+              return r.blob();
+            }).then(function (blob) {
+              return api.save({ filename: f.name, data: blob });
+            }).then(function () { st.textContent = "נשמר."; }, function (e) {
+              var code = e && e.code;
+              st.textContent = code === "declined" ? "ההורדה בוטלה." : code === "rate_limited" ? "חלון הורדה כבר פתוח. אפשר לנסות שוב בעוד רגע." : "ההורדה לא הצליחה. הקבצים נשלחו גם בשיחה.";
+            });
+          });
+        });
+        act.appendChild(b);
+      }
+      act.appendChild(st);
+      row.appendChild(act);
+      if (f.note) row.appendChild(el("p", "file-note", f.note));
+      list.appendChild(row);
+    });
+  }
+
+  // ---------- Week overview ----------
+  function renderWeek() {
+    var g = document.getElementById("weekGrid");
+    STATIONS.filter(function (s) { return s.n > 0; }).forEach(function (st) {
+      var b = el("button", "wk"); b.type = "button";
+      var top = el("div", "wk-top");
+      top.appendChild(el("span", "", "שיעור " + st.n));
+      top.appendChild(el("span", "", st.data));
+      b.appendChild(top);
+      b.appendChild(el("span", "wk-title", st.title));
+      b.appendChild(el("span", "wk-gist", st.gist));
+      var pt = el("span", "wk-sub");
+      pt.appendChild(el("b", "", "הכנה: "));
+      pt.appendChild(document.createTextNode(stMin(st.n) + " דק'"));
+      b.appendChild(pt);
+      var sub = el("span", "wk-sub");
+      sub.appendChild(el("b", "", "מגישים: "));
+      sub.appendChild(document.createTextNode(st.subShort));
+      b.appendChild(sub);
+      b.addEventListener("click", function () { openStation(st.n); document.getElementById("stations").scrollIntoView({ block: "start", behavior: "smooth" }); });
+      g.appendChild(b);
+    });
+  }
+
+  // ---------- Rail ----------
+  var railEl = document.getElementById("rail");
+  function renderRail() {
+    if (!railEl.children.length) {
+      STATIONS.forEach(function (st) {
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "tab"; b.setAttribute("role", "tab");
+        b.id = "tab-" + st.n; b.setAttribute("aria-controls", "panel");
+        b.innerHTML = '<span class="t-num"></span><span class="t-name"></span><span class="t-prog"></span>';
+        b.querySelector(".t-num").textContent = "תחנה " + st.n;
+        b.querySelector(".t-name").textContent = st.tab;
+        b.addEventListener("click", function () { openStation(st.n); });
+        b.addEventListener("keydown", function (ev) {
+          var dir = ev.key === "ArrowLeft" ? 1 : ev.key === "ArrowRight" ? -1 : 0;
+          if (!dir) return;
+          ev.preventDefault();
+          var nx = (st.n + dir + STATIONS.length) % STATIONS.length;
+          openStation(nx); document.getElementById("tab-" + nx).focus();
+        });
+        railEl.appendChild(b);
+      });
+    }
+    STATIONS.forEach(function (st) {
+      var b = document.getElementById("tab-" + st.n);
+      var k = countOn(st.n), t = stationTotal(st.n);
+      b.setAttribute("aria-selected", st.n === state.station ? "true" : "false");
+      b.tabIndex = st.n === state.station ? 0 : -1;
+      b.dataset.done = k === t ? "1" : "0";
+      b.querySelector(".t-prog").textContent = k === t ? "הושלם " + k + "/" + t : k + "/" + t;
+    });
+  }
+
+  // ---------- Station panel ----------
+  var panelEl = document.getElementById("panel");
+  function renderDone() {
+    var s = document.getElementById("doneTag");
+    if (s) s.hidden = countOn(state.station) !== stationTotal(state.station);
+  }
+  function moreBox(h, paras) {
+    var d = el("details", "more");
+    d.appendChild(el("summary", "", h));
+    var body = el("div", "more-body");
+    paras.forEach(function (p) { var pe = el("p", ""); pe.appendChild(rich(p)); body.appendChild(pe); });
+    d.appendChild(body);
+    return d;
+  }
+  function renderStation(focusId) {
+    var st = STATIONS[state.station];
+    panelEl.innerHTML = "";
+    panelEl.setAttribute("aria-labelledby", "tab-" + st.n);
+
+    var head = el("div", "st-head");
+    head.appendChild(el("p", "st-kicker", st.n === 0 ? "תחנה 0, לפני השבוע" : "תחנה " + st.n + ", שיעור " + st.n + " מתוך " + LAST + ", " + (WEEK.datasets[st.data] || "")));
+    head.appendChild(el("h2", "", st.title));
+    if (st.sub) head.appendChild(el("p", "st-sub", st.sub));
+    head.appendChild(el("p", "st-prep", "זמן הכנה משוער: " + stMin(st.n) + " דקות. מצטבר מתחילת ההכנה: " + hm(cumMin(st.n)) + " שעות."));
+    var tag = el("span", "done-tag", "התחנה הושלמה"); tag.id = "doneTag";
+    head.appendChild(tag);
+    panelEl.appendChild(head);
+
+    var goals = el("div", "goals");
+    goals.appendChild(el("span", "goals-label", st.goalsLabel || "מטרות השיעור"));
+    var gl = el("ul", "");
+    st.goals.forEach(function (g) { gl.appendChild(el("li", "", g)); });
+    goals.appendChild(gl);
+    panelEl.appendChild(goals);
+    if (st.idea) {
+      var idb = el("div", "idea");
+      idb.appendChild(el("span", "idea-label", "הרעיון של השיעור"));
+      idb.appendChild(el("p", "", st.idea));
+      panelEl.appendChild(idb);
+    }
+
+    if (st.times) {
+      var tb = el("div", "timebar");
+      var track = el("div", "tb-track");
+      track.setAttribute("role", "img");
+      track.setAttribute("aria-label", "חלוקת 45 הדקות: " + st.times.map(function (t) { return t[0] + " " + t[1] + " דקות"; }).join(", "));
+      st.times.forEach(function (t) {
+        var seg = el("div", "tb-seg", t[1] >= 7 ? String(t[1]) : "");
+        seg.dataset.kind = t[2]; seg.style.flex = t[1] + " 1 0";
+        track.appendChild(seg);
+      });
+      tb.appendChild(track);
+      var lg = el("p", "tb-legend");
+      st.times.forEach(function (t) {
+        var s = document.createElement("span");
+        s.appendChild(document.createTextNode(t[0] + " "));
+        var b = document.createElement("b"); b.textContent = t[1]; s.appendChild(b);
+        s.appendChild(document.createTextNode(" דק'"));
+        lg.appendChild(s);
+      });
+      tb.appendChild(lg);
+      panelEl.appendChild(tb);
+    } else if (st.timeNote) {
+      panelEl.appendChild(el("p", "block-sub", st.timeNote));
+    }
+
+    var ch = el("section", "block");
+    ch.appendChild(el("h3", "block-title", "אתגרים צפויים בשיעור"));
+    ch.appendChild(el("p", "block-sub", st.n === 0 ? "מה עלול להשתבש לפני שהשבוע מתחיל, ומה עושים." : "הבנה: קושי להסיק מסקנה מהנתונים. תוכנה: קושי בתפעול Power BI. ליד כל אתגר כתוב מה לעשות."));
+    var cl = el("ul", "chall");
+    st.challenges.forEach(function (c) {
+      var li = document.createElement("li");
+      var k = el("span", "kind", c.k); k.dataset.k = c.k;
+      var body = el("div", "");
+      body.appendChild(el("p", "p", c.p));
+      body.appendChild(el("p", "f", c.f));
+      li.appendChild(k); li.appendChild(body);
+      cl.appendChild(li);
+    });
+    ch.appendChild(cl);
+    panelEl.appendChild(ch);
+
+    var cols = el("div", "cols");
+    var a = el("section", "block");
+    a.appendChild(el("h3", "block-title", st.stepsTitle || "ההדגמה שלך"));
+    a.appendChild(el("p", "block-sub", st.n === 0 ? "בערך חצי שעה, פעם אחת." : "ההדגמה נעשית עם קובצי הכיתה. המספרים ב\"מה אמור להופיע\" חושבו מהקבצים עצמם. לחיצה על שם של כפתור במסגרת אפורה מעתיקה אותו."));
+    var ol = el("ol", "steps");
+    st.steps.forEach(function (s) {
+      var li = document.createElement("li");
+      var body = el("div", "step-body");
+      var tx = el("span", ""); tx.appendChild(rich(s.t));
+      body.appendChild(tx);
+      body.appendChild(el("span", "expect", s.e));
+      li.appendChild(body); ol.appendChild(li);
+    });
+    a.appendChild(ol);
+    cols.appendChild(a);
+
+    var b = el("section", "block");
+    b.appendChild(el("h3", "block-title", "משימות ההכנה שלך"));
+    var t = stationTotal(st.n);
+    var sub = el("p", "block-sub", countOn(st.n) + " מתוך " + t + " בתחנה הזו"); sub.id = "stSub";
+    b.appendChild(sub);
+    var ul = el("ul", "checks");
+    ORDER.filter(function (m) { return m.st === st.n; }).forEach(function (m) {
+      var li = document.createElement("li");
+      var lab = document.createElement("label"); lab.id = "lbl-" + m.id;
+      var cb = document.createElement("input");
+      cb.type = "checkbox"; cb.id = "cb-" + m.id; cb.checked = isOn(m.id);
+      cb.addEventListener("change", function () {
+        toggle(m.id, cb.checked);
+        document.getElementById("stSub").textContent = countOn(st.n) + " מתוך " + t + " בתחנה הזו";
+      });
+      lab.appendChild(cb); lab.appendChild(el("span", "", m.text)); lab.appendChild(el("span", "mins", m.min + " דק'" + (m.after ? ", אחרי השבוע" : "")));
+      li.appendChild(lab); ul.appendChild(li);
+    });
+    b.appendChild(ul);
+    if (st.submit) {
+      var sb = el("div", "submit");
+      sb.appendChild(el("span", "submit-label", "מה התלמידים מגישים במודל"));
+      sb.appendChild(el("p", "", st.submit));
+      b.appendChild(sb);
+    }
+    if (st.sim) {
+      var simLink = el("p", "block-sub");
+      var aSim = document.createElement("a"); aSim.href = "#sim"; aSim.textContent = "לסימולטור של השיעור, עם השיקולים";
+      simLink.appendChild(aSim); b.appendChild(simLink);
+    }
+    if (st.n > 0) {
+      var sl = el("p", "block-sub");
+      var aSt = document.createElement("a"); aSt.href = STUDENT_APP + "#l" + st.n; aSt.target = "_blank"; aSt.rel = "noopener";
+      aSt.textContent = "שיעור " + st.n + " בדוח הלמידה";
+      sl.appendChild(aSt); b.appendChild(sl);
+    }
+    cols.appendChild(b);
+    panelEl.appendChild(cols);
+
+    var stack = el("div", "more-stack");
+    var qd = el("details", "more");
+    qd.appendChild(el("summary", "", "בדיקה עצמית (" + st.quiz.length + (st.quiz.length === 1 ? " שאלה)" : " שאלות)")));
+    var qb = el("div", "more-body");
+    qb.appendChild(el("p", "block-sub", "אותן שאלות אפשר לשאול את התלמידים בסוף השיעור."));
+    var qwrap = el("div", "quiz");
+    st.quiz.forEach(function (q, qi) {
+      var qid = "q" + st.n + "-" + qi;
+      var fs = el("fieldset", "q");
+      fs.appendChild(el("legend", "", q.q));
+      var fb = el("div", "feedback"); fb.setAttribute("aria-live", "polite"); fb.hidden = true;
+      q.o.forEach(function (opt, oi) {
+        var lab = document.createElement("label");
+        var r = document.createElement("input");
+        r.type = "radio"; r.name = qid; r.id = qid + "-" + oi; r.value = String(oi);
+        if (state.quiz[qid] === oi) r.checked = true;
+        r.addEventListener("change", function () { state.quiz[qid] = oi; saveLocal(); scheduleWrite(); showFb(fb, q, oi); });
+        lab.appendChild(r); lab.appendChild(el("span", "", opt));
+        fs.appendChild(lab);
+      });
+      fs.appendChild(fb);
+      if (typeof state.quiz[qid] === "number") showFb(fb, q, state.quiz[qid]);
+      qwrap.appendChild(fs);
+    });
+    qb.appendChild(qwrap); qd.appendChild(qb);
+    stack.appendChild(qd);
+    (st.more || []).forEach(function (m) { stack.appendChild(moreBox(m.h, m.p)); });
+    panelEl.appendChild(stack);
+
+    renderDone();
+    if (focusId) {
+      var lb = document.getElementById("lbl-" + focusId);
+      if (lb) {
+        lb.classList.add("flash");
+        lb.scrollIntoView({ block: "center", behavior: "smooth" });
+        var c = document.getElementById("cb-" + focusId);
+        if (c) c.focus({ preventScroll: true });
+      }
+    }
+  }
+  function showFb(fb, q, oi) {
+    fb.hidden = false;
+    var ok = oi === q.a;
+    fb.dataset.ok = ok ? "1" : "0";
+    fb.innerHTML = "";
+    fb.appendChild(el("b", "", ok ? "נכון." : "לא בדיוק. התשובה: " + q.o[q.a]));
+    fb.appendChild(el("span", "", q.why));
+  }
+  function openStation(n, focusId) {
+    state.station = n; saveLocal();
+    renderRail(); renderDots(); renderStation(focusId);
+    if (!focusId) {
+      var top = panelEl.getBoundingClientRect().top;
+      if (top < 0 || top > window.innerHeight * 0.75) document.getElementById("rail").scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+  }
+  function renderAll() { renderDots(); renderNext(); renderRail(); renderStation(); }
+
+  // Copy the whole week's prep list
+  document.getElementById("copyAll").addEventListener("click", function () {
+    var lines = ["שבוע " + WEEK.n + " בקורס Power BI: משימות ההכנה", ""];
+    STATIONS.forEach(function (st) {
+      lines.push((st.n === 0 ? "לפני השבוע" : "שיעור " + st.n + ": " + st.title) + " (הכנה: " + stMin(st.n) + " דק')");
+      ORDER.filter(function (m) { return m.st === st.n; }).forEach(function (m) { lines.push((isOn(m.id) ? "[x] " : "[ ] ") + m.text + " (" + m.min + " דק'" + (m.after ? ", אחרי השבוע" : "") + ")"); });
+      lines.push("");
+    });
+    lines.push("סך הכול: בערך " + longDur(cumMin(LAST)) + ".");
+    var text = lines.join("\n");
+    copyText(text, function () { toast("רשימת המשימות הועתקה."); }, function () { toast("ההעתקה לא עבדה בתצוגה הזו."); });
+  });
+
+  // ---------- Progress map (collapsed by default) and shortcuts ----------
+  var mapBtn = document.getElementById("mapBtn"), mapBox = document.getElementById("mapBox");
+  function setMap(show) {
+    mapBox.hidden = !show;
+    mapBtn.setAttribute("aria-expanded", show ? "true" : "false");
+    mapBtn.textContent = show ? "להסתיר את מפת המסע" : "להציג את מפת המסע";
+  }
+  mapBtn.addEventListener("click", function () { setMap(mapBox.hidden); });
+  document.getElementById("mapClose").addEventListener("click", function () { setMap(false); mapBtn.focus(); });
+  var navMore = document.getElementById("navMore");
+  try { if (navMore && window.matchMedia("(min-width: 900px)").matches && view.layout !== "mobile") navMore.open = true; } catch (e) { }
+
+  // ---------- Guided journey: one task at a time, like the student's tour ----------
+  var gOn = false, gI = 0, gDemo = false;
+  var gbar = document.getElementById("gbar"), guideBtn = document.getElementById("guideBtn");
+  var reduceM = false; try { reduceM = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { }
+  function gClear() { Array.prototype.forEach.call(document.querySelectorAll(".tour-target"), function (n) { n.classList.remove("tour-target"); }); }
+  function gScroll(t) {
+    var r = t.getBoundingClientRect(), room = gbar.getBoundingClientRect().top || window.innerHeight;
+    var y = r.height > room - 48 ? r.top - 24 : r.top + r.height / 2 - room / 2;
+    window.scrollBy({ top: y, behavior: reduceM ? "auto" : "smooth" });
+  }
+  function gShow() {
+    gClear();
+    var fin = gI >= ORDER.length;
+    document.getElementById("gFill").style.width = Math.round(100 * countOn() / TOTAL) + "%";
+    var done = document.getElementById("gDone"), prev = document.getElementById("gPrev"), skip = document.getElementById("gSkip"), demo = document.getElementById("gDemo");
+    if (fin) {
+      document.getElementById("gCount").textContent = countOn() + " מתוך " + TOTAL + " משימות בוצעו";
+      document.getElementById("gTitle").textContent = countOn() === TOTAL ? "ההכנה הושלמה" : "עברתם על כל המשימות";
+      document.getElementById("gText").textContent = countOn() === TOTAL ? "אפשר לצאת מהמסע. אחרי השיעורים מספרים מה קרה בכיתה." : "נשארו משימות שדילגתם עליהן. הצעד הבא בעמוד יראה לכם את הראשונה.";
+      done.hidden = true; skip.hidden = true; demo.hidden = true; prev.disabled = false;
+      return;
+    }
+    done.hidden = false; skip.hidden = false; demo.hidden = false;
+    var m = ORDER[gI], on = isOn(m.id), st = STATIONS[m.st];
+    if (state.station !== m.st) { state.station = m.st; saveLocal(); renderRail(); renderDots(); renderStation(); }
+    document.getElementById("gCount").textContent = "משימה " + (gI + 1) + " מתוך " + TOTAL + ", " + (m.st === 0 ? "לפני השבוע" : "שיעור " + m.st) + (m.min ? ", " + m.min + " דק'" : "");
+    document.getElementById("gTitle").textContent = m.text;
+    document.getElementById("gText").textContent = on ? "המשימה הזו כבר סומנה כבוצעה." : (m.after ? "את המשימה הזו עושים אחרי השבוע." : "כשסיימתם, לוחצים על הכפתור הצהוב.");
+    done.textContent = on ? "למשימה הבאה" : "בוצע, ולמשימה הבאה";
+    prev.disabled = gI === 0;
+    demo.textContent = gDemo ? "למשימה" : "להדגמה";
+    var t = gDemo ? document.querySelector("#panel .cols .block") : document.getElementById("lbl-" + m.id);
+    if (t) { t.classList.add("tour-target"); gScroll(t); }
+  }
+  function gGo(i) { gI = Math.max(0, Math.min(ORDER.length, i)); gDemo = false; gShow(); }
+  function startGuide() {
+    var first = ORDER.findIndex(function (m) { return !isOn(m.id); });
+    gOn = true; gI = first < 0 ? 0 : first; gDemo = false;
+    document.documentElement.setAttribute("data-guided", "1");
+    gbar.hidden = false;
+    if (!mapBox.hidden) setMap(false);
+    gShow();
+    document.getElementById(gI < ORDER.length ? "gDone" : "gExit").focus({ preventScroll: true });
+  }
+  function endGuide() {
+    gOn = false; gClear(); gbar.hidden = true; document.documentElement.removeAttribute("data-guided");
+    guideBtn.focus({ preventScroll: true });
+  }
+  guideBtn.addEventListener("click", startGuide);
+  document.getElementById("gExit").addEventListener("click", endGuide);
+  document.getElementById("gPrev").addEventListener("click", function () { gGo(gI - 1); });
+  document.getElementById("gSkip").addEventListener("click", function () { gGo(gI + 1); });
+  document.getElementById("gDemo").addEventListener("click", function () { gDemo = !gDemo; gShow(); });
+  document.getElementById("gDone").addEventListener("click", function () {
+    var m = ORDER[gI];
+    if (m && !isOn(m.id)) {
+      toggle(m.id, true);
+      var cb = document.getElementById("cb-" + m.id); if (cb) cb.checked = true;
+      var sub = document.getElementById("stSub"); if (sub) sub.textContent = countOn(m.st) + " מתוך " + stationTotal(m.st) + " בתחנה הזו";
+    }
+    gGo(gI + 1);
+  });
+  document.addEventListener("keydown", function (ev) {
+    if (!gOn) return;
+    var tg = ev.target, tn = tg && tg.tagName;
+    if (tn === "TEXTAREA" || tn === "SELECT" || (tn === "INPUT" && tg.type !== "checkbox" && tg.type !== "radio")) return;
+    if (ev.key === "Escape") endGuide();
+  });
+
+  // ---------- Boot ----------
+  loadLocal();
+  var h = (location.hash || "").replace("#", "");
+  if (/^s\d+$/.test(h)) state.station = Number(h.slice(1));
+  if (!(state.station >= 0 && state.station <= LAST)) state.station = 0;
+  renderFiles(); renderWeek(); renderAll();
+  if (h === "cards") document.getElementById("cards").open = true;
+  setStatus("local");
+  initRemote();
+  if (/^s\d+$/.test(h) && Number(h.slice(1)) <= LAST) setTimeout(function () { document.getElementById("rail").scrollIntoView({ block: "start" }); }, 60);
+  else if (h && document.getElementById(h)) setTimeout(function () { document.getElementById(h).scrollIntoView({ block: "start" }); }, 60);
+})();
+</script>
+
+</body></html>
