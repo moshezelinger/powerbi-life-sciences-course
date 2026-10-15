@@ -1,5 +1,5 @@
 # powerbi-life-sciences-course
-Open Power BI learning course using life-science data, with interactive student apps, teacher guides, datasets, and reusable templates.
+קורס Power BI לתלמידי תיכון, המשלב למידה מעשית על נתוני מחקר אמיתיים, חשיבה אנליטית, פעילויות אינטראקטיביות וכלי הוראה למורים. כולל חומרי למידה ותבניות הניתנות להתאמה.
 
 
 עותק של הפרויקט "קורס Power BI" מ-claude.ai, נכון ל-15.10.2026.
