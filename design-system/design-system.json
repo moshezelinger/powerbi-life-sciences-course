@@ -1,0 +1,64 @@
+{
+ "v": 3,
+ "layout": "files",
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-02T21:04:03Z"
+ },
+ "title": "מגמת מידע ונתונים",
+ "namespace": "DataAnalysisTrack",
+ "libraries": [],
+ "sections": {},
+ "groups": [
+  "Logos"
+ ],
+ "assetGroups": {
+  "Logos": {
+   "name": "Logos",
+   "tile": "l",
+   "order": [
+    "logo-primary.png",
+    "logo-original-white.png",
+    "logo-original-dark.png",
+    "logo-banner-gradient.png"
+   ],
+   "files": {
+    "logo-primary.png": {
+     "name": "logo-primary.png",
+     "blob": "a4cbedf505d34e36b8ca3701d0cea8fc",
+     "size": 198037,
+     "type": "image/png"
+    },
+    "logo-original-white.png": {
+     "name": "logo-original-white.png",
+     "blob": "37426a804711eef29f0f7544eeb725a1",
+     "size": 301975,
+     "type": "image/png"
+    },
+    "logo-original-dark.png": {
+     "name": "logo-original-dark.png",
+     "blob": "b26fdddefc2e3ec3686267db551de554",
+     "size": 84300,
+     "type": "image/png"
+    },
+    "logo-banner-gradient.png": {
+     "name": "logo-banner-gradient.png",
+     "blob": "a56587c3dd34cb6e19323bd336aa2db9",
+     "size": 112321,
+     "type": "image/png"
+    }
+   }
+  }
+ },
+ "blobs": {},
+ "docs": {
+  "readme": "project/README.md",
+  "sections": []
+ },
+ "lastChange": {
+  "by": "Moshe",
+  "at": "2026-10-03T00:00:00Z",
+  "via": "Claude",
+  "note": "נוספה תבנית המצגות הרשמית: slide-templates.md ועדכון README ורכיב Slide"
+ }
+}

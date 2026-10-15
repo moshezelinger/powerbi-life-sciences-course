@@ -1,0 +1,25 @@
+<!-- @dsCard height=288 -->
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gveret+Levin&family=Heebo:wght@400;500;600;700&family=Rubik:wght@500;600;700&display=swap">
+<style>
+html,body{margin:0;width:960px;height:288px;overflow:hidden;background:var(--surface)}
+body{position:relative;font-family:var(--font-body)}
+svg{position:absolute;inset:0}
+.bar.blue{fill:var(--brand-blue)}.bar.gray{fill:var(--brand-gray)}.bar.yellow{fill:var(--brand-yellow)}
+.bar{rx:var(--radius-sm)}
+.trend{fill:none;stroke:var(--ink);stroke-width:3;stroke-linejoin:round}
+.dot{fill:var(--surface);stroke:var(--ink);stroke-width:3}
+.txt{position:absolute;left:var(--space-6);bottom:var(--space-6);width:440px;text-align:right}
+h1{margin:0;font-family:var(--font-display);font-weight:700;font-size:76px;line-height:72px;color:var(--ink)}
+p{margin:var(--space-2) 0 0;font-size:14px;line-height:20px;color:var(--ink-muted)}
+</style></head><body>
+<svg width="960" height="288" viewBox="0 0 960 288" aria-hidden="true">
+<!-- blocks: brand-blue x2, brand-gray x2, brand-yellow x2 as 56px bars (space-8 minus space-2 wide), staggered heights, bleeding off the bottom edge
+arrangement: six unequal vertical bars right of x=480 with a trend line and ring dots above their tops, as in the logo's chart
+pattern: literal motif (bar and line chart), chosen because the logo is a bar chart inside a bulb and the track is about data
+steps and radii: 8px gap (space-2), 56px bars, radius-sm tops, 9px ring dots in surface with ink stroke -->
+<rect class="bar blue" x="496" y="150" width="56" height="158"/><rect class="bar gray" x="560" y="70" width="56" height="238"/><rect class="bar gray" x="624" y="120" width="56" height="188"/><rect class="bar yellow" x="688" y="180" width="56" height="128"/><rect class="bar yellow" x="752" y="100" width="56" height="208"/><rect class="bar blue" x="816" y="40" width="56" height="268"/>
+<polyline class="trend" points="524,132 588,52 652,102 716,162 780,82 844,22"/>
+<circle class="dot" cx="524" cy="132" r="9"/><circle class="dot" cx="588" cy="52" r="9"/><circle class="dot" cx="652" cy="102" r="9"/><circle class="dot" cx="716" cy="162" r="9"/><circle class="dot" cx="780" cy="82" r="9"/><circle class="dot" cx="844" cy="22" r="9"/>
+</svg>
+<div class="txt"><h1>מגמת מידע<br>ונתונים</h1><p>כי ידע זה כוח</p></div>
+</body></html>
