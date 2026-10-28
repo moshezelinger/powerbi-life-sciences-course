@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<!-- עותק של קוד האפליקציה "לתלמיד - דוח למידה PBI מס' 1" (גרסה 10, 9.10.2026: הוחזר הצהוב של מערכת העיצוב (כפתור העתקה ראשי, קו תחתון לכותרת, קצה למטרת השיעור ולשונית נבחרת). גרסה 9: נוסף אזור "קבצי הנתונים להורדה" בתוך "עזרה וכלים", באותו אופן כמו במסע ההכנה למורה. גרסה 8: תיבת סיכום אחת במקום שתיים, העתקה שעובדת גם כשהדפדפן חוסם את הלוח, והדבקה נקייה עם כותרות מודגשות בלי צבעי רקע וכתב; הסיכום קוצר. גרסה 7: הוסר כרטיס "השיעור הנוכחי" ותווית "כעת" בלשוניות, ונוספה שכבת תנועה וחומרים לפי apple-design. התוכן, המזהים ומפתחות השמירה לא השתנו). הגרסה החיה: https://claude.ai/artifact/ANxBiCmMftYhVMPkdxsntd. לעריכה: לקרוא את הקישור, לשנות ולפרסם מחדש לאותו קישור. -->
+<!-- עותק של קוד האפליקציה "לתלמיד - דוח למידה PBI מס' 1" (גרסה 14, 28.10.2026: כשהעמוד פתוח מחוץ ל-Claude (למשל ב-GitHub Pages), כפתור ההורדה מוריד את הקובץ מהתיקייה data שליד העמוד. התוכן לא השתנה. גרסה 13, 26.10.2026: שיעור 4 מצעד 5 נכתב מחדש כמדריך: כל סינון בצעד משלו (נוספו l4-5b ו-l4-5c) עם הסבר למה, Replace Values מתחיל בבחירת העמודה, Don't summarize ל-yearstart בטבלה, Load more ושם הגיליון ברמזים. המזהים הקיימים ומפתחות השמירה לא השתנו. גרסה 12, 19.10.2026: מספר הצעד עבר לראש התיבה "קודם חושבים", ובצעד שיש בו גם שאלה וגם הסבר, ההסבר "למה עושים את זה?" מקופל עד אחרי הביצוע, כדי שלא יענה על השאלה מראש. גרסה 11: בשיעורים 3 עד 7 נוספה לצעדים תיבה "קודם חושבים" (שדה p), שמופיעה לפני הפעולה ושואלת מה קרה בשטח או בסקר. בשיעור 4 שאלה 1 מתחילה בניחוש. המזהים ומפתחות השמירה לא השתנו. גרסה 10, 9.10.2026: הוחזר הצהוב של מערכת העיצוב (כפתור העתקה ראשי, קו תחתון לכותרת, קצה למטרת השיעור ולשונית נבחרת). גרסה 9: נוסף אזור "קבצי הנתונים להורדה" בתוך "עזרה וכלים", באותו אופן כמו במסע ההכנה למורה. גרסה 8: תיבת סיכום אחת במקום שתיים, העתקה שעובדת גם כשהדפדפן חוסם את הלוח, והדבקה נקייה עם כותרות מודגשות בלי צבעי רקע וכתב; הסיכום קוצר. גרסה 7: הוסר כרטיס "השיעור הנוכחי" ותווית "כעת" בלשוניות, ונוספה שכבת תנועה וחומרים לפי apple-design. התוכן, המזהים ומפתחות השמירה לא השתנו). הגרסה החיה: https://claude.ai/artifact/ANxBiCmMftYhVMPkdxsntd. לעריכה: לקרוא את הקישור, לשנות ולפרסם מחדש לאותו קישור. עותק ב-GitHub: https://github.com/moshezelinger/powerbi-life-sciences-course, בתיקייה project/claude/שבוע 1/אפליקציות. -->
 <title>לתלמיד - דוח למידה PBI מס' 1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -271,6 +271,11 @@ html[data-board="1"] .tools, html[data-board="1"] .foot, html[data-board="1"] .t
 .why { background: var(--chip); border-inline-start: 3px solid var(--bar); border-radius: 8px; padding: 8px 12px; display: grid; gap: 2px; color: var(--ink-2); font-size: 1rem; cursor: default; }
 .why-label { display: inline-flex; gap: 6px; align-items: center; font-size: 0.9375rem; font-weight: 700; color: var(--bar); }
 .why-label svg { width: 1.05em; height: 1.05em; flex: none; }
+.think { background: var(--tape-soft); border-inline-start: 3px solid var(--tape); border-radius: 8px; padding: 8px 12px; display: grid; gap: 2px; color: var(--ink); font-size: 1.0625rem; cursor: default; }
+.think-label { font-size: 0.9375rem; font-weight: 700; color: var(--tape-ink); }
+.think-label .s-num { color: var(--ink-3); font-weight: 400; margin-inline-end: 4px; }
+.why-late > summary { cursor: pointer; width: fit-content; }
+.why-late[open] > summary { margin-bottom: 4px; }
 .q-parts { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; color: var(--ink-2); font-size: 1.0625rem; }
 .toast { border-radius: 14px; text-align: center; line-height: 1.5; }
 @media (min-width: 900px) {
@@ -475,7 +480,7 @@ details[open]::details-content { opacity: 1; block-size: auto; }
               <li><b>מספר השורות:</b> ב-Table view, בשורת המצב שבתחתית החלון.</li>
               <li><b><bdi>Card</bdi>, <bdi>Table</bdi>, <bdi>Slicer</bdi>, <bdi>Clustered column chart</bdi> ו-<bdi>Line chart</bdi>:</b> בחלונית Visualizations שבצד ימין.</li>
               <li><b>רשימת העמודות:</b> בחלונית Data שבצד ימין, ליד Visualizations.</li>
-              <li><b><bdi>Count</bdi>, <bdi>Average</bdi> ו-<bdi>Count (Distinct)</bdi>:</b> בחץ הקטן שליד שם העמודה, באזור השדות של הגרף בחלונית Visualizations.</li>
+              <li><b><bdi>Count</bdi>, <bdi>Average</bdi>, <bdi>Count (Distinct)</bdi> ו-<bdi>Don't summarize</bdi>:</b> בחץ הקטן שליד שם העמודה, באזור השדות של הגרף או הטבלה בחלונית Visualizations.</li>
               <li><b><bdi>Format visual</bdi> (סמל המברשת):</b> בחלונית Visualizations, כשהגרף מסומן. בראש החלונית יש תיבת חיפוש.</li>
               <li><b><bdi>Display units</bdi>:</b> בתוך Format visual. הכי מהר: מקלידים Display units בתיבת החיפוש של Format visual.</li>
               <li><b><bdi>X-axis</bdi> ואחריו <bdi>Type</bdi>:</b> בתוך Format visual, כשגרף העמודות מסומן.</li>
@@ -499,8 +504,9 @@ details[open]::details-content { opacity: 1; block-size: auto; }
               <li><b><bdi>Column quality</bdi>, <bdi>Column distribution</bdi> ו-<bdi>Column profile</bdi>:</b> בלשונית View, בקבוצה Data Preview.</li>
               <li><b><bdi>Column profiling based on top 1000 rows</bdi>:</b> בשורת המצב שבתחתית החלון, משמאל. לחיצה עליו מאפשרת לבחור entire data set.</li>
               <li><b><bdi>Number Filters</bdi> ו-<bdi>Remove Empty</bdi>:</b> בחץ שבכותרת העמודה.</li>
+              <li><b><bdi>Load more</bdi>:</b> בתחתית הרשימה שנפתחת מהחץ בכותרת העמודה. לוחצים עליו כשערך שמחפשים לא מופיע ברשימה.</li>
               <li><b><bdi>Choose Columns</bdi>:</b> בלשונית Home, בקבוצה Manage Columns.</li>
-              <li><b><bdi>Replace Values</bdi>:</b> בלשונית Home או בלשונית Transform. Advanced options נמצא בתוך החלון שנפתח.</li>
+              <li><b><bdi>Replace Values</bdi>:</b> בלשונית Home או בלשונית Transform, אחרי שלוחצים על העמודה. Advanced options נמצא בתוך החלון שנפתח.</li>
               <li><b>שינוי שם של עמודה:</b> לחיצה כפולה על כותרת העמודה.</li>
               <li><b>סוג הנתונים, למשל <bdi>Decimal Number</bdi>:</b> בסמל שמשמאל לשם העמודה, בכותרת (ABC, 123 או 1.2).</li>
               <li><b><bdi>Close &amp; Apply</bdi>:</b> בלשונית Home, הכפתור הראשון משמאל.</li>
@@ -633,16 +639,16 @@ details[open]::details-content { opacity: 1; block-size: auto; }
       intro: "בגרף שתבנו תראו צניחה חדה ב-2020. מה גרם לה? האם החיות נעלמו, או שמשהו השתנה באיסוף הנתונים? היום תבדקו את מאמץ הדגימה, כלומר כמה סבבי לכידה נערכו בכל שנה, ותלמדו להשוות בין שנים בצורה הוגנת.",
       steps: [
         { id: "l3-1", t: "פתחו את L02 ושמרו בשם {{L03_Portal_Cohen_Noa.pbix}}.", e: "יש ארבעה קבצים ב-work: L01, L02, L03 וקובץ ה-xlsx." },
-        { id: "l3-2", t: "ב-Table view לחצו על year, ובלשונית Column tools שנו את [[Summarization]] ל-[[Don't summarize]]. עשו אותו דבר ל-plot.", e: "Power BI כבר לא יחבר שנים או מספרי חלקות.", w: "חיבור של שנים, 2016 ועוד 2017, לא אומר כלום. גם חיבור של מספרי חלקות." },
+        { id: "l3-2", p: "בעמודה year יש מספרים. אם Power BI יחבר את השנים, האם לתוצאה תהיה משמעות?", t: "ב-Table view לחצו על year, ובלשונית Column tools שנו את [[Summarization]] ל-[[Don't summarize]]. עשו אותו דבר ל-plot.", e: "Power BI כבר לא יחבר שנים או מספרי חלקות.", w: "חיבור של שנים, 2016 ועוד 2017, לא אומר כלום. גם חיבור של מספרי חלקות." },
         { id: "l3-3", t: "ב-Report view לחצו על + בתחתית המסך כדי לפתוח עמוד חדש, וקראו לו לכידות (לחיצה כפולה על השם).", e: "עמוד ריק בשם לכידות." },
         { id: "l3-3b", t: "הוסיפו מסנן: לחצו על מקום ריק בעמוד, ובחלונית Visualizations לחצו על [[Slicer]]. מרשימת השדות גררו את species לאזור Field.", e: "מופיעה רשימה של שמות מינים, עם ריבוע סימון ליד כל אחד.", h: "Slicer הוא תצוגה כמו גרף, ולא טבלה. הוא נבנה מעמודה שכבר קיימת, ואין צורך ליצור טבלה חדשה. לא רואים את הרשימה? לחצו קודם על מקום ריק בעמוד: כשתצוגה אחרת נבחרת, הגרירה משנה אותה." },
         { id: "l3-3c", t: "ברשימה של ה-Slicer לחצו על DM (חולדת הקנגורו של מריאם).", e: "רק DM מסומן. הכרטיס מהעמוד הראשון נשאר כמו שהוא.", h: "הרשימה ארוכה? הקלידו DM בתיבת החיפוש שבראש ה-Slicer, או גללו.", w: "Slicer מסנן את כל מה שנמצא איתו באותו עמוד. בעמוד נפרד, הכרטיס מהעמוד הראשון לא מושפע ממנו." },
-        { id: "l3-4", t: "לחצו על מקום ריק בעמוד, ובחלונית Visualizations לחצו על [[Clustered column chart]]. גררו year לאזור X-axis, וגררו recordID לאזור Y-axis. בחץ שליד recordID באזור Y-axis בחרו [[Count]]. בחץ שליד year באזור X-axis ודאו שמסומן Don't summarize.", e: "עמודה לכל שנה, מ-2016 עד 2026. כדי לראות מספר, העבירו את העכבר מעל עמודה.", h: "יש רק עמודה אחת, של 2016? כנראה year מסוכם (למשל Minimum או Sum). בחץ שליד year באזור X-axis בחרו Don't summarize. הציר מראה 2,016? בעיצוב הגרף (סמל המברשת) פתחו את X-axis ושנו את Type ל-Categorical." },
+        { id: "l3-4", p: "כל שורה בקובץ היא לכידה אחת. מה יראה הגובה של כל עמודה בגרף: כמה חיות היו בשטח, או משהו אחר?", t: "לחצו על מקום ריק בעמוד, ובחלונית Visualizations לחצו על [[Clustered column chart]]. גררו year לאזור X-axis, וגררו recordID לאזור Y-axis. בחץ שליד recordID באזור Y-axis בחרו [[Count]]. בחץ שליד year באזור X-axis ודאו שמסומן Don't summarize.", e: "עמודה לכל שנה, מ-2016 עד 2026. כדי לראות מספר, העבירו את העכבר מעל עמודה.", h: "יש רק עמודה אחת, של 2016? כנראה year מסוכם (למשל Minimum או Sum). בחץ שליד year באזור X-axis בחרו Don't summarize. הציר מראה 2,016? בעיצוב הגרף (סמל המברשת) פתחו את X-axis ושנו את Type ל-Categorical." },
         { id: "l3-4b", t: "ודאו שהעמודות מסודרות לפי שנה, מ-2016 עד 2026. אם הן מסודרות לפי גובה: לחצו על שלוש הנקודות בפינת הגרף, בחרו [[Sort axis]] ואז year, ושוב על שלוש הנקודות ובחרו [[Sort ascending]].", e: "263 לכידות ב-2019, ו-61 ב-2020.", h: "אחרי שינוי ל-Categorical, Power BI מסדר את העמודות לפי גובה ולא לפי שנה. אין עמודות בכלל? ודאו ש-DM מסומן ב-Slicer." },
         { id: "l3-5", t: "עצרו. מה יכול להסביר את הירידה ב-2020? כתבו שתי אפשרויות בשאלה 1, לפני שממשיכים.", e: "עוד לא מתקנים כלום. רק כותבים." },
-        { id: "l3-6", t: "פתחו עוד עמוד חדש, בשם סבבים. הוסיפו [[Table]] עם year ועם period, ושנו את period ל-[[Count (Distinct)]].", e: "ב-2019: 12 סבבים. ב-2020: 2.", h: "למה ב-2020 רק 2 סבבים? אחרי פברואר 2020 עבודת השדה נעצרה בגלל מגפת הקורונה, וחודשה רק ביוני 2021.", w: "Slicer מסנן את כל מה שנמצא איתו באותו עמוד. בעמוד נפרד, טבלת הסבבים סופרת את כל הסבבים, ולא רק את אלה שבהם נלכד המין שבחרתם." },
-        { id: "l3-7", t: "את החישוב עושים במחשבון או על דף, לא ב-Power BI. מספר הלכידות של 2019 ו-2020 נמצא בגרף בעמוד לכידות (העבירו את העכבר מעל העמודה). מספר הסבבים נמצא בטבלה בעמוד סבבים. חלקו: לכידות חלקי סבבים.", e: "2019: 263 חלקי 12 הם 21.9. 2020: 61 חלקי 2 הם 30.5.", h: "שני הסבבים של 2020 היו בינואר ובפברואר, ובחורף נלכדות יותר חולדות קנגורו מאשר בקיץ. אפשר להסיק שהן לא נעלמו, אבל לא ש-2020 הייתה שנה טובה יותר.", w: "כך מתחשבים במאמץ הדגימה. החישוב הזה נקרא נרמול, ובזכותו ההשוואה בין השנים הוגנת." },
-        { id: "l3-8", t: "עכשיו 2023 מול 2025, באותה דרך: את הלכידות קוראים מהגרף בעמוד לכידות, ואת הסבבים מהטבלה בעמוד סבבים. בשתי השנים נערכו 11 סבבים.", e: "2023: 605 חלקי 11 הם 55.0. 2025: 169 חלקי 11 הם 15.4." },
+        { id: "l3-6", p: "דמיינו את החוקרים במדבר. מה צריך לקרות כדי שתיווצר שורה בקובץ? ואם בחודש מסוים לא יצאו לשטח, מה יקרה למספר השורות?", t: "פתחו עוד עמוד חדש, בשם סבבים. הוסיפו [[Table]] עם year ועם period, ושנו את period ל-[[Count (Distinct)]].", e: "ב-2019: 12 סבבים. ב-2020: 2.", h: "למה ב-2020 רק 2 סבבים? אחרי פברואר 2020 עבודת השדה נעצרה בגלל מגפת הקורונה, וחודשה רק ביוני 2021.", w: "Slicer מסנן את כל מה שנמצא איתו באותו עמוד. בעמוד נפרד, טבלת הסבבים סופרת את כל הסבבים, ולא רק את אלה שבהם נלכד המין שבחרתם." },
+        { id: "l3-7", p: "בשנה אחת נערכו 12 סבבים, ובשנה אחרת 2. איך אפשר להשוות ביניהן בצורה הוגנת? כתבו רעיון לפני שמחשבים.", t: "את החישוב עושים במחשבון או על דף, לא ב-Power BI. מספר הלכידות של 2019 ו-2020 נמצא בגרף בעמוד לכידות (העבירו את העכבר מעל העמודה). מספר הסבבים נמצא בטבלה בעמוד סבבים. חלקו: לכידות חלקי סבבים.", e: "2019: 263 חלקי 12 הם 21.9. 2020: 61 חלקי 2 הם 30.5.", h: "שני הסבבים של 2020 היו בינואר ובפברואר, ובחורף נלכדות יותר חולדות קנגורו מאשר בקיץ. אפשר להסיק שהן לא נעלמו, אבל לא ש-2020 הייתה שנה טובה יותר.", w: "כך מתחשבים במאמץ הדגימה. החישוב הזה נקרא נרמול, ובזכותו ההשוואה בין השנים הוגנת." },
+        { id: "l3-8", p: "ב-2023 וב-2025 נערכו אותו מספר סבבים. אם מספר הלכידות ירד, מה זה כבר יכול להגיד על החיות בשטח?", t: "עכשיו 2023 מול 2025, באותה דרך: את הלכידות קוראים מהגרף בעמוד לכידות, ואת הסבבים מהטבלה בעמוד סבבים. בשתי השנים נערכו 11 סבבים.", e: "2023: 605 חלקי 11 הם 55.0. 2025: 169 חלקי 11 הם 15.4." },
         { id: "l3-9", t: "לבד: בחרו מין אחר ב-Slicer, וחשבו ממוצע לכידות בסבב ל-2019, 2020, 2023 ו-2025.", e: "רשמו את המספרים בשאלה 2.", h: "המינים הנפוצים: PP, PB, OT ו-DO. השמות והקישורים לתמונות נמצאים למעלה, בחלק \"המכרסמים במחקר\". אין עמודה לשנה מסוימת? באותה שנה לא נלכד אף פרט מהמין. שימו לב: PP נלכד מעט מאוד בחורף." },
         { id: "l3-10", t: "שמרו את הקובץ.", e: "L03 נשמר ב-work." }
       ],
@@ -664,15 +670,18 @@ details[open]::details-content { opacity: 1; block-size: auto; }
         { id: "l4-1", t: "הורידו מהמודל את BRFSS_PA.csv לתיקייה {{data}}.", e: "הקובץ נמצא ב-data." },
         { id: "l4-1b", t: "שמרו את BRFSS_PA.csv בגרסת Excel: פתחו אותו ב-Excel, ולחצו על File ואז Save As. בחרו Excel Workbook (*.xlsx), ושמרו בתיקייה {{work}} בשם {{BRFSS_PA.xlsx}}. סגרו את Excel.", e: "בתיקייה work יש קובץ xlsx, ובתיקייה data נשאר ה-CSV המקורי.", h: "הקובץ גדול, ולכן הפתיחה והשמירה לוקחות כמה שניות." },
         { id: "l4-2", t: "פתחו קובץ Power BI חדש ושמרו מיד בשם {{L04_BRFSS_Cohen_Noa.pbix}}.", e: "הקובץ נמצא ב-work." },
-        { id: "l4-3", t: "בחרו [[Get data]] ואז [[Excel workbook]], בחרו את BRFSS_PA.xlsx מהתיקייה work, סמנו בחלון Navigator את הגיליון BRFSS_PA, והפעם לחצו על [[Transform data]].", e: "נפתח Power Query.", h: "בקובץ יש 60,060 שורות, והטעינה לוקחת קצת זמן.", w: "כדי לנקות את הנתונים ב-Power Query לפני שהם נכנסים לדוח, ולכן לא לוחצים על Load." },
-        { id: "l4-4", t: "עברו ל-[[entire data set]] ולחצו על העמודה education.", e: "כמה אחוזים מהתאים ריקים? רשמו." },
-        { id: "l4-5", t: "אל תמחקו את השורות שבהן education ריקה. סננו במקום זה שלוש עמודות: stratificationcategory1 שווה Education, questionid שווה Q047, ו-locationabbr שווה US.", e: "60 שורות.", h: "Q047 היא השאלה: כמה אחוזים לא עשו שום פעילות גופנית בזמנם הפנוי. US הוא כל ארצות הברית.", w: "העמודה education מלאה רק בשורות שבהן האחוז מחושב לפי השכלה. בשאר השורות החלוקה היא לפי גיל, מין, הכנסה או מוצא, או שהשורה מתארת את כל האוכלוסייה. מחיקה של השורות שבהן education ריקה תמחק את רוב הקובץ: את האחוז רשמתם בצעד הקודם." },
-        { id: "l4-6", t: "בפרופיל של education יש 5 ערכים במקום 4. בחרו [[Replace Values]], והחליפו את [[Some college or technical sch]] ב-[[Some college or technical school]]. לפני OK פתחו את Advanced options וסמנו [[Match entire cell contents]].", e: "4 ערכים.", h: "שכחתם לסמן? יופיע schoolool. מחקו את הצעד ונסו שוב.", w: "לאותה קבוצת השכלה יש בקובץ שני שמות: עד 2023 השם מקוצר ({{Some college or technical sch}}), ומ-2024 הוא מלא. ל-Power BI אלה שני ערכים שונים, ולכן בגרף הקבוצה תופיע כשני קווים. צעד אחד מאחד את שני השמות." },
-        { id: "l4-7", t: "לחצו על [[Close & Apply]]. הוסיפו [[Table]] עם yearstart, education ו-data_value, ובדקו את 2025.", e: "College graduate 12.3, Some college 21.2, High school graduate 27.9, Less than high school 41.7.", h: "data_value מופיע כטקסט? חזרו ל-Power Query ושנו את הסוג ל-Decimal Number." },
+        { id: "l4-3", p: "ה-CDC שאל אנשים בטלפון על פעילות גופנית. מה לדעתכם יהיה בשורה אחת בקובץ: תשובה של אדם אחד, או משהו אחר? את הניחוש תבדקו בשאלה 2.", t: "בחרו [[Get data]] ואז [[Excel workbook]], ובחרו את BRFSS_PA.xlsx מהתיקייה work. בחלון Navigator סמנו את הגיליון היחיד ברשימה, והפעם לחצו על [[Transform data]].", e: "נפתח Power Query.", h: "בקובץ יש 60,060 שורות, והטעינה לוקחת קצת זמן. לגיליון יש שם של קובץ ה-CSV שממנו נשמר: BRFSS_PA, או hn4x-zwk7 אם הקובץ ירד ישר מאתר ה-CDC.", w: "ב-Portal לחצתם על Load, והנתונים נכנסו לדוח כמו שהם. כאן לוחצים על Transform data, כדי לבדוק ולנקות את הנתונים ב-Power Query לפני שהם נכנסים לדוח." },
+        { id: "l4-4", p: "את האחוזים בסקר מחשבים לפי קבוצות: גיל, מין, הכנסה, השכלה או מוצא. בשורה שבה האחוז מחושב לפי גיל, מה לדעתכם כתוב בעמודה education?", t: "בלשונית View סמנו [[Column quality]] ו-[[Column profile]]. בתחתית החלון עברו ל-[[entire data set]], ולחצו על הכותרת של העמודה education.", e: "מתחת לכותרת מופיעה השורה Empty: כמה אחוזים מהתאים ריקים? רשמו את המספר לשאלה 1.", h: "לא רואים את Valid, Error ו-Empty מתחת לכותרות? סמנו את Column quality בלשונית View.", w: "לפני שמנקים, בודקים מה יש בקובץ, כמו ב-Portal. הפרופיל על כל הנתונים סופר את התאים הריקים בכל 60,060 השורות, ולא רק ב-1,000 הראשונות." },
+        { id: "l4-5", p: "לפני שמסננים: האם התאים הריקים ב-education הם מידע שחסר, או שהם ריקים בכוונה? כתבו ניחוש בסעיף א של שאלה 1.", t: "לחצו על החץ בכותרת העמודה stratificationcategory1. בטלו את הסימון של {{(Select All)}}, סמנו רק את Education, ולחצו על OK.", e: "לחצו שוב על education: השורה Empty מראה עכשיו 0%, ובפרופיל Count הוא 8,580.", h: "Empty לא ירד ל-0%? בדקו שסימנתם רק את Education, ושברשימת הצעדים (Applied Steps) נוסף צעד בשם Filtered Rows.", w: "העמודה stratificationcategory1 אומרת לפי מה חילקו את המשיבים בכל שורה: גיל, מין, הכנסה, השכלה, מוצא, או כל האוכלוסייה יחד. בעמודה education יש ערך רק בשורות שחולקו לפי השכלה. בשאר השורות התא ריק, כי אין מה לכתוב בו. כלומר, הריק כאן לא אומר שחסר מידע: הוא אומר שהשורה עוסקת בחלוקה אחרת. לכן לא מוחקים ריקים, אלא בוחרים בעצמנו את החלוקה שמעניינת אותנו." },
+        { id: "l4-5b", t: "בחץ בכותרת העמודה questionid השאירו מסומן רק את Q047, ולחצו על OK.", e: "לחצו על questionid: בפרופיל, Count הוא 3,300.", h: "Q047 לא מופיעה ברשימה? לחצו על Load more בתחתית הרשימה.", w: "בקובץ חמש שאלות על פעילות גופנית, ולכל אחת אחוזים משלה. Q047 שואלת כמה אחוזים מהמבוגרים לא עשו שום פעילות גופנית בזמנם הפנוי. בלי הסינון, לכל שנה וקבוצה יופיעו אחוזים של שאלות שונות, ואין טעם להשוות ביניהם." },
+        { id: "l4-5c", t: "בחץ בכותרת העמודה locationabbr השאירו מסומן רק את US, ולחצו על OK.", e: "60 שורות (Count בפרופיל).", h: "US לא מופיע ברשימה? לחצו על Load more בתחתית הרשימה.", w: "US הוא האומדן לכל ארצות הברית. בלי הסינון, לכל שנה וקבוצה יש 55 שורות: אחת לכל מדינה וטריטוריה, ואחת לכל ארצות הברית. עכשיו נשארה שורה אחת לכל שנה וקבוצת השכלה." },
+        { id: "l4-6", p: "הסקר נערך כבר שנים רבות. בפרופיל של education יש 5 ערכים, אבל יש רק 4 קבוצות השכלה. אילו שני ערכים הם בעצם אותה קבוצה, ומה השתנה בין השנים?", t: "לחצו על הכותרת של education, ואז על [[Replace Values]]. בשדה Value To Find הדביקו [[Some college or technical sch]], ובשדה Replace With [[Some college or technical school]]. פתחו את Advanced options, סמנו [[Match entire cell contents]], ולחצו על OK.", e: "בפרופיל של education יש 4 ערכים (4 distinct).", h: "מופיע schoolool? לא סימנתם Match entire cell contents. מחקו את הצעד (ה-X שליד Replaced Value ברשימת הצעדים) ונסו שוב. ההחלפה לא שינתה כלום? לחצו קודם על העמודה education: Replace Values פועל רק על העמודה שבחרתם.", w: "עד 2023 שם הקבוצה נשמר בקובץ מקוצר ({{Some college or technical sch}}), ומ-2024 הוא נשמר מלא. ל-Power BI אלה שני ערכים שונים, ולכן בגרף הקבוצה הייתה מופיעה כשני קווים: אחד עד 2023, ואחד מ-2024. בלי Match entire cell contents, Power BI מחליף גם חלק מתא: הוא מוצא את השם המקוצר בתוך השם המלא, ומוסיף לו עוד ool. ההחלפה נשמרת ברשימת הצעדים (Applied Steps), ה\"מתכון\" של Power Query, ולכן היא תתקן גם קובץ חדש של הסקר." },
+        { id: "l4-7", p: "לפני שבונים את הטבלה: נחשו באיזו קבוצת השכלה יהיה האחוז הגבוה ביותר של מבוגרים שלא עשו שום פעילות גופנית.", t: "לחצו על [[Close & Apply]]. הוסיפו [[Table]] וגררו אליו את yearstart, education ו-data_value. בחץ שליד yearstart, באזור השדות של הטבלה, בחרו [[Don't summarize]].", e: "60 שורות, שורה לכל שנה וקבוצה. ב-2025: College graduate 12.3, Some college or technical school 21.2, High school graduate 27.9, Less than high school 41.7. האם הניחוש שלכם התאים?", h: "בטבלה רק 4 שורות, ובמקום שנה מופיע 30,270? Power BI חיבר את 15 השנים. בחרו Don't summarize בחץ שליד yearstart. data_value מופיע כטקסט? חזרו ל-Power Query ושנו את הסוג ל-Decimal Number.", w: "yearstart הוא מספר, ולכן Power BI מנסה לחבר אותו, כמו את year ב-Portal. שנה היא תווית ולא כמות: Don't summarize מציג כל שנה בשורה משלה, ולצדה את האחוז של אותה שנה." },
         { id: "l4-8", t: "שמרו את הקובץ.", e: "L04 נשמר ב-work." }
       ],
       qs: [
-        { id: "l4-q1", q: "למה לא מחקנו את השורות הריקות ב-education? הסבירו במילים שלכם." },
+        { id: "l4-q1", q: "התאים הריקים ב-education.", ph: "א.\nב.",
+          parts: ["א. לפני צעד 6 כתבו ניחוש: התאים הריקים הם מידע שחסר, או שהם ריקים בכוונה?", "ב. אחרי צעד 6: האם צדקתם? למה לא מחקנו את השורות שבהן education ריקה? הסבירו במילים שלכם. (ההסבר בתיבה \"למה עושים את זה?\" של צעד 6)"] },
         { id: "l4-q2", q: "מה מייצגת שורה אחת במאגר הזה?", ph: "א.\nב.",
           parts: ["א. מה מתועד בשורה אחת ב-BRFSS? (היעזרו בעמודות yearstart, locationabbr, question, education ו-data_value)", "ב. במה זה שונה משורה ב-Portal?"] }
       ],
@@ -684,9 +693,9 @@ details[open]::details-content { opacity: 1; block-size: auto; }
       intro: "המטרה: אחוז המבוגרים בארצות הברית שעושים אימוני כוח פעמיים בשבוע או יותר, לפי גיל.",
       steps: [
         { id: "l5-1", t: "פתחו את L04 ושמרו בשם {{L05_BRFSS_Cohen_Noa.pbix}}. ב-Power Query, ברשימת השאילתות (Queries) שבצד שמאל, לחצו לחיצה ימנית על השאילתה ובחרו [[Duplicate]].", e: "יש שאילתה שנייה עם אותם צעדים.", w: "העותק מקבל את כל המתכון של שיעור 4, ומשנים בו רק את מה שצריך. השאילתה המקורית נשארת כמו שהיא." },
-        { id: "l5-2", t: "נקודת בדיקה 1: אחרי השינויים שלכם נשארות 36 שורות.", e: "36 שורות.", h: "השאלה על אימוני כוח היא Q046. הגיל נמצא בקטגוריה Age (years)." },
+        { id: "l5-2", p: "לפני שמשנים: אילו שני סינונים מהמתכון של שיעור 4 צריך להחליף, כדי לקבל אימוני כוח לפי גיל? כתבו אותם לעצמכם, ורק אז שנו.", t: "נקודת בדיקה 1: אחרי השינויים שלכם נשארות 36 שורות.", e: "36 שורות.", h: "השאלה על אימוני כוח היא Q046. הגיל נמצא בקטגוריה Age (years)." },
         { id: "l5-3", t: "נקודת בדיקה 2: ב-2023, בגילי 18 עד 24 הערך הוא 51.2, ובגיל 65 ומעלה 38.1.", e: "שני הערכים מתאימים." },
-        { id: "l5-4", t: "בדקו אילו שנים יש בטבלה ואילו חסרות.", e: "רשמו בשאלה 1." },
+        { id: "l5-4", p: "שנה שאין בה ערך: מה קרה בה בפועל? שאלו את האנשים והם לא ענו, או שבאותה שנה לא שאלו בכלל?", t: "בדקו אילו שנים יש בטבלה ואילו חסרות.", e: "רשמו בשאלה 1." },
         { id: "l5-5", opt: true, t: "Q047 במדינה שהמורה בחר, לפי Race/Ethnicity. כמה ערכים חסרים? מה כתוב בעמודה data_value_footnote?", e: "רשמו בשאלה 2." },
         { id: "l5-6", t: "שמרו את הקובץ.", e: "L05 נשמר ב-work." }
       ],
@@ -704,9 +713,9 @@ details[open]::details-content { opacity: 1; block-size: auto; }
       goal: "היום תבנו גרף קווים, ותבדקו בו את הניקוי משיעור 4: אם יש בגרף קו מיותר, משהו בניקוי לא הצליח. בגרף תמצאו גם דפוס שחוזר בשנים 2011 עד 2020, ותבדקו אם הוא נובע משינוי אצל אנשים או מהשאלון.",
       steps: [
         { id: "l6-1", t: "פתחו את L05 ושמרו בשם {{L06_BRFSS_Cohen_Noa.pbix}}.", e: "L06 נמצא ב-work." },
-        { id: "l6-2", t: "הוסיפו [[Line chart]] מהטבלה של שיעור 4: yearstart בציר X, data_value בציר Y (בחץ שלו בחרו [[Average]]), ו-education ב-[[Legend]].", e: "4 קווים.", h: "יש 5 קווים? ה-Replace משיעור 4 לא עבד. חזרו אליו." },
-        { id: "l6-3", t: "הסתכלו על השנים 2011 עד 2020. באילו שנים רוב הקווים גבוהים יותר: בשנים הזוגיות (למשל 2012 ו-2014) או בשנים האי-זוגיות (למשל 2011 ו-2013)?", e: "רשמו בשאלה 1." },
-        { id: "l6-4", t: "השוו רק שנים אי-זוגיות, למשל 2011 מול 2023.", e: "Less than high school: 39.0 ב-2011, ו-44.8 ב-2023." },
+        { id: "l6-2", p: "בשיעור 4 איחדתם את קבוצות ההשכלה. כמה קווים אמורים להופיע בגרף? ואם יופיעו יותר, מה זה יגיד על הניקוי?", t: "הוסיפו [[Line chart]] מהטבלה של שיעור 4: yearstart בציר X, data_value בציר Y (בחץ שלו בחרו [[Average]]), ו-education ב-[[Legend]].", e: "4 קווים.", h: "יש 5 קווים? ה-Replace משיעור 4 לא עבד. חזרו אליו." },
+        { id: "l6-3", p: "הרגלים של מיליוני אנשים משתנים לאט. איך אתם מצפים שהקווים ייראו משנה לשנה: חלקים או קופצים?", t: "הסתכלו על השנים 2011 עד 2020. באילו שנים רוב הקווים גבוהים יותר: בשנים הזוגיות (למשל 2012 ו-2014) או בשנים האי-זוגיות (למשל 2011 ו-2013)?", e: "רשמו בשאלה 1." },
+        { id: "l6-4", p: "אם הדפוס נובע מהשאלון ולא מהאנשים, אילו שנים הוגן להשוות זו לזו?", t: "השוו רק שנים אי-זוגיות, למשל 2011 מול 2023.", e: "Less than high school: 39.0 ב-2011, ו-44.8 ב-2023." },
         { id: "l6-5", t: "שמרו את הקובץ.", e: "L06 נשמר ב-work." }
       ],
       qs: [
@@ -725,8 +734,8 @@ details[open]::details-content { opacity: 1; block-size: auto; }
         { id: "l7-1", t: "הורידו מהמודל את Portal_rodents_2016_2026_update.csv לתיקייה {{data}}.", e: "הקובץ נמצא ב-data, ליד הקובץ הישן." },
         { id: "l7-1b", t: "שמרו את קובץ העדכון בגרסת Excel: פתחו אותו ב-Excel, ולחצו על File ואז Save As. בחרו Excel Workbook (*.xlsx), ושמרו בתיקייה {{work}} בשם {{Portal_rodents_2016_2026_update.xlsx}}. לפני השמירה שנו את שם הגיליון (לחיצה כפולה על הלשונית בתחתית) ל-Portal_rodents_2016_2026, כמו בקובץ הישן.", e: "בתיקייה work יש שני קובצי xlsx, והגיליון בכל אחד נקרא Portal_rodents_2016_2026.", h: "שם הגיליון חייב להיות זהה. אחרת Power BI לא ימצא את הגיליון כשתחליפו מקור, ויופיע בו שגיאה.", w: "הצעד Navigation ברשימת הצעדים בוחר גיליון לפי שמו. גיליון בשם אחר לא ימצא." },
         { id: "l7-2", t: "פתחו את L03 ושמרו בשם {{L07_Portal_Cohen_Noa.pbix}}.", e: "L07 נמצא ב-work." },
-        { id: "l7-3", t: "בחץ שליד Transform data בחרו [[Data source settings]] ואז [[Change Source]]. לחצו על Browse ובחרו ב-work את קובץ ה-xlsx של העדכון. לחצו על OK ואז על Close, ובפס הצהוב לחצו על [[Apply changes]].", e: "הכרטיס עולה מ-14,492 ל-14,548.", h: "המספרים לא השתנו? לחצו על Refresh.", w: "ב-Data source settings רואים מאיזה קובץ Power BI קורא את הנתונים, וב-Change Source בוחרים במקומו את הקובץ החדש. אחרי Apply changes, Power BI מריץ את המתכון מחדש, הפעם על הקובץ החדש." },
-        { id: "l7-4", t: "בדקו את עמוד הסבבים. בעמוד לכידות בחרו DM ב-Slicer ובדקו את הגרף.", e: "ב-2026: 6 סבבים במקום 5, ו-181 לכידות של DM במקום 159." },
+        { id: "l7-3", p: "לפני ההחלפה: בקובץ החדש יש 61 שורות נוספות, מיוני 2026. האם כל שורה חדשה תעבור את שני הכללים של שיעור 2? נחשו בכמה יעלה הכרטיס.", t: "בחץ שליד Transform data בחרו [[Data source settings]] ואז [[Change Source]]. לחצו על Browse ובחרו ב-work את קובץ ה-xlsx של העדכון. לחצו על OK ואז על Close, ובפס הצהוב לחצו על [[Apply changes]].", e: "הכרטיס עולה מ-14,492 ל-14,548.", h: "המספרים לא השתנו? לחצו על Refresh.", w: "ב-Data source settings רואים מאיזה קובץ Power BI קורא את הנתונים, וב-Change Source בוחרים במקומו את הקובץ החדש. אחרי Apply changes, Power BI מריץ את המתכון מחדש, הפעם על הקובץ החדש." },
+        { id: "l7-4", p: "ביוני 2026 החוקרים יצאו לשטח עוד פעם אחת. מה אמור לקרות למספר הסבבים ב-2026?", t: "בדקו את עמוד הסבבים. בעמוד לכידות בחרו DM ב-Slicer ובדקו את הגרף.", e: "ב-2026: 6 סבבים במקום 5, ו-181 לכידות של DM במקום 159." },
         { id: "l7-5", t: "הבדיקה המעשית: המורה יחלק את המשימות.", e: "עובדים לבד." },
         { id: "l7-6", t: "שמרו את הקובץ.", e: "L07 נשמר ב-work." }
       ],
@@ -763,7 +772,7 @@ details[open]::details-content { opacity: 1; block-size: auto; }
     "Legend": "באזור השדות של גרף הקווים, בחלונית Visualizations",
     "Save as": "בתפריט File",
     "Summarization": "בלשונית Column tools, שנפתחת בסרגל העליון אחרי לחיצה על עמודה ב-Table view",
-    "Don't summarize": "ברשימה של Summarization, בלשונית Column tools",
+    "Don't summarize": "בחץ הקטן שליד שם השדה, באזור השדות בחלונית Visualizations. או ברשימה של Summarization, בלשונית Column tools",
     "Column quality": "ב-Power Query, בלשונית View, בקבוצה Data Preview",
     "Column distribution": "ב-Power Query, בלשונית View, בקבוצה Data Preview",
     "Column profile": "ב-Power Query, בלשונית View, בקבוצה Data Preview",
@@ -774,7 +783,7 @@ details[open]::details-content { opacity: 1; block-size: auto; }
     "Remove Empty": "בחץ שבכותרת העמודה, ב-Power Query",
     "Choose Columns": "ב-Power Query, בלשונית Home, בקבוצה Manage Columns",
     "Close & Apply": "ב-Power Query, בלשונית Home, הכפתור הראשון משמאל",
-    "Replace Values": "ב-Power Query, בלשונית Home או בלשונית Transform",
+    "Replace Values": "ב-Power Query, בלשונית Home או בלשונית Transform. קודם לוחצים על העמודה שבה מחליפים",
     "Match entire cell contents": "בחלון Replace Values, תחת Advanced options",
     "Duplicate": "ב-Power Query: לחיצה ימנית על השאילתה ברשימת Queries שבצד שמאל",
     "Applied Steps": "ב-Power Query, בחלונית Query Settings שבצד ימין",
@@ -945,7 +954,7 @@ details[open]::details-content { opacity: 1; block-size: auto; }
         b.addEventListener("click", function () {
           st.textContent = "הקובץ בהכנה...";
           getDownloads().then(function (api) {
-            if (!api) { st.textContent = "ההורדה לא זמינה בתצוגה הזו. אפשר להוריד את הקובץ מהמודל."; return; }
+            if (!api) { var lk = document.createElement("a"); lk.href = f.path; lk.download = f.name; document.body.appendChild(lk); lk.click(); lk.remove(); st.textContent = "ההורדה התחילה. אם הקובץ לא ירד, אפשר להוריד אותו מהמודל. אחר כך מעבירים אותו לתיקייה data."; return; }
             return fetch(f.path).then(function (r) {
               if (!r.ok) throw new Error("fetch " + r.status);
               return r.blob();
@@ -1234,12 +1243,31 @@ details[open]::details-content { opacity: 1; block-size: auto; }
       cb.setAttribute("aria-labelledby", "tx-" + s.id);
       var body = el("div", "step-body");
       var tx = el("div", "s-text"); tx.id = "tx-" + s.id;
-      tx.appendChild(el("span", "s-num", (i + 1) + ". "));
-      if (s.opt) tx.appendChild(el("span", "s-badge", "אתגר"));
+      if (!s.p) {
+        tx.appendChild(el("span", "s-num", (i + 1) + ". "));
+        if (s.opt) tx.appendChild(el("span", "s-badge", "אתגר"));
+      }
       tx.appendChild(rich(s.t));
       var main = el("div", "s-main");
+      if (s.p) {
+        var pb = el("div", "think");
+        var ph = el("span", "think-label");
+        ph.appendChild(el("span", "s-num", (i + 1) + ". "));
+        if (s.opt) ph.appendChild(el("span", "s-badge", "אתגר"));
+        ph.appendChild(document.createTextNode("קודם חושבים"));
+        pb.appendChild(ph);
+        var pp = el("p", ""); pp.appendChild(rich(s.p)); pb.appendChild(pp);
+        main.appendChild(pb);
+      }
       main.appendChild(tx);
-      if (s.w) {
+      if (s.w && s.p) {
+        // The why box answers the think question, so it opens only after the student has guessed
+        var wd = el("details", "why why-late");
+        var ws = el("summary", "why-label"); ws.innerHTML = BULB_ICON;
+        ws.appendChild(document.createTextNode("למה עושים את זה? (פתחו אחרי שביצעתם את הצעד)"));
+        wd.appendChild(ws); var wp2 = el("p", ""); wp2.appendChild(rich(s.w)); wd.appendChild(wp2);
+        main.appendChild(wd);
+      } else if (s.w) {
         var wb = el("div", "why");
         var wl = el("span", "why-label"); wl.innerHTML = BULB_ICON;
         wl.appendChild(document.createTextNode("למה עושים את זה?"));
@@ -1267,7 +1295,7 @@ details[open]::details-content { opacity: 1; block-size: auto; }
       }
       cb.addEventListener("change", function () { set(cb.checked); });
       li.addEventListener("click", function (ev) {
-        if (ev.target.closest("button, a, summary, details, input, textarea, code, .why")) return;
+        if (ev.target.closest("button, a, summary, details, input, textarea, code, .why, .think")) return;
         set(!cb.checked);
       });
       ol.appendChild(li);
