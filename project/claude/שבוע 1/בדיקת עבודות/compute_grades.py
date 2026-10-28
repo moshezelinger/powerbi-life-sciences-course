@@ -17,9 +17,9 @@ compute_grades.py: חישוב ציונים לפי המחוון של שיעורי
   ]
 }
 בשיעור שלא הוגש ("submitted": false) אפשר להשמיט את החלקים שלו, והם נספרים 0.
-ב-L1.S וב-L2.S רושמים את הנקודות שהצילום קיבל לפי המחוון. אם השיעור מופיע ב-identical_screens
-(צילום זהה לצילום של תלמיד אחר), הסקריפט נותן חצי מהנקודות האלה. foreign_file: true (שם קובץ של
-תלמיד אחר בכותרת הצילום) מוריד נקודה אחת מהציון הסופי. שני השדות לא חובה.
+ב-L1.S וב-L2.S רושמים את הנקודות שהצילום קיבל לפי המחוון. כל שיעור שמופיע ב-identical_screens
+(קובץ צילום זהה לקובץ של תלמיד אחר) מוריד נקודה אחת מהציון הסופי. foreign_file: true (שם קובץ של
+תלמיד אחר בכותרת הצילום) מוריד עוד נקודה אחת. שני השדות לא חובה.
 
 מה הוא עושה:
   1. בודק שכל חלק קיים, בין 0 למקסימום, בקפיצות של 0.5.
@@ -63,6 +63,7 @@ MAX_TOTAL = 100
 FLAGS = ("none", "medium", "strong")
 SCREENS = {"L1": "L1.S", "L2": "L2.S"}
 FOREIGN_FILE_PENALTY = 1
+IDENTICAL_PENALTY = 1
 
 
 def half_up(x):
@@ -97,8 +98,6 @@ def grade_student(st, errors):
         if not isinstance(val, (int, float)) or val < 0 or val > mx or (val * 2) % 1 != 0:
             errors.append("%s: הערך של %s הוא %r, צריך מספר בין 0 ל-%d בקפיצות של 0.5" % (name, pid, val, mx))
             val = 0.0
-        if pid == SCREENS.get(les) and les in identical:
-            val = val / 2
         res["parts"][pid] = val
         res[les] += val
     for pid, mx, _ in BONUS:
@@ -112,7 +111,7 @@ def grade_student(st, errors):
     if flag not in FLAGS:
         errors.append("%s: copy_flag חייב להיות אחד מ-%s" % (name, ", ".join(FLAGS)))
         flag = "none"
-    penalty = FOREIGN_FILE_PENALTY if st.get("foreign_file") else 0
+    penalty = IDENTICAL_PENALTY * len(identical) + (FOREIGN_FILE_PENALTY if st.get("foreign_file") else 0)
     raw = res["L1"] + res["L2"] + res["bonus"] - penalty
     res.update(name=name, folder=st.get("folder", ""), raw=raw, total=max(0, min(MAX_TOTAL, half_up(raw))),
                identical=identical, penalty=penalty,
@@ -125,7 +124,7 @@ def write_csv(path, rows):
     with open(path, "w", encoding="utf-8-sig", newline="") as f:
         w = csv.writer(f)
         w.writerow(["שם", "תיקייה", "שיעור 1 (מתוך 50)", "שיעור 2 (מתוך 50)", "בונוס (עד 5)",
-                    "צילום זהה (חצי מנקודות הצילום)", "שם קובץ של אחר (הורדה)", "ציון סופי",
+                    "צילום זהה (שיעורים)", "הורדות", "ציון סופי",
                     "חשד להעתקה", "לבדיקת מורה", "טעויות נפוצות"])
         for r in rows:
             w.writerow([r["name"], r["folder"], fmt(r["L1"]), fmt(r["L2"]), fmt(r["bonus"]),
