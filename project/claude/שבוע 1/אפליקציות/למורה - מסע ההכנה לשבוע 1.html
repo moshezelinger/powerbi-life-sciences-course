@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<!-- עותק של קוד האפליקציה "למורה - מסע ההכנה לשבוע 1" (גרסה 7, 9.10.2026: מפת המסע מצומצמת גם במכשירים שבהם התכונה hidden לא מוסתרת, ונוספה שכבת תנועה וחומרים לפי apple-design; התוכן, המזהים ומפתחות השמירה לא השתנו). הגרסה החיה: https://claude.ai/artifact/RmK5pMVfsmc2q2gFxG9ebR. לעריכה: לקרוא את הקישור, לשנות ולפרסם מחדש לאותו קישור. -->
+<!-- עותק של קוד האפליקציה "למורה - מסע ההכנה לשבוע 1" (גרסה 9, 28.10.2026: כשהעמוד פתוח מחוץ ל-Claude (למשל ב-GitHub Pages), כפתור ההורדה מוריד את הקובץ מהתיקייה data שליד העמוד. התוכן לא השתנה. גרסה 8, 26.10.2026: תחנה 4 נכתבה מחדש: הדגמה בשמונה צעדים, עם הנימוק לכל סינון, אתגרים חדשים (Load more, שם הגיליון, Replace בלי בחירת עמודה, סכום של שנים, "מחיקה נותנת אותה תוצאה") ושאלת בדיקה עצמית שנייה. המזהים ומפתחות השמירה לא השתנו. גרסה 7, 9.10.2026: מפת המסע מצומצמת גם במכשירים שבהם התכונה hidden לא מוסתרת, ונוספה שכבת תנועה וחומרים לפי apple-design; התוכן, המזהים ומפתחות השמירה לא השתנו). הגרסה החיה: https://claude.ai/artifact/RmK5pMVfsmc2q2gFxG9ebR. לעריכה: לקרוא את הקישור, לשנות ולפרסם מחדש לאותו קישור. עותק ב-GitHub: https://github.com/moshezelinger/powerbi-life-sciences-course, בתיקייה project/claude/שבוע 1/אפליקציות. -->
 <title>למורה - מסע ההכנה לשבוע 1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -685,7 +685,7 @@ details[open]::details-content { opacity: 1; block-size: auto; }
                 <li><b>מספר השורות:</b> ב-Table view, בשורת המצב שבתחתית החלון.</li>
                 <li><b><bdi>Card</bdi>, <bdi>Table</bdi>, <bdi>Slicer</bdi>, <bdi>Clustered column chart</bdi> ו-<bdi>Line chart</bdi>:</b> בחלונית Visualizations שבצד ימין.</li>
                 <li><b>רשימת העמודות:</b> בחלונית Data שבצד ימין, ליד Visualizations.</li>
-                <li><b><bdi>Count</bdi>, <bdi>Average</bdi> ו-<bdi>Count (Distinct)</bdi>:</b> בחץ הקטן שליד שם העמודה, באזור השדות של הגרף בחלונית Visualizations.</li>
+                <li><b><bdi>Count</bdi>, <bdi>Average</bdi>, <bdi>Count (Distinct)</bdi> ו-<bdi>Don't summarize</bdi>:</b> בחץ הקטן שליד שם העמודה, באזור השדות של הגרף או הטבלה בחלונית Visualizations.</li>
                 <li><b><bdi>Format visual</bdi> (סמל המברשת):</b> בחלונית Visualizations, כשהגרף מסומן. בראש החלונית יש תיבת חיפוש.</li>
                 <li><b><bdi>Display units</bdi>:</b> בתוך Format visual. הכי מהר: מקלידים Display units בתיבת החיפוש של Format visual.</li>
                 <li><b><bdi>X-axis</bdi> ואחריו <bdi>Type</bdi>:</b> בתוך Format visual, כשגרף העמודות מסומן.</li>
@@ -709,8 +709,9 @@ details[open]::details-content { opacity: 1; block-size: auto; }
                 <li><b><bdi>Column quality</bdi>, <bdi>Column distribution</bdi> ו-<bdi>Column profile</bdi>:</b> בלשונית View, בקבוצה Data Preview.</li>
                 <li><b><bdi>Column profiling based on top 1000 rows</bdi>:</b> בשורת המצב שבתחתית החלון, משמאל. לחיצה עליו מאפשרת לבחור entire data set.</li>
                 <li><b><bdi>Number Filters</bdi> ו-<bdi>Remove Empty</bdi>:</b> בחץ שבכותרת העמודה.</li>
+                <li><b><bdi>Load more</bdi>:</b> בתחתית הרשימה שנפתחת מהחץ בכותרת העמודה. לוחצים עליו כשערך שמחפשים לא מופיע ברשימה.</li>
                 <li><b><bdi>Choose Columns</bdi>:</b> בלשונית Home, בקבוצה Manage Columns.</li>
-                <li><b><bdi>Replace Values</bdi>:</b> בלשונית Home או בלשונית Transform. Advanced options נמצא בתוך החלון שנפתח.</li>
+                <li><b><bdi>Replace Values</bdi>:</b> בלשונית Home או בלשונית Transform, אחרי שלוחצים על העמודה. Advanced options נמצא בתוך החלון שנפתח.</li>
                 <li><b>שינוי שם של עמודה:</b> לחיצה כפולה על כותרת העמודה.</li>
                 <li><b>סוג הנתונים, למשל <bdi>Decimal Number</bdi>:</b> בסמל שמשמאל לשם העמודה, בכותרת (ABC, 123 או 1.2).</li>
                 <li><b><bdi>Close &amp; Apply</bdi>:</b> בלשונית Home, הכפתור הראשון משמאל.</li>
@@ -750,6 +751,7 @@ details[open]::details-content { opacity: 1; block-size: auto; }
         <li>איך year מוצג בציר: 2016 או 2,016</li>
         <li>איך הכרטיס מקצר מספרים, ואם Remove Empty מוריד את כל השורות הריקות</li>
         <li>כמה זמן לוקחות ההורדה והטעינה של BRFSS_PA.csv</li>
+        <li>שיעור 4: אם צריך ללחוץ על Load more כדי למצוא את Q047 ואת US ברשימה שבחץ, ואם Column quality דלוק בקובץ חדש</li>
       </ul>
     </section>
     <section>
@@ -839,7 +841,7 @@ details[open]::details-content { opacity: 1; block-size: auto; }
     "Legend": "באזור השדות של גרף הקווים, בחלונית Visualizations",
     "Save as": "בתפריט File",
     "Summarization": "בלשונית Column tools, שנפתחת בסרגל העליון אחרי לחיצה על עמודה ב-Table view",
-    "Don't summarize": "ברשימה של Summarization, בלשונית Column tools",
+    "Don't summarize": "בחץ הקטן שליד שם השדה, באזור השדות בחלונית Visualizations. או ברשימה של Summarization, בלשונית Column tools",
     "Column quality": "ב-Power Query, בלשונית View, בקבוצה Data Preview",
     "Column distribution": "ב-Power Query, בלשונית View, בקבוצה Data Preview",
     "Column profile": "ב-Power Query, בלשונית View, בקבוצה Data Preview",
@@ -850,7 +852,7 @@ details[open]::details-content { opacity: 1; block-size: auto; }
     "Remove Empty": "בחץ שבכותרת העמודה, ב-Power Query",
     "Choose Columns": "ב-Power Query, בלשונית Home, בקבוצה Manage Columns",
     "Close & Apply": "ב-Power Query, בלשונית Home, הכפתור הראשון משמאל",
-    "Replace Values": "ב-Power Query, בלשונית Home או בלשונית Transform",
+    "Replace Values": "ב-Power Query, בלשונית Home או בלשונית Transform. קודם לוחצים על העמודה שבה מחליפים",
     "Match entire cell contents": "בחלון Replace Values, תחת Advanced options",
     "Duplicate": "ב-Power Query: לחיצה ימנית על השאילתה ברשימת Queries שבצד שמאל",
     "Applied Steps": "ב-Power Query, בחלונית Query Settings שבצד ימין",
@@ -1073,36 +1075,45 @@ details[open]::details-content { opacity: 1; block-size: auto; }
 
     { n: 4, tab: "שיעור 4", title: "מאגר חדש: סקר בריאות ופעילות גופנית (BRFSS)", sub: "מנקים נתונים במאגר שבו תא ריק אינו מסמן בהכרח מידע חסר", data: "BRFSS",
       gist: "משמעות הריקים: מאגר חדש, שבו תא ריק לא תמיד מסמן מידע חסר", subShort: "רשימת הצעדים, טבלה ו-2 תשובות",
-      idea: "במאגר חדש התלמידים משתמשים באותם כלים, ונתקלים בבעיות אחרות: תא ריק שהוא חלק מהמבנה, ושם של קבוצה שהשתנה בין השנים.",
+      idea: "במאגר חדש התלמידים משתמשים באותם כלים, ונתקלים בבעיות אחרות: תא ריק שהוא חלק מהמבנה, ושם של קבוצה שהשתנה בין השנים. כל סינון בשיעור עונה על שאלה: לפי מה חילקו את המשיבים, על איזו שאלה מסתכלים, ובאיזה מקום.",
       goals: ["התלמידים מיישמים במאגר חדש את מה שלמדו ב-Portal.", "הם מבינים שתא ריק יכול להיות חלק מהמבנה, ולא מידע חסר.", "שם של קבוצת השכלה נכתב בקובץ בשתי צורות, והתלמידים מאחדים אותן בצעד אחד ב-Power Query. אם יגיע קובץ חדש, הצעד הזה יתקן גם אותו."],
       times: [["פתיחה", 5, "teach"], ["הדגמה", 12, "teach"], ["תרגול", 23, "practice"], ["סיכום", 5, "wrap"]],
       challenges: [
         { k: "הבנה", p: "שורה תיראה כמו אדם.", f: "כל שורה היא אחוז: מדינה, שנה, שאלה וקבוצה אחת. לכל מדינה, שנה ושאלה יש 28 שורות: סך הכול, 6 קבוצות גיל, 4 של השכלה, 2 של מגדר, 7 של הכנסה ו-8 של מוצא." },
-        { k: "הבנה", p: "ריק פירושו חסר, ולכן מוחקים.", f: "education ריקה ב-86% מהשורות, כי רק שורות של פילוח ההשכלה ממלאות אותה. מחיקה תמחק את רוב המאגר. מסננים לפי stratificationcategory1." },
-        { k: "תוכנה", p: "Replace Values בלי Match entire cell contents.", f: "השורות של 2024 ו-2025 הופכות ל-technical schoolool. מוחקים את הצעד, ובחלון ההחלפה פותחים את Advanced options ומסמנים את האפשרות." },
+        { k: "הבנה", p: "ריק פירושו חסר, ולכן מוחקים.", f: "education ריקה ב-86% מהשורות, כי רק שורות שחולקו לפי השכלה ממלאות אותה. מסננים לפי stratificationcategory1, וכך בוחרים את החלוקה במפורש." },
+        { k: "הבנה", p: "\"אם נמחק את הריקים ב-education, נקבל אותן 8,580 שורות. אז למה לסנן?\"", f: "נכון, כאן התוצאה זהה. אבל הנימוק של המחיקה שגוי: הריק אומר שהשורה עוסקת בחלוקה אחרת, ולא שחסר בה מידע. מי שמוחק כי ריק זה חסר יטעה במאגר הבא. ריקים אמיתיים יש ב-data_value: ב-12% מהשורות האחוז לא דווח." },
+        { k: "תוכנה", p: "Q047 או US לא מופיעים ברשימה שבחץ.", f: "הרשימה נבנית מהשורות הראשונות בלבד, ובקובץ המלא כל 1,000 השורות הראשונות הן Q043 מ-2011. לוחצים על Load more, או מסננים לפי הסדר: Education, Q047, US." },
+        { k: "תוכנה", p: "ב-Navigator הגיליון נקרא hn4x-zwk7.", f: "Excel נותן לגיליון את שם קובץ ה-CSV, וזה השם שהאתר של ה-CDC נותן לקובץ. לעבודה זה לא משנה. כדי שהשם יתאים להוראות, משנים את שם ה-CSV ל-BRFSS_PA.csv לפני שפותחים אותו ב-Excel ומעלים למודל." },
+        { k: "תוכנה", p: "Replace Values לא שינה כלום, או יצר schoolool.", f: "לא שינה כלום: לא לחצו קודם על העמודה education. schoolool: לא סימנו Match entire cell contents, ולכן השם המקוצר הוחלף גם בתוך השם המלא. מוחקים את הצעד ומנסים שוב." },
+        { k: "תוכנה", p: "בטבלה 4 שורות, ובמקום שנה מופיע 30,270.", f: "Power BI חיבר את 15 השנים. בחץ שליד yearstart בוחרים Don't summarize." },
         { k: "תוכנה", p: "data_value זוהה כטקסט.", f: "משנים את הסוג ל-Decimal Number." }
       ],
       steps: [
         { t: "שומרים את BRFSS_PA.csv בגרסת Excel: פותחים ב-Excel, Save As, Excel Workbook (xlsx), בתיקייה work בשם BRFSS_PA.xlsx.", e: "קובץ xlsx ב-work" },
-        { t: "פותחים קובץ חדש ושומרים בשם L04_BRFSS. בוחרים [[Get data]] ואז [[Excel workbook]], בוחרים את BRFSS_PA.xlsx, ב-Navigator מסמנים את הגיליון ולוחצים על [[Transform data]].", e: "נפתח Power Query" },
-        { t: "עוברים ל-[[entire data set]] ופותחים את הפרופיל של education.", e: "60,060 שורות, ו-86% מהתאים ב-education ריקים" },
-        { t: "מסננים שלוש עמודות: stratificationcategory1 שווה Education, questionid שווה Q047, ו-locationabbr שווה US.", e: "60 שורות: 15 שנים כפול 4 רמות השכלה" },
-        { t: "בפרופיל של education יש 5 ערכים. בוחרים [[Replace Values]], מחליפים את Some college or technical sch ב-Some college or technical school, ובתוך Advanced options מסמנים [[Match entire cell contents]].", e: "4 ערכים" },
-        { t: "לוחצים על [[Close & Apply]], מוסיפים Table עם yearstart, education ו-data_value, ובודקים את 2025.", e: "College graduate 12.3, Some college 21.2, High school graduate 27.9, Less than high school 41.7" }
+        { t: "פותחים קובץ חדש ושומרים בשם L04_BRFSS. בוחרים [[Get data]] ואז [[Excel workbook]], בוחרים את BRFSS_PA.xlsx, ב-Navigator מסמנים את הגיליון היחיד ולוחצים על [[Transform data]]. מזכירים: ב-Portal לחצנו על Load, וכאן קודם בודקים ומנקים.", e: "נפתח Power Query" },
+        { t: "בלשונית View מסמנים [[Column quality]] ו-[[Column profile]], עוברים ל-[[entire data set]] ולוחצים על education. שואלים את הכיתה למה 86% מהתאים ריקים, ומקשיבים לניחושים בלי לענות.", e: "60,060 שורות, ו-86% מהתאים ב-education ריקים (Empty)" },
+        { t: "מסננים את stratificationcategory1 ל-Education בלבד, ולוחצים שוב על education. זה רגע הגילוי: הריקים נעלמו, כי הם היו שייכים לשורות שחולקו לפי גיל, מין, הכנסה או מוצא. הריק היה חלק מהמבנה, ולא מידע חסר.", e: "Empty ב-education: 0%. Count: 8,580" },
+        { t: "מסננים את questionid ל-Q047, ומסבירים במשפט: בקובץ חמש שאלות, וכדי להשוות בין קבוצות צריך שאלה אחת.", e: "Count: 3,300" },
+        { t: "מסננים את locationabbr ל-US, האומדן לכל ארצות הברית, ומראים שנשארה שורה אחת לכל שנה וקבוצת השכלה. סדר הסינונים חשוב: מי שמתחיל מ-questionid יראה ברשימה רק את Q043, עד שילחץ על Load more.", e: "60 שורות: 15 שנים כפול 4 רמות השכלה" },
+        { t: "שואלים: בפרופיל של education יש 5 ערכים, אבל 4 קבוצות. מה קרה? לוחצים על education, בוחרים [[Replace Values]], מחליפים את Some college or technical sch ב-Some college or technical school, ובתוך Advanced options מסמנים [[Match entire cell contents]]. כדאי להראות קודם פעם אחת בלי הסימון, ולמחוק את הצעד.", e: "4 ערכים. בלי הסימון: Some college or technical schoolool" },
+        { t: "לוחצים על [[Close & Apply]], מוסיפים [[Table]] עם yearstart, education ו-data_value, ובחץ שליד yearstart בוחרים [[Don't summarize]]. מזכירים את year ב-Portal: שנה היא תווית, לא כמות.", e: "60 שורות. ב-2025: College graduate 12.3, Some college or technical school 21.2, High school graduate 27.9, Less than high school 41.7" }
       ],
       items: [
-        ["s4-1", "לטעון את BRFSS_PA.csv ולמדוד כמה זמן זה לוקח", 10],
+        ["s4-1", "לטעון את BRFSS_PA.xlsx ולמדוד כמה זמן זה לוקח", 10],
         ["s4-2", "לבדוק שבפרופיל על כל הנתונים education ריקה ב-86% מהשורות", 5],
-        ["s4-3", "לסנן ולוודא שנשארות 60 שורות", 5],
+        ["s4-3", "לסנן לפי הסדר Education, Q047, US, ולוודא שנשארות 60 שורות", 5],
         ["s4-4", "להחליף ערכים עם Match entire cell contents, ופעם אחת בלעדיו", 10],
-        ["s4-5", "לבדוק את ארבעת הערכים של 2025", 5],
+        ["s4-5", "לבנות את הטבלה עם Don't summarize ל-yearstart, ולבדוק את ארבעת הערכים של 2025", 5],
         ["s4-6", "לשמור עותק גיבוי בשם CP_L04.pbix", 5]
       ],
       submit: "צילום מסך של רשימת הצעדים (Applied Steps) ושל הטבלה, ותשובות לשתי שאלות: למה לא מחקנו את השורות הריקות ב-education? מה מתועד בשורה אחת במאגר הזה?",
       quiz: [
         { q: "מחליפים Some college or technical sch ב-Some college or technical school בלי Match entire cell contents. מה קורה בשורות של 2024 ו-2025?",
-          o: ["כלום", "הן הופכות ל-technical schoolool", "הן נמחקות"], a: 1,
-          why: "בלי הסימון Power Query מחליף גם חלק מתא. הערך המלא כבר מכיל את המקוצר, ולכן נוספות אותיות." }
+          o: ["כלום", "הן הופכות ל-Some college or technical schoolool", "הן נמחקות"], a: 1,
+          why: "בלי הסימון Power Query מחליף גם חלק מתא. הערך המלא כבר מכיל את המקוצר, ולכן נוספות אותיות." },
+        { q: "תלמיד אומר: אם נמחק את השורות שבהן education ריקה, נקבל אותן 8,580 שורות כמו בסינון. מה עונים?",
+          o: ["צודק, ולכן אין הבדל בין הדרכים", "התוצאה זהה, אבל הנימוק שגוי: הריק אומר שהשורה עוסקת בחלוקה אחרת, ולא שחסר בה מידע", "המחיקה לא תעבוד ב-Power Query"], a: 1,
+          why: "הסינון לפי stratificationcategory1 אומר במפורש מה בוחרים. מחיקה כי ריק זה חסר נשענת על הנחה שלא נכונה כאן, ותוביל לטעות במאגר הבא." }
       ],
       more: [
         { h: "מה זה BRFSS", p: [
@@ -1111,6 +1122,8 @@ details[open]::details-content { opacity: 1; block-size: auto; }
         { h: "למה Portal קודם ו-BRFSS אחריו", p: ["בשבוע הראשון התלמידים פוגשים כלי חדש. Portal מלמד את צעדי הבסיס על נתונים קטנים וברורים. BRFSS בודק אם הם יודעים להעביר את אותם צעדים למאגר אחר, עם בעיות אחרות."] },
         { h: "אם ההדגמה נתקעת", p: ["פותחים את CP_L04.pbix. אם הטעינה איטית במחשבי התלמידים, עובדים בזוגות על מחשב אחד."] }
       ] },
+
+    
 
     { n: 5, tab: "שיעור 5", title: "ניקוי נתונים עצמאי", sub: "מקבלים מטרה ונקודות בדיקה, ומחליטים לבד אילו צעדים לבצע", data: "BRFSS",
       gist: "ניקוי עצמאי: בונים שאילתה לבד, לפי מטרה ונקודות בדיקה", subShort: "רשימת הצעדים ותשובה",
@@ -1565,7 +1578,7 @@ details[open]::details-content { opacity: 1; block-size: auto; }
         b.addEventListener("click", function () {
           st.textContent = "הקובץ בהכנה...";
           getDownloads().then(function (api) {
-            if (!api) { st.textContent = "ההורדה לא זמינה בתצוגה הזו. הקבצים נשלחו גם בשיחה."; return; }
+            if (!api) { var lk = document.createElement("a"); lk.href = f.path; lk.download = f.name; document.body.appendChild(lk); lk.click(); lk.remove(); st.textContent = "ההורדה התחילה."; return; }
             return fetch(f.path).then(function (r) {
               if (!r.ok) throw new Error("fetch " + r.status);
               return r.blob();
