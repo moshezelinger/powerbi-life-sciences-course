@@ -9,16 +9,21 @@ compute_grades.py: חישוב ציונים לפי המחוון של שיעורי
     {"name": "כהן נועה", "folder": "שם התיקייה",
      "submitted": {"L1": true, "L2": true},
      "scores": {"L1.S": 7, "L1.Q1a": 5.5, ... , "B.L1Q3": 2, "B.insight": 0},
+     "identical_screens": ["L2"],
+     "foreign_file": false,
      "copy_flag": "none" | "medium" | "strong",
      "teacher_review": true | false,
      "mistakes": ["M1-3", "M2-9"]}
   ]
 }
 בשיעור שלא הוגש ("submitted": false) אפשר להשמיט את החלקים שלו, והם נספרים 0.
+ב-L1.S וב-L2.S רושמים את הנקודות שהצילום קיבל לפי המחוון. אם השיעור מופיע ב-identical_screens
+(צילום זהה לצילום של תלמיד אחר), הסקריפט נותן חצי מהנקודות האלה. foreign_file: true (שם קובץ של
+תלמיד אחר בכותרת הצילום) מוריד נקודה אחת מהציון הסופי. שני השדות לא חובה.
 
 מה הוא עושה:
   1. בודק שכל חלק קיים, בין 0 למקסימום, בקפיצות של 0.5.
-  2. מחשב ציון לכל שיעור, בונוס וציון סופי (מעוגל כלפי מעלה מ-0.5, ולא יותר מ-100).
+  2. מחשב ציון לכל שיעור, בונוס, הורדות וציון סופי (מעוגל כלפי מעלה מ-0.5, ולא יותר מ-100).
   3. כותב grades.csv (UTF-8 עם BOM, נפתח ב-Excel בעברית) ו-class_summary.md.
 
 שימוש:
@@ -35,18 +40,18 @@ import sys
 
 # (מזהה, שיעור, מקסימום, תיאור)
 PARTS = [
-    ("L1.S", "L1", 8, "שיעור 1: צילום הכרטיס"),
-    ("L1.Q1a", "L1", 7, "שיעור 1, שאלה 1 א: מה כתוב בשורה"),
-    ("L1.Q1b", "L1", 7, "שיעור 1, שאלה 1 ב: פרט שחוזר"),
+    ("L1.S", "L1", 12, "שיעור 1: צילום הכרטיס"),
+    ("L1.Q1a", "L1", 6, "שיעור 1, שאלה 1 א: מה כתוב בשורה"),
+    ("L1.Q1b", "L1", 6, "שיעור 1, שאלה 1 ב: פרט שחוזר"),
     ("L1.Q2a", "L1", 8, "שיעור 1, שאלה 2 א: שורות בלי species"),
-    ("L1.Q2b", "L1", 8, "שיעור 1, שאלה 2 ב: משמעות הפרט שחוזר"),
-    ("L1.Q2c", "L1", 8, "שיעור 1, שאלה 2 ג: למה פחות מ-15,120"),
+    ("L1.Q2b", "L1", 7, "שיעור 1, שאלה 2 ב: משמעות הפרט שחוזר"),
+    ("L1.Q2c", "L1", 7, "שיעור 1, שאלה 2 ג: למה פחות מ-15,120"),
     ("L1.C", "L1", 4, "שיעור 1: שלמות ההגשה"),
-    ("L2.S", "L2", 14, "שיעור 2: צילום רשימת הצעדים"),
-    ("L2.Q1a", "L2", 6, "שיעור 2, שאלה 1 א: מה זה NA"),
-    ("L2.Q1b", "L2", 8, "שיעור 2, שאלה 1 ב: למה NA נשאר"),
-    ("L2.Q2a", "L2", 6, "שיעור 2, שאלה 2 א: מה הוריד סינון period"),
-    ("L2.Q2b", "L2", 6, "שיעור 2, שאלה 2 ב: מה הוריד סינון species"),
+    ("L2.S", "L2", 18, "שיעור 2: צילום רשימת הצעדים"),
+    ("L2.Q1a", "L2", 5, "שיעור 2, שאלה 1 א: מה זה NA"),
+    ("L2.Q1b", "L2", 7, "שיעור 2, שאלה 1 ב: למה NA נשאר"),
+    ("L2.Q2a", "L2", 5, "שיעור 2, שאלה 2 א: מה הוריד סינון period"),
+    ("L2.Q2b", "L2", 5, "שיעור 2, שאלה 2 ב: מה הוריד סינון species"),
     ("L2.Q2c", "L2", 6, "שיעור 2, שאלה 2 ג: הכלל מאחורי כל סינון"),
     ("L2.C", "L2", 4, "שיעור 2: שלמות ההגשה"),
 ]
@@ -56,6 +61,8 @@ BONUS = [
 ]
 MAX_TOTAL = 100
 FLAGS = ("none", "medium", "strong")
+SCREENS = {"L1": "L1.S", "L2": "L2.S"}
+FOREIGN_FILE_PENALTY = 1
 
 
 def half_up(x):
@@ -76,6 +83,10 @@ def grade_student(st, errors):
     scores = st.get("scores", {})
     sub = st.get("submitted", {"L1": True, "L2": True})
     res = {"L1": 0.0, "L2": 0.0, "bonus": 0.0, "parts": {}}
+    identical = st.get("identical_screens", [])
+    if not isinstance(identical, list) or any(x not in SCREENS for x in identical):
+        errors.append("%s: identical_screens צריך להיות רשימה של L1 ו-L2" % name)
+        identical = []
     for pid, les, mx, _ in PARTS:
         if pid not in scores:
             if sub.get(les, True):
@@ -86,6 +97,8 @@ def grade_student(st, errors):
         if not isinstance(val, (int, float)) or val < 0 or val > mx or (val * 2) % 1 != 0:
             errors.append("%s: הערך של %s הוא %r, צריך מספר בין 0 ל-%d בקפיצות של 0.5" % (name, pid, val, mx))
             val = 0.0
+        if pid == SCREENS.get(les) and les in identical:
+            val = val / 2
         res["parts"][pid] = val
         res[les] += val
     for pid, mx, _ in BONUS:
@@ -99,8 +112,10 @@ def grade_student(st, errors):
     if flag not in FLAGS:
         errors.append("%s: copy_flag חייב להיות אחד מ-%s" % (name, ", ".join(FLAGS)))
         flag = "none"
-    raw = res["L1"] + res["L2"] + res["bonus"]
-    res.update(name=name, folder=st.get("folder", ""), raw=raw, total=min(MAX_TOTAL, half_up(raw)),
+    penalty = FOREIGN_FILE_PENALTY if st.get("foreign_file") else 0
+    raw = res["L1"] + res["L2"] + res["bonus"] - penalty
+    res.update(name=name, folder=st.get("folder", ""), raw=raw, total=max(0, min(MAX_TOTAL, half_up(raw))),
+               identical=identical, penalty=penalty,
                copy_flag=flag, review=bool(st.get("teacher_review")), mistakes=list(st.get("mistakes", [])),
                submitted=sub)
     return res
@@ -109,10 +124,12 @@ def grade_student(st, errors):
 def write_csv(path, rows):
     with open(path, "w", encoding="utf-8-sig", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["שם", "תיקייה", "שיעור 1 (מתוך 50)", "שיעור 2 (מתוך 50)", "בונוס (עד 5)", "ציון סופי",
+        w.writerow(["שם", "תיקייה", "שיעור 1 (מתוך 50)", "שיעור 2 (מתוך 50)", "בונוס (עד 5)",
+                    "צילום זהה (חצי מנקודות הצילום)", "שם קובץ של אחר (הורדה)", "ציון סופי",
                     "חשד להעתקה", "לבדיקת מורה", "טעויות נפוצות"])
         for r in rows:
-            w.writerow([r["name"], r["folder"], fmt(r["L1"]), fmt(r["L2"]), fmt(r["bonus"]), r["total"],
+            w.writerow([r["name"], r["folder"], fmt(r["L1"]), fmt(r["L2"]), fmt(r["bonus"]),
+                        " ".join(r["identical"]), fmt(r["penalty"]) if r["penalty"] else "", r["total"],
                         r["copy_flag"], "כן" if r["review"] else "", " ".join(r["mistakes"])])
 
 

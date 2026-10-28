@@ -6,7 +6,8 @@ similarity_check.py: איתור דמיון חשוד בין הגשות של תל�
 מה הוא בודק:
   1. טקסט: רצפי מילים זהים בין שני תלמידים, אחרי שמסירים שורות תבנית וצירופים שמופיעים אצל הרבה תלמידים
      (למשל ניסוח מהרמזים באפליקציה). מספרים נכונים זהים (15,120 או 14,492) לא נחשבים דמיון.
-  2. צילומי מסך: קובצי תמונה זהים בתוכן (MD5) אצל תלמידים שונים.
+  2. צילומי מסך: קובצי תמונה זהים בתוכן (MD5) אצל תלמידים שונים, כולל תמונות שהודבקו בתוך קובצי docx.
+     צילום שהוקטן או הוגדל לא מזוהה כאן, ולכן משווים גם בעין.
 
 הוא מסמן חשד, ולא קובע העתקה. ההחלטה בידי המורה. בכיתה עובדים בזוגות בחלק מהצעדים.
 
@@ -71,6 +72,30 @@ def read_text(path):
         return ""
 
 
+def docx_images(path):
+    """התמונות שהודבקו בתוך קובץ docx, כזוגות (נתיב הקובץ, שם התמונה בתוכו)."""
+    try:
+        with zipfile.ZipFile(path) as z:
+            return [(path, m) for m in z.namelist()
+                    if m.startswith("word/media/") and os.path.splitext(m)[1].lower() in IMG_EXT]
+    except Exception:
+        return []
+
+
+def image_bytes(img):
+    if isinstance(img, tuple):
+        with zipfile.ZipFile(img[0]) as z:
+            return z.read(img[1])
+    with open(img, "rb") as f:
+        return f.read()
+
+
+def image_label(root, img):
+    if isinstance(img, tuple):
+        return "%s:%s" % (os.path.relpath(img[0], root), os.path.basename(img[1]))
+    return os.path.relpath(img, root)
+
+
 def norm_line(line):
     return " ".join(NONWORD.sub(" ", NIQQUD.sub("", line)).lower().split())
 
@@ -106,6 +131,8 @@ def collect(root, outdir):
             else:
                 t = read_text(path)
                 (s["text"] if t.strip() else s["unread"]).append((path, t))
+                if ext == ".docx":
+                    s["images"] += docx_images(path)
     return students
 
 
@@ -163,8 +190,8 @@ def main(argv):
     by_hash = {}
     for k in names:
         for p in students[k]["images"]:
-            h = hashlib.md5(open(p, "rb").read()).hexdigest()
-            by_hash.setdefault(h, []).append((k, os.path.relpath(p, root)))
+            h = hashlib.md5(image_bytes(p)).hexdigest()
+            by_hash.setdefault(h, []).append((k, image_label(root, p)))
     dup_images = [{"md5": h, "files": v} for h, v in by_hash.items() if len({k for k, _ in v}) > 1]
 
     pairs.sort(key=lambda p: (p["level"] != "strong", -p["longest_run_words"], -p["shared_rare_phrases"]))
