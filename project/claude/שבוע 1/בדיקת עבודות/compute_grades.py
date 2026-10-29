@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-compute_grades.py: חישוב ציונים לפי המחוון של שיעורים 1 ו-2 (שבוע 1, קורס Power BI).
+compute_grades.py: חישוב ציונים לפי המחוונים של שבוע 1 בקורס Power BI: שיעורים 1 ו-2, או שיעור 3.
 
 הקלט: קובץ scores.json שהבדיקה כתבה, בצורה הזו:
 {
@@ -17,8 +17,9 @@ compute_grades.py: חישוב ציונים לפי המחוון של שיעורי
   ]
 }
 בשיעור שלא הוגש ("submitted": false) אפשר להשמיט את החלקים שלו, והם נספרים 0.
-ב-L1.S וב-L2.S רושמים את הנקודות שהצילום קיבל לפי המחוון. כל שיעור שמופיע ב-identical_screens
-(קובץ צילום זהה לקובץ של תלמיד אחר) מוריד נקודה אחת מהציון הסופי. foreign_file: true (שם קובץ של
+בחלקי הצילום (L1.S ו-L2.S, ובשיעור 3 L3.SG ו-L3.ST) רושמים את הנקודות שהצילום קיבל לפי המחוון.
+כל צילום שמופיע ב-identical_screens (קובץ צילום זהה לקובץ של תלמיד אחר) מוריד נקודה אחת מהציון הסופי.
+בשיעורים 1 ו-2 הערכים ב-identical_screens הם L1 ו-L2, ובשיעור 3 הם graph ו-table. foreign_file: true (שם קובץ של
 תלמיד אחר בכותרת הצילום) מוריד עוד נקודה אחת. שני השדות לא חובה.
 
 מה הוא עושה:
@@ -28,8 +29,9 @@ compute_grades.py: חישוב ציונים לפי המחוון של שיעורי
 
 שימוש:
   python3 compute_grades.py scores.json [תיקיית_פלט]
+  python3 compute_grades.py --lesson 3 scores.json [תיקיית_פלט]    (מחוון שיעור 3)
 
-אם משנים נקודות במחוון, משנים גם את PARTS כאן. קוד היציאה 1 אם יש שגיאה. Python 3 בלבד.
+אם משנים נקודות במחוון, משנים גם את PARTS_12 או PARTS_3 כאן. קוד היציאה 1 אם יש שגיאה. Python 3 בלבד.
 """
 import csv
 import json
@@ -39,7 +41,7 @@ import statistics
 import sys
 
 # (מזהה, שיעור, מקסימום, תיאור)
-PARTS = [
+PARTS_12 = [
     ("L1.S", "L1", 12, "שיעור 1: צילום הכרטיס"),
     ("L1.Q1a", "L1", 6, "שיעור 1, שאלה 1 א: מה כתוב בשורה"),
     ("L1.Q1b", "L1", 6, "שיעור 1, שאלה 1 ב: פרט שחוזר"),
@@ -55,13 +57,32 @@ PARTS = [
     ("L2.Q2c", "L2", 6, "שיעור 2, שאלה 2 ג: הכלל מאחורי כל סינון"),
     ("L2.C", "L2", 4, "שיעור 2: שלמות ההגשה"),
 ]
-BONUS = [
+BONUS_12 = [
     ("B.L1Q3", 3, "בונוס: אתגר סוגי המשתנים (שיעור 1)"),
     ("B.insight", 2, "בונוס: תובנה עצמאית"),
 ]
+PARTS_3 = [
+    ("L3.SG", "L3", 15, "שיעור 3: צילום הגרף"),
+    ("L3.ST", "L3", 15, "שיעור 3: צילום טבלת הסבבים"),
+    ("L3.Q1", "L3", 6, "שיעור 3, שאלה 1: שתי השערות לירידה ב-2020"),
+    ("L3.Q2a", "L3", 20, "שיעור 3, שאלה 2 א: לכידות, סבבים וממוצע לסבב"),
+    ("L3.Q2b", "L3", 14, "שיעור 3, שאלה 2 ב: פחות חיות או מאמץ דגימה קטן יותר"),
+    ("L3.Q2c", "L3", 8, "שיעור 3, שאלה 2 ג: 2023 מול 2025"),
+    ("L3.Q2d", "L3", 18, "שיעור 3, שאלה 2 ד: טענה, ראיה ונימוק"),
+    ("L3.C", "L3", 4, "שיעור 3: שלמות ההגשה"),
+]
+BONUS_3 = [
+    ("B.season", 3, "בונוס: עונתיות ב-2020"),
+    ("B.insight", 2, "בונוס: תובנה עצמאית"),
+]
+RUBRICS = {
+    "1-2": dict(parts=PARTS_12, bonus=BONUS_12, screens={"L1": "L1.S", "L2": "L2.S"}, title="שיעורים 1 ו-2"),
+    "3": dict(parts=PARTS_3, bonus=BONUS_3, screens={"graph": "L3.SG", "table": "L3.ST"}, title="שיעור 3"),
+}
+RUBRIC = RUBRICS["1-2"]
+PARTS, BONUS, SCREENS = RUBRIC["parts"], RUBRIC["bonus"], RUBRIC["screens"]
 MAX_TOTAL = 100
 FLAGS = ("none", "medium", "strong")
-SCREENS = {"L1": "L1.S", "L2": "L2.S"}
 FOREIGN_FILE_PENALTY = 1
 IDENTICAL_PENALTY = 1
 
@@ -74,6 +95,18 @@ def fmt(x):
     return str(int(x)) if float(x).is_integer() else str(x)
 
 
+def lessons():
+    out = []
+    for _, les, _, _ in PARTS:
+        if les not in out:
+            out.append(les)
+    return out
+
+
+def lesson_max(les):
+    return sum(mx for _, l, mx, _ in PARTS if l == les)
+
+
 def load(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
@@ -82,11 +115,12 @@ def load(path):
 def grade_student(st, errors):
     name = st.get("name") or st.get("folder") or "(בלי שם)"
     scores = st.get("scores", {})
-    sub = st.get("submitted", {"L1": True, "L2": True})
-    res = {"L1": 0.0, "L2": 0.0, "bonus": 0.0, "parts": {}}
+    sub = st.get("submitted", {les: True for les in lessons()})
+    res = {les: 0.0 for les in lessons()}
+    res.update(bonus=0.0, parts={})
     identical = st.get("identical_screens", [])
     if not isinstance(identical, list) or any(x not in SCREENS for x in identical):
-        errors.append("%s: identical_screens צריך להיות רשימה של L1 ו-L2" % name)
+        errors.append("%s: identical_screens צריך להיות רשימה של %s" % (name, ", ".join(SCREENS)))
         identical = []
     for pid, les, mx, _ in PARTS:
         if pid not in scores:
@@ -112,7 +146,7 @@ def grade_student(st, errors):
         errors.append("%s: copy_flag חייב להיות אחד מ-%s" % (name, ", ".join(FLAGS)))
         flag = "none"
     penalty = IDENTICAL_PENALTY * len(identical) + (FOREIGN_FILE_PENALTY if st.get("foreign_file") else 0)
-    raw = res["L1"] + res["L2"] + res["bonus"] - penalty
+    raw = sum(res[les] for les in lessons()) + res["bonus"] - penalty
     res.update(name=name, folder=st.get("folder", ""), raw=raw, total=max(0, min(MAX_TOTAL, half_up(raw))),
                identical=identical, penalty=penalty,
                copy_flag=flag, review=bool(st.get("teacher_review")), mistakes=list(st.get("mistakes", [])),
@@ -123,18 +157,18 @@ def grade_student(st, errors):
 def write_csv(path, rows):
     with open(path, "w", encoding="utf-8-sig", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["שם", "תיקייה", "שיעור 1 (מתוך 50)", "שיעור 2 (מתוך 50)", "בונוס (עד 5)",
-                    "צילום זהה (שיעורים)", "הורדות", "ציון סופי",
+        w.writerow(["שם", "תיקייה"] + ["שיעור %s (מתוך %s)" % (les[1:], fmt(lesson_max(les))) for les in lessons()] +
+                   ["בונוס (עד %s)" % fmt(sum(mx for _, mx, _ in BONUS)), "צילום זהה", "הורדות", "ציון סופי",
                     "חשד להעתקה", "לבדיקת מורה", "טעויות נפוצות"])
         for r in rows:
-            w.writerow([r["name"], r["folder"], fmt(r["L1"]), fmt(r["L2"]), fmt(r["bonus"]),
+            w.writerow([r["name"], r["folder"]] + [fmt(r[les]) for les in lessons()] + [fmt(r["bonus"]),
                         " ".join(r["identical"]), fmt(r["penalty"]) if r["penalty"] else "", r["total"],
                         r["copy_flag"], "כן" if r["review"] else "", " ".join(r["mistakes"])])
 
 
 def write_summary(path, rows):
     totals = [r["total"] for r in rows]
-    out = ["# תמונת מצב: שבוע 1, שיעורים 1 ו-2", ""]
+    out = ["# תמונת מצב: שבוע 1, %s" % RUBRIC["title"], ""]
     out.append("תלמידים שנבדקו: %d" % len(rows))
     if totals:
         out.append("ממוצע: %.1f, חציון: %s, נמוך: %d, גבוה: %d" % (statistics.mean(totals), fmt(statistics.median(totals)), min(totals), max(totals)))
@@ -162,7 +196,7 @@ def write_summary(path, rows):
     out.append("חשד להעתקה (חזק או בינוני): %s" % (", ".join("%s (%s)" % (r["name"], r["copy_flag"]) for r in flagged) or "אין"))
     out.append("")
     out.append("לבדיקת מורה: %s" % (", ".join(r["name"] for r in review) or "אין"))
-    notsub = [r for r in rows if not all(r["submitted"].get(k, True) for k in ("L1", "L2"))]
+    notsub = [r for r in rows if not all(r["submitted"].get(k, True) for k in lessons())]
     out.append("")
     out.append("הגשה חלקית או חסרה: %s" % (", ".join(r["name"] for r in notsub) or "אין"))
     with open(path, "w", encoding="utf-8") as f:
@@ -170,6 +204,17 @@ def write_summary(path, rows):
 
 
 def main(argv):
+    global RUBRIC, PARTS, BONUS, SCREENS
+    argv = list(argv)
+    if "--lesson" in argv:
+        i = argv.index("--lesson")
+        key = argv[i + 1] if i + 1 < len(argv) else ""
+        if key not in RUBRICS:
+            print("--lesson צריך להיות אחד מ-%s" % ", ".join(RUBRICS))
+            return 1
+        RUBRIC = RUBRICS[key]
+        PARTS, BONUS, SCREENS = RUBRIC["parts"], RUBRIC["bonus"], RUBRIC["screens"]
+        del argv[i:i + 2]
     if len(argv) < 2:
         print(__doc__)
         return 1
