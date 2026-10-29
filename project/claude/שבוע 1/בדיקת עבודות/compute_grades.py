@@ -18,7 +18,8 @@ compute_grades.py: חישוב ציונים לפי המחוונים של שבוע
 }
 בשיעור שלא הוגש ("submitted": false) אפשר להשמיט את החלקים שלו, והם נספרים 0.
 בחלקי הצילום (L1.S ו-L2.S, ובשיעור 3 L3.SG ו-L3.ST) רושמים את הנקודות שהצילום קיבל לפי המחוון.
-כל צילום שמופיע ב-identical_screens (קובץ צילום זהה לקובץ של תלמיד אחר) מוריד נקודה אחת מהציון הסופי.
+כל צילום שמופיע ב-identical_screens (קובץ צילום זהה לקובץ של תלמיד אחר) מוריד נקודה אחת מהציון הסופי,
+ובשיעור 3 שתי נקודות.
 בשיעורים 1 ו-2 הערכים ב-identical_screens הם L1 ו-L2, ובשיעור 3 הם graph ו-table. foreign_file: true (שם קובץ של
 תלמיד אחר בכותרת הצילום) מוריד עוד נקודה אחת. שני השדות לא חובה.
 
@@ -77,7 +78,8 @@ BONUS_3 = [
 ]
 RUBRICS = {
     "1-2": dict(parts=PARTS_12, bonus=BONUS_12, screens={"L1": "L1.S", "L2": "L2.S"}, title="שיעורים 1 ו-2"),
-    "3": dict(parts=PARTS_3, bonus=BONUS_3, screens={"graph": "L3.SG", "table": "L3.ST"}, title="שיעור 3"),
+    "3": dict(parts=PARTS_3, bonus=BONUS_3, screens={"graph": "L3.SG", "table": "L3.ST"}, title="שיעור 3",
+              identical_penalty=2),
 }
 RUBRIC = RUBRICS["1-2"]
 PARTS, BONUS, SCREENS = RUBRIC["parts"], RUBRIC["bonus"], RUBRIC["screens"]
@@ -145,7 +147,7 @@ def grade_student(st, errors):
     if flag not in FLAGS:
         errors.append("%s: copy_flag חייב להיות אחד מ-%s" % (name, ", ".join(FLAGS)))
         flag = "none"
-    penalty = IDENTICAL_PENALTY * len(identical) + (FOREIGN_FILE_PENALTY if st.get("foreign_file") else 0)
+    penalty = RUBRIC.get("identical_penalty", IDENTICAL_PENALTY) * len(identical) + (FOREIGN_FILE_PENALTY if st.get("foreign_file") else 0)
     raw = sum(res[les] for les in lessons()) + res["bonus"] - penalty
     res.update(name=name, folder=st.get("folder", ""), raw=raw, total=max(0, min(MAX_TOTAL, half_up(raw))),
                identical=identical, penalty=penalty,
