@@ -35,7 +35,8 @@ The project instructions require asking Moshe before activating another skill (f
    - Browser test with Playwright: desktop 1366 px; phone 390 px with text size "גדול מאוד" (localStorage `pbi-view-v1` = `{"size":"xl","layout":"auto"}`, then reload) in dark mode. No page errors, no horizontal scroll, the tour reaches every stop, clicking a [[button]] chip shows its location.
 7. **Publish.** Republish to the same artifact URL. Never change step, question or task ids, storage keys or capabilities. On a redeploy omit `capabilities` and `files`, so the stored ones are kept.
 8. **Docs and copies.** Update the slide outline, teacher guide and print checklist (Claude Docs, find-and-replace edits, then export and scan). Replace the copies in the project and update the conversation summary.
-9. **After a class.** Collect only the missing facts with a short form: what they finished, where they got stuck, what they understood and the evidence, what to change. Keep observation, interpretation and decision separate, then update the next lesson.
+9. **Rubric.** When a lesson or task is ready, offer Moshe a grading rubric for it, before students submit. Follow `claude/מערכת/מדריך בדיקת עבודות.md`: rubric structure, answer key computed from the data, the staged validation with the teacher, and the recommended outputs (Excel first, because it recalculates). Never put grades, student names or submissions in the repo.
+10. **After a class.** Collect only the missing facts with a short form: what they finished, where they got stuck, what they understood and the evidence, what to change. Keep observation, interpretation and decision separate, then update the next lesson.
 
 ## Rules that always hold
 
