@@ -37,6 +37,25 @@ The project instructions require asking Moshe before activating another skill (f
 8. **Docs and copies.** Update the slide outline, teacher guide and print checklist (Claude Docs, find-and-replace edits, then export and scan). Replace the copies in the project and update the conversation summary.
 9. **After a class.** Collect only the missing facts with a short form: what they finished, where they got stuck, what they understood and the evidence, what to change. Keep observation, interpretation and decision separate, then update the next lesson.
 
+## Fields built for automatic checking
+
+While preparing a lesson's learning report, and again when revising it, offer Moshe once, briefly and as an option (never as the default), to make answer fields checkable by code. Offer it per question, with the reason ("this answer is one number, so a script can check it"). Suggest the field type that fits: fill (a number or short text), click (choice, checkbox) or drag (ordering, matching).
+
+If he accepts:
+
+- Every field gets a stable id, under the same rule as step and question ids. Never change it after publishing.
+- The app exports the answers as structured data (JSON): id, type, value. Never rely on parsing answers out of free text in Word.
+- The rubric holds, per question: the correct answer, the tolerance for numbers, the normalization for short text, a pre-written feedback sentence for each likely wrong answer, and one generic sentence for any other wrong answer.
+- Open questions (reasoning, interpretation) stay open and are marked "teacher judgment". If AI helps there, its output is limited to a level from a closed set plus one sentence, and the teacher decides.
+
+The checking pipeline that these fields serve:
+
+1. A script compares the closed answers to the rubric.
+2. The feedback text comes from the rubric, not from the model, so it does not vary between runs.
+3. AI handles only the open items, with a fixed prompt and constrained output.
+4. A script builds the Word file with one comment bubble per question, plus a teacher summary page: score, failed questions, open items waiting for a decision.
+5. Each cycle, Moshe checks three or four works himself. Running the same work twice must give identical results on every closed item.
+
 ## Rules that always hold
 
 - Students: second person plural ("פתחו"). Teacher: infinitive, present plural or neutral wording ("לבדוק", "פותחים", "לרשותך"). No gendered address.
