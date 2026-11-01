@@ -32,6 +32,7 @@ The project instructions require asking Moshe before activating another skill (f
 5. **Approval file.** An RTL Markdown file with 10 to 15 checkboxes, each with the full proposed text. Never a 100-item file: Moshe found that too much to follow.
 6. **Build and check.**
    - Run `python3 check_week.py <files>` on every app and doc. Zero errors. Read every warning and either fix it or state why it stays.
+   - For every multiple-choice submission question, compare all options, including the correct one, against the guide's section 7.4 length and wording check. Revise and recheck after any edit; `check_week.py` does not currently enforce this rule.
    - Browser test with Playwright: desktop 1366 px; phone 390 px with text size "גדול מאוד" (localStorage `pbi-view-v1` = `{"size":"xl","layout":"auto"}`, then reload) in dark mode. No page errors, no horizontal scroll, the tour reaches every stop, clicking a [[button]] chip shows its location.
 7. **Publish.** Republish to the same artifact URL. Never change step, question or task ids, storage keys or capabilities. On a redeploy omit `capabilities` and `files`, so the stored ones are kept.
 8. **Docs and copies.** Update the slide outline, teacher guide and print checklist (Claude Docs, find-and-replace edits, then export and scan). Replace the copies in the project and update the conversation summary.
@@ -51,6 +52,7 @@ Once the lesson's questions are approved, offer to hand off to `rubric-feedback-
 - The person acts, not the tool, in titles and instructions.
 - A step says only what to do. Any explanation goes in the step's `w` field, shown as "למה עושים את זה?". Every step has `e` ("מה אמור להופיע").
 - Questions split into parts א, ב, ג. The first is answered from the screen, the next asks for reasoning, and each says where the answer is found.
+- When building multiple-choice submission questions, give the correct option and all distractors comparable length, parallel grammar and equal specificity. Each distractor must test a plausible misconception; never pad wording merely to hit the length target. Apply the measurable check in guide section 7.4 before publishing.
 - No spoilers: intros ask, they do not answer. A finding appears only at the step where students discover it. This includes the glossary, the dataset cards and the slides. Teacher materials may give answers.
 - Fixed glossary, with its definition the first time in each lesson: רשימת הצעדים (Applied Steps), ה"מתכון" של Power Query; מאמץ דגימה; נרמול; השוואה הוגנת; ממוצע לכידות בסבב. Extend the glossary in the guide before using a new term.
 - "לחצו על X". Button names in English, as in the UI. Every [[button]] has a LOC entry: "בסרגל העליון, בלשונית Home".
