@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="he" dir="rtl" data-mode="practice">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!-- גרסה 1, 3.11.2026. נבנה מ-build.py; המספרים נבדקו מול Portal_rodents_2016_2026.csv ומול BRFSS_PA (60,060 שורות). -->
+<title>תרגול BRFSS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Secular+One&display=swap">
+<style>
+/* Same language as the week 1 apps (design system "מגמת מידע ונתונים"): neutral paper, cards, Secular One and Assistant.
+   The lead color replaces the blue of week 1: teal for practice, indigo for the exam. Yellow stays only for bonus and attention. */
+:root {
+  color-scheme: light;
+  --paper: #f3f5f6; --paper-line: rgba(43, 40, 41, 0.045); --card: #ffffff;
+  --ink: #2b2829; --ink-2: #4a4748; --ink-3: #5a5758; --rule: #d5d8db; --chip: #eceff1;
+  --tape: #ffca08; --tape-ink: #7a5200; --tape-soft: rgba(255, 202, 8, 0.20); --on-tape: #1f1d1e;
+  --bad: #b3261e; --bad-soft: rgba(179, 38, 30, 0.08);
+  --shadow: 0 1px 2px rgba(31, 29, 30, 0.10), 0 6px 18px rgba(31, 29, 30, 0.08);
+  --fw: 500;
+  --display: 'Secular One', 'Assistant', system-ui, sans-serif;
+  --body: 'Assistant', 'Segoe UI', Arial, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+  --lead: #0e7c72; --lead-text: #0a5c54; --lead-soft: rgba(14, 124, 114, 0.10); --on-lead: #ffffff; --focus: #0a5c54;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #0e0e0f; --paper-line: rgba(244, 242, 242, 0.04); --card: #1b1b1d;
+    --ink: #f4f2f2; --ink-2: #d9d6d6; --ink-3: #bdbabb; --rule: #3a3a3d; --chip: #2a2a2d; --fw: 400;
+    --tape-ink: #ffca08; --tape-soft: rgba(255, 202, 8, 0.14);
+    --bad: #ff8a80; --bad-soft: rgba(255, 138, 128, 0.10); --shadow: none;
+    --lead: #3cc4b4; --lead-text: #3cc4b4; --lead-soft: rgba(60, 196, 180, 0.16); --on-lead: #0e0e0f; --focus: #ffca08;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #0e0e0f; --paper-line: rgba(244, 242, 242, 0.04); --card: #1b1b1d;
+  --ink: #f4f2f2; --ink-2: #d9d6d6; --ink-3: #bdbabb; --rule: #3a3a3d; --chip: #2a2a2d; --fw: 400;
+  --tape-ink: #ffca08; --tape-soft: rgba(255, 202, 8, 0.14);
+  --bad: #ff8a80; --bad-soft: rgba(255, 138, 128, 0.10); --shadow: none;
+    --lead: #3cc4b4; --lead-text: #3cc4b4; --lead-soft: rgba(60, 196, 180, 0.16); --on-lead: #0e0e0f; --focus: #ffca08;
+}
+* { box-sizing: border-box; }
+html { font-size: calc(16px * var(--fs, 1)); }
+html[data-size="l"] { --fs: 1.15; }
+html[data-size="xl"] { --fs: 1.3; }
+body {
+  margin: 0;
+  background-color: var(--paper);
+  background-image: linear-gradient(var(--paper-line) 1px, transparent 1px), linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink); font-family: var(--body); font-size: 1.1875rem; line-height: 1.65; font-weight: var(--fw);
+}
+.app { max-width: 880px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); padding-block: 26px 80px; display: grid; gap: 22px; }
+@media (max-width: 480px) { .app { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); } body { font-size: 1.125rem; } }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: clamp(1.875rem, 6vw, 2.5rem); line-height: 1.08; }
+h2 { font-size: clamp(1.4rem, 4.2vw, 1.85rem); }
+h3 { font-size: 1.2rem; }
+p { margin: 0; text-wrap: pretty; }
+a { color: var(--lead-text); text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+code, .ltr { font-family: var(--mono); font-size: 0.86em; background: var(--chip); border-radius: 4px; padding: 1px 6px; direction: ltr; unicode-bidi: isolate; overflow-wrap: anywhere; }
+[hidden] { display: none !important; }
+
+/* Header */
+.top { display: grid; gap: 10px; }
+.eyebrow { font-size: 0.9375rem; font-weight: 700; color: var(--ink-3); }
+.who { display: inline-block; font-size: 0.875rem; font-weight: 700; border-radius: 999px; padding: 1px 12px; margin-inline-end: 8px; color: var(--on-lead); background: var(--lead); }
+.top h1::after { content: ""; display: block; width: 4.5rem; height: 5px; border-radius: 3px; background: var(--lead); margin-top: 12px; }
+.lede { color: var(--ink-2); max-width: 62ch; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px; }
+.meta span { font-size: 0.9375rem; font-weight: 600; background: var(--card); border: 1px solid var(--rule); border-radius: 999px; padding: 2px 12px; }
+.meta b { color: var(--lead-text); }
+
+/* View settings */
+.viewset > summary { cursor: pointer; list-style: none; display: inline-flex; gap: 8px; align-items: center; font-weight: 700; font-size: 1rem; color: var(--lead-text); border: 1.5px solid var(--rule); background: var(--card); border-radius: 999px; padding: 0.3rem 0.95rem; width: fit-content; }
+.viewset > summary::-webkit-details-marker { display: none; }
+.viewset[open] > summary { border-color: var(--lead); }
+.viewset-body { margin-top: 8px; display: grid; gap: 12px; background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow); width: fit-content; max-width: 100%; }
+.vs-label { font-size: 0.875rem; font-weight: 700; color: var(--ink-3); margin-bottom: 4px; }
+.vs-seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.vs-btn { font: inherit; font-size: 0.9375rem; font-weight: 600; border: 1.5px solid var(--rule); background: var(--card); color: var(--ink); border-radius: 999px; padding: 0.3rem 0.85rem; cursor: pointer; }
+.vs-btn[aria-pressed="true"] { border-color: var(--lead); background: var(--lead-soft); }
+
+/* Cards */
+.panel { background: var(--card); border: 1px solid var(--rule); border-radius: 16px; box-shadow: var(--shadow); padding: clamp(18px, 3.4vw, 30px); display: grid; gap: 18px; overflow-wrap: anywhere; }
+.kicker { font-size: 0.9375rem; font-weight: 700; color: var(--lead-text); }
+.goal { background: var(--lead-soft); border-inline-start: 5px solid var(--lead); border-radius: 12px; padding: 14px 16px; display: grid; gap: 4px; }
+.goal-label { font-size: 0.875rem; font-weight: 700; color: var(--lead-text); }
+.goal p { font-size: 1.1875rem; font-weight: 600; }
+.intro { color: var(--ink-2); max-width: 66ch; display: grid; gap: 8px; }
+.deliver { display: grid; gap: 12px; }
+.deliver-page { border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; display: grid; gap: 6px; }
+.deliver-page h3 { font-size: 1.1rem; color: var(--lead-text); }
+.deliver ul, .plain-list { margin: 0; padding-inline-start: 22px; display: grid; gap: 6px; }
+.badge { display: inline-block; font-size: 0.85rem; font-weight: 700; border-radius: 6px; padding: 0 8px; margin-inline-end: 6px; vertical-align: 0.1em; }
+.badge.bonus { color: var(--on-tape); background: var(--tape); }
+.badge.solo { color: var(--on-lead); background: var(--lead); }
+.sec-head { display: grid; gap: 6px; }
+.sec-sub { color: var(--ink-2); font-size: 1.0625rem; max-width: 64ch; }
+.namebox { display: grid; gap: 6px; }
+.namebox label { font-weight: 700; }
+.namebox input { font: inherit; font-family: var(--mono); direction: ltr; text-align: left; width: min(100%, 22rem); border: 1.5px solid var(--rule); border-radius: 10px; padding: 8px 12px; background: var(--paper); color: var(--ink); }
+.namebox input:focus { border-color: var(--lead); outline: none; box-shadow: 0 0 0 3px var(--lead-soft); }
+.small { font-size: 1rem; color: var(--ink-2); }
+
+/* Tasks */
+.tasks { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.task { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; align-items: start; padding: 12px; border: 1px solid var(--rule); border-radius: 12px; }
+.task input[type="checkbox"] { width: 24px; height: 24px; margin: 3px 0 0; accent-color: var(--lead); cursor: pointer; }
+.task[data-done="1"] { background: var(--lead-soft); border-color: transparent; }
+.task-body { display: grid; gap: 8px; min-width: 0; }
+.t-num { font-size: 0.9375rem; font-weight: 700; color: var(--ink-3); }
+.t-goal { font-weight: 600; }
+.think { background: var(--tape-soft); border-inline-start: 3px solid var(--tape); border-radius: 8px; padding: 8px 12px; display: grid; gap: 2px; font-size: 1.0625rem; }
+.think-label { font-size: 0.9375rem; font-weight: 700; color: var(--tape-ink); }
+.expect { font-size: 1rem; color: var(--ink-2); }
+.expect b { color: var(--lead-text); }
+.hint > summary { cursor: pointer; font-size: 1rem; font-weight: 600; color: var(--lead-text); width: fit-content; }
+.hint p { font-size: 1rem; color: var(--ink-2); padding-top: 4px; }
+
+/* Questions */
+.qs { display: grid; gap: 16px; }
+.q { border: 1px solid var(--rule); border-radius: 12px; padding: 14px; display: grid; gap: 10px; }
+.q-head { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
+.q-num { font-size: 0.9375rem; font-weight: 700; color: var(--ink-3); }
+.q-pts { font-size: 0.875rem; font-weight: 700; color: var(--lead-text); background: var(--lead-soft); border-radius: 999px; padding: 0 10px; }
+.q-text { font-weight: 600; }
+.q-note { font-size: 1rem; color: var(--ink-2); }
+.q-options, .q-rows { display: grid; gap: 8px; }
+.q-option { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 8px; cursor: pointer; }
+.q-option:has(input:checked) { border-color: var(--lead); background: var(--lead-soft); }
+.q-option input { flex: none; width: 20px; height: 20px; margin-top: 4px; accent-color: var(--lead); }
+.q-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 8px; }
+.q-row > span { min-width: 0; flex: 1 1 14rem; }
+.q-row select, .q-row input { font: inherit; font-size: 1.0625rem; background: var(--paper); color: var(--ink); border: 1.5px solid var(--rule); border-radius: 8px; padding: 5px 8px; }
+.q-row select { width: min(100%, 22rem); }
+.q-row select.ltr-sel { direction: ltr; font-family: var(--mono); font-size: 0.95rem; }
+.q-row input { width: 9rem; direction: ltr; text-align: left; font-variant-numeric: tabular-nums; }
+.q-row .unit { font-size: 0.95rem; color: var(--ink-3); }
+.q-row[data-res="ok"] { border-color: var(--lead); background: var(--lead-soft); }
+.q-row[data-res="no"] { border-color: var(--bad); background: var(--bad-soft); }
+.q-option[data-res="ok"] { border-color: var(--lead); background: var(--lead-soft); }
+.q-option[data-res="no"] { border-color: var(--bad); background: var(--bad-soft); }
+.q textarea { font: inherit; font-size: 1.125rem; width: 100%; min-height: 110px; resize: vertical; border: 1.5px solid var(--rule); border-radius: 10px; padding: 10px 12px; background: var(--paper); color: var(--ink); }
+.q textarea:focus, .q-row select:focus, .q-row input:focus { border-color: var(--lead); outline: none; box-shadow: 0 0 0 3px var(--lead-soft); }
+.q-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.fb { border-radius: 10px; padding: 10px 12px; display: grid; gap: 4px; font-size: 1.0625rem; }
+.fb.ok { background: var(--lead-soft); border-inline-start: 4px solid var(--lead); }
+.fb.part { background: var(--tape-soft); border-inline-start: 4px solid var(--tape); }
+.fb.no { background: var(--bad-soft); border-inline-start: 4px solid var(--bad); }
+.fb-title { font-weight: 700; }
+.selfcheck { display: grid; gap: 6px; }
+.selfcheck label { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; font-size: 1.0625rem; }
+.selfcheck input { width: 20px; height: 20px; margin-top: 4px; accent-color: var(--lead); flex: none; }
+.bank { border: 1px dashed var(--rule); border-radius: 10px; padding: 10px 12px; display: grid; gap: 6px; }
+.bank-label { font-size: 0.9375rem; font-weight: 700; color: var(--ink-3); }
+.bank-items { display: flex; flex-wrap: wrap; gap: 6px; }
+.bank-items span { font-family: var(--mono); font-size: 0.875rem; direction: ltr; unicode-bidi: isolate; background: var(--chip); border-radius: 6px; padding: 1px 8px; }
+
+/* Score */
+.score { display: grid; gap: 8px; border: 2px solid var(--lead); border-radius: 14px; padding: 14px 16px; }
+.score-top { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; }
+.score-num { font-family: var(--display); font-size: 1.75rem; color: var(--lead-text); }
+.meter { height: 10px; border-radius: 999px; background: var(--chip); overflow: hidden; }
+.meter > i { display: block; height: 100%; width: 0; background: var(--lead); border-radius: 999px; transition: width 420ms ease; }
+.score table { border-collapse: collapse; width: 100%; font-size: 1rem; font-variant-numeric: tabular-nums; }
+.score th, .score td { padding: 6px 8px; border-bottom: 1px solid var(--rule); text-align: start; }
+.score th { font-size: 0.875rem; color: var(--ink-3); font-weight: 600; }
+
+/* Checklist */
+.checks { display: grid; gap: 8px; }
+.checks label { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 8px; cursor: pointer; }
+.checks input { width: 22px; height: 22px; margin-top: 3px; accent-color: var(--lead); flex: none; }
+.checks label:has(input:checked) { background: var(--lead-soft); border-color: transparent; }
+
+/* Submit */
+.submit { border: 2px dashed var(--lead); border-radius: 14px; padding: 16px; display: grid; gap: 12px; }
+.submit-label { font-size: 0.875rem; font-weight: 700; color: var(--lead-text); }
+.report-prev { margin: 0; padding: 12px 16px; background: #fff; color: #1b1b1b; color-scheme: light; border: 1px solid var(--rule); border-radius: 10px; font-family: var(--body); font-size: 1rem; line-height: 1.6; font-weight: 400; max-height: min(30rem, 70vh); overflow: auto; }
+.report-prev p { margin: 0 0 0.8em; }
+.report-prev b { font-weight: 700; }
+.report-prev .json { font-family: var(--mono); font-size: 0.8rem; direction: ltr; text-align: left; overflow-wrap: anywhere; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn { font: inherit; font-weight: 700; font-size: 1.0625rem; border-radius: 999px; border: 1.5px solid var(--lead); background: var(--lead); color: var(--on-lead); padding: 8px 18px; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--lead-text); }
+.btn.quiet { border-color: var(--rule); background: transparent; color: var(--ink-2); font-weight: 600; }
+.btn:hover { filter: brightness(1.06); }
+.status { font-size: 1rem; color: var(--lead-text); font-weight: 600; }
+.subm { display: flex; gap: 10px; align-items: center; font-weight: 600; cursor: pointer; width: fit-content; }
+.subm input { width: 22px; height: 22px; accent-color: var(--lead); }
+.foot { display: grid; gap: 8px; font-size: 1rem; color: var(--ink-3); }
+.toast { position: fixed; inset-inline: 0; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); margin-inline: auto; width: fit-content; max-width: calc(100% - 32px); background: var(--ink); color: var(--paper); font-size: 1rem; padding: 8px 16px; border-radius: 999px; box-shadow: var(--shadow); z-index: 5; }
+.nav { display: flex; flex-wrap: wrap; gap: 8px; }
+.nav a { font-size: 0.9375rem; font-weight: 700; text-decoration: none; border: 1.5px solid var(--rule); background: var(--card); border-radius: 999px; padding: 3px 12px; }
+.nav a:hover { border-color: var(--lead); }
+
+/* Motion, same layer as week 1 */
+:root { --smooth: cubic-bezier(0.22, 1, 0.36, 1); }
+button, summary, .q-option, .checks label { transition: transform 450ms var(--smooth), background-color 160ms ease, border-color 160ms ease, color 160ms ease, filter 160ms ease; touch-action: manipulation; }
+button:not(:disabled):active { transform: scale(0.95); transition: transform 70ms ease-out; }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+.app > * { animation: rise 460ms var(--smooth) backwards; }
+.app > :nth-child(2) { animation-delay: 50ms; } .app > :nth-child(3) { animation-delay: 100ms; } .app > :nth-child(n+4) { animation-delay: 150ms; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@media (prefers-contrast: more) { :root { --rule: #6b6b6e; } }
+@media print { .viewset, .nav, .q-actions, .btn { display: none !important; } .app > * { animation: none; } body { background: #fff; } }
+</style>
+</head>
+<body>
+<div class="app" id="app" dir="rtl" lang="he"></div>
+<div class="toast" dir="rtl" lang="he" id="toast" role="status" aria-live="polite" hidden></div>
+<script>
+var CONFIG = {"mode": "practice", "fileId": "practice-brfss", "storageKey": "pbi-practice-brfss-v1", "jsonMarker": "PRACTICE_BRFSS_ANSWERS_JSON", "badge": "תרגול", "eyebrow": "הכנה למבחן המעשי, חלק 2 מתוך 2", "title": "תרגול: השכלה וחוסר פעילות גופנית", "lede": "התרגול מכין לחלק של BRFSS במבחן: אותן מיומנויות, עם מדינה אחרת. המשימות אומרות מה צריך להתקבל, ואת הדרך ב-Power BI בוחרים לבד.", "meta": [["זמן", "כ-40 דקות, והבונוס אם נשאר זמן"], ["קובץ", "`P_BRFSS_{{name}}.pbix`"], ["נתונים", "`BRFSS_PA.xlsx` מהמודל"]], "nav": [["brief", "השאלה והתוצר"], ["guided", "חלק א"], ["solo", "חלק ב"], ["bonus", "בונוס"], ["score", "ציון"], ["submit", "הגשה"]], "brief": {"kicker": "BRFSS: סקר בריאות ופעילות גופנית", "question": "ב-2025, איך שונה שיעור המבוגרים שלא עסקו בפעילות גופנית בשעות הפנאי בין קבוצות ההשכלה בקנזס (Kansas)?", "intro": ["ה-CDC סוקר מבוגרים בארצות הברית על בריאות ופעילות גופנית. כל שורה בקובץ היא אומדן באחוזים לקבוצה, בשנה ובמקום מסוימים, ולא תשובה של אדם אחד.", "המדד בשאלת החקר מופיע בעמודה question בשם: `Percent of adults who engage in no leisure-time physical activity`. אחוז גבוה פירושו יותר מבוגרים שלא עסקו בפעילות גופנית בשעות הפנאי."], "deliver": [{"h": "עמוד אחד בדוח", "items": ["גרף קווים: קו אחד לכל קבוצת השכלה, לאורך כל השנים בקובץ.", "Slicer לבחירת קבוצות השכלה, שמשנה גם את הגרף וגם את הטבלה.", "טבלה: השנה, קבוצת ההשכלה והאחוז.", "לכל רכיב כותרת שמזכירה את המדד, את קנזס ואת השנים, ומבהירה שהערכים באחוזים."]}, {"h": "בניקוי", "items": ["רק אומדנים שחולקו לפי השכלה, במדד של שאלת החקר ובקנזס (`Kansas`)."]}]}, "sections": [{"id": "guided", "title": "חלק א: בונים את הדוח", "sub": "כל משימה מגדירה מה צריך להתקבל. שאלת התכנון עוזרת לסדר את העבודה, ולא אומרת על מה ללחוץ. סמנו משימה כשהבדיקה שלה מתקיימת.", "tasks": [{"id": "pb-1", "t": "צרו קובץ Power BI חדש בשם `P_BRFSS_{{name}}.pbix` בתיקייה work, וטענו אליו את `BRFSS_PA.xlsx` כך שתוכלו לנקות אותו לפני שהוא נכנס לדוח.", "p": "מה מייצגת שורה אחת בקובץ? ולמה לא כדאי לטעון אותו ישר לדוח?", "e": "Power Query פתוח עם 60,060 שורות."}, {"id": "pb-2", "t": "השאירו רק את השורות שעונות על שאלת החקר: אומדנים שחולקו לפי השכלה, במדד של חוסר פעילות בשעות הפנאי, בקנזס (`Kansas`).", "p": "באילו שלוש עמודות מזהים את סוג החלוקה, את המדד ואת המקום? ומה מסמן תא ריק ב-education לפני הסינון?", "e": "בכל שנה נשארות בדיוק 4 שורות, אחת לכל קבוצת השכלה. את מספר השורות אחרי כל סינון תכתבו בשאלה 1.", "h": "שם המדד מופיע בעמודה question. לכל מדד יש קוד בעמודה questionid."}, {"id": "pb-3", "t": "בדקו כמה שמות שונים יש לקבוצות ההשכלה, ואחדו שמות שמתארים את אותה קבוצה.", "p": "כמה קבוצות השכלה אמורות להיות בכל שנה? אם יש יותר שמות, באילו שנים מופיע כל אחד מהם?", "e": "כל שם בעמודה education מופיע בכל 15 השנים."}, {"id": "pb-4", "t": "העבירו את הנתונים לדוח ובנו עמוד אחד: גרף קווים עם קו לכל קבוצת השכלה לאורך השנים, Slicer לבחירת קבוצות השכלה, וטבלה עם השנה, הקבוצה והאחוז.", "p": "כל נקודה בגרף היא אומדן באחוזים. מה יקרה אם Power BI יחבר אחוזים? ומה צריך לקרות לשנה?", "e": "4 קווים מ-2011 עד 2025, ובחירה ב-Slicer משנה גם את הגרף וגם את הטבלה."}, {"id": "pb-5", "t": "תנו לכל רכיב כותרת שאומרת מה מוצג: המדד, המדינה, הקבוצות והשנים, וציינו שהערכים באחוזים.", "p": "האם הכותרת מבהירה שאחוז גבוה פירושו יותר חוסר פעילות, ולא יותר פעילות?", "e": "בכותרת מופיעים קנזס, חוסר פעילות בשעות הפנאי והשנים."}, {"id": "pb-6", "t": "שמרו את הקובץ וצלמו שני צילומי מסך מלאים: Applied Steps, ועמוד הדוח.", "e": "הקובץ שמור ב-work, ושם הקובץ נראה בכל צילום."}], "qs": [{"id": "B1", "type": "counts", "q": "כמה שורות אומדן נשארו אחרי כל סינון? כתבו מספר שורות, לא מספר אנשים.", "note": "אם סיננתם בסדר אחר, בחרו ב-Applied Steps את הצעד המתאים ובדקו את Count בפרופיל.", "rows": [{"id": "strat", "label": "אחרי סינון סוג החלוקה (השכלה) בלבד", "key": 8580}, {"id": "measure", "label": "אחרי סוג החלוקה והמדד", "key": 3300}, {"id": "place", "label": "אחרי שלושת הסינונים (Kansas)", "key": 60}], "why": "כל סינון שומר דבר אחד קבוע: סוג החלוקה, המדד והמקום. 60 הן 15 שנים כפול 4 קבוצות השכלה.", "retry": "בדקו את Count בפרופיל על כל הנתונים, לא על 1,000 השורות הראשונות."}, {"id": "B2", "type": "counts", "q": "מה מצאתם בעמודה education?", "rows": [{"id": "before", "label": "שמות שונים ב-education לפני האיחוד", "key": 5}, {"id": "first", "label": "השנה הראשונה שבה מופיע השם המלא Some college or technical school", "key": 2024}], "why": "עד 2023 השם של הקבוצה נשמר מקוצר, ומ-2024 מלא. זו אותה קבוצה, ולכן מאחדים לשם אחד.", "retry": "בדקו את הפרופיל של education אחרי שלושת הסינונים, ואז סננו זמנית לפי כל שם וראו באילו שנים הוא מופיע."}, {"id": "B3", "type": "counts", "q": "קראו בטבלה או בגרף את ערכי 2025 בקנזס.", "rows": [{"id": "cg", "label": "College graduate", "key": 11.8, "tol": 0.05, "unit": "%"}, {"id": "lhs", "label": "Less than high school", "key": 37.2, "tol": 0.05, "unit": "%"}, {"id": "gap", "label": "הפער בין שתי הקבוצות", "key": 25.4, "tol": 0.1, "unit": "נקודות אחוז"}], "why": "37.2 פחות 11.8 הם 25.4 נקודות אחוז.", "retry": "ודאו שהשנה מוצגת כתווית, ושבכל שורה בטבלה מופיע אחוז אחד בלי חיבור."}, {"id": "B4", "type": "choice", "q": "מה פירוש הערך 37.2 בשורת 2025 של Less than high school בקנזס?", "options": [{"id": "A", "text": "37.2% מהמבוגרים שלא סיימו תיכון בקנזס לא עסקו בפעילות גופנית בשעות הפנאי."}, {"id": "B", "text": "37.2% מכלל המבוגרים בקנזס לא סיימו תיכון, ולכן זו הקבוצה הגדולה במדינה."}, {"id": "C", "text": "37.2% מהמבוגרים שלא סיימו תיכון בקנזס עסקו בפעילות גופנית בשעות הפנאי."}, {"id": "D", "text": "37.2 מתוך 60 השורות בטבלה מתארות מבוגרים שלא סיימו תיכון ולא היו פעילים."}], "key": "A", "why": "כל אחוז מתייחס למבוגרים בקבוצה ובשנה של אותה שורה. המדד סופר חוסר פעילות, ולכן אחוז גבוה פירושו פחות פעילות.", "retry": "קראו שוב את שם המדד: האם הוא סופר מי שעסקו בפעילות או מי שלא עסקו? ולמי מתייחס המכנה?"}, {"id": "B5", "type": "choice", "q": "מה היה מופיע בגרף הקווים אם לא הייתם מאחדים את שמות קבוצות ההשכלה?", "options": [{"id": "A", "text": "חמישה קווים: קבוצה אחת מתפצלת לקו עד 2023 ולקו קצר ב-2024 וב-2025."}, {"id": "B", "text": "ארבעה קווים, אבל הקו של קבוצה אחת גבוה פי שניים כי האחוזים מתחברים."}, {"id": "C", "text": "שלושה קווים בלבד, כי Power BI משמיט קבוצה ששמה לא זהה בכל השנים."}, {"id": "D", "text": "ארבעה קווים רגילים, כי Power BI מזהה לבד ששני השמות הם אותה קבוצה."}], "key": "A", "why": "Legend יוצר קו לכל ערך שונה. שני שמות של אותה קבוצה הם שני ערכים, ולכן שני קווים מנותקים.", "retry": "חשבו כמה ערכים שונים יש ב-education לפני האיחוד, ומה Legend עושה עם כל ערך."}, {"id": "B6", "type": "choice", "q": "בציר Y של גרף הקווים בחרתם Average של data_value. מתי Sum היה נותן תוצאה שגויה?", "options": [{"id": "A", "text": "כשלאותה שנה ולאותה קבוצה יש יותר משורה אחת, למשל אם שכחתם לסנן מקום."}, {"id": "B", "text": "תמיד, כי Power BI מחשב Sum של אחוזים כמספר שלם ומעגל את התוצאה."}, {"id": "C", "text": "רק בשנים 2024 ו-2025, כי בהן שם קבוצת ההשכלה מופיע בשתי צורות."}, {"id": "D", "text": "אף פעם, כי Sum ו-Average נותנים תמיד אותה תוצאה בכל גרף קווים."}], "key": "A", "why": "אחרי הניקוי יש שורה אחת לכל שנה וקבוצה, ולכן שתי הבחירות נראות אותו דבר. Average שומר על אחוז גם כשהניקוי לא הושלם, ו-Sum מחבר אחוזים של מקומות שונים.", "retry": "דמיינו שבנקודה אחת בגרף יש 55 שורות, אחת לכל מקום. מה יעשה כל חישוב?"}, {"id": "B7", "type": "seq", "rp": 1, "q": "תארו את רצף העבודה שלכם: לכל שלב בחרו מהמאגר את הכפתור או הפקודה שבהם השתמשתם.", "rows": [{"id": "b1", "label": "1. להשאיר רק אומדנים שחולקו לפי השכלה", "key": "Select All (uncheck) > one value"}, {"id": "b2", "label": "2. לאחד שני שמות של אותה קבוצת השכלה", "key": "Replace Values"}, {"id": "b3", "label": "3. להעביר לדוח את הנתונים אחרי הניקוי", "key": "Close & Apply"}, {"id": "b4", "label": "4. לצייר קו נפרד לכל קבוצת השכלה", "key": "Legend"}, {"id": "b5", "label": "5. לקבוע את גובה הקו לפי האחוז, בלי לחבר אחוזים", "key": "Average"}, {"id": "b6", "label": "6. להציג את השנה כתווית בציר ובטבלה", "key": "Don't summarize"}], "why": "סינון ברשימת הערכים שבחץ העמודה, איחוד שמות ב-Replace Values, ואז בניית הגרף: Legend לקווים ו-Average לגובה.", "retry": "בעמודת טקסט אין Number Filters. Duplicate יוצר שאילתה חדשה ולא משנה ערכים, ו-Sum מחבר אחוזים."}, {"id": "B8", "type": "open", "q": "ענו על שאלת החקר ב-2 עד 3 משפטים: ב-2025, איך שונה חוסר הפעילות בשעות הפנאי בין קבוצות ההשכלה בקנזס?", "criteria": ["מה רואים: הכיוון או הסדר שעונה על שאלת החקר.", "נתון אחד או שניים מהדוח, עם השנה והמין או הקבוצה.", "השוואה ישירה, למשל פער או שינוי, בלי הסבר על הסיבה."]}]}, {"id": "solo", "badge": "לבד", "badgeCls": "solo", "title": "חלק ב: משימה עצמאית", "sub": "בלי שאלות תכנון ובלי רמזים, כמו במבחן.", "intro": ["שאלת חקר חדשה: ב-2025, מה הפער בחוסר פעילות בשעות הפנאי בין מי שלא סיימו תיכון לבין בוגרי קולג' באינדיאנה (`Indiana`)? בנו שאילתה ועמוד נפרדים, בלי לשנות את העמוד של קנזס."], "qs": [{"id": "S1", "type": "counts", "q": "קראו בטבלה או בגרף את ערכי 2025 באינדיאנה.", "rows": [{"id": "cg", "label": "College graduate", "key": 13.6, "tol": 0.05, "unit": "%"}, {"id": "lhs", "label": "Less than high school", "key": 41.9, "tol": 0.05, "unit": "%"}, {"id": "gap", "label": "הפער בין שתי הקבוצות", "key": 28.3, "tol": 0.1, "unit": "נקודות אחוז"}], "why": "41.9 פחות 13.6 הם 28.3 נקודות אחוז.", "retry": "ודאו שהשנה מוצגת כתווית, ושבכל שורה בטבלה מופיע אחוז אחד בלי חיבור."}, {"id": "S2", "type": "choice", "q": "השוו בין אינדיאנה לקנזס ב-2025. איזה משפט נכון?", "options": [{"id": "A", "text": "הפער באינדיאנה (28.3) גדול מהפער בקנזס (25.4) ב-2.9 נקודות אחוז."}, {"id": "B", "text": "הפער באינדיאנה (28.3) קטן מהפער בקנזס (25.4) ב-2.9 נקודות אחוז."}, {"id": "C", "text": "באינדיאנה יותר אנשים לא סיימו תיכון, ולכן הפער שם גדול יותר מבקנזס."}, {"id": "D", "text": "אי אפשר להשוות, כי באינדיאנה ובקנזס מספר הנשאלים בכל קבוצה שונה."}], "key": "A", "why": "28.3 פחות 25.4 הם 2.9 נקודות אחוז. כל אחוז מחושב בתוך הקבוצה שלו, ולכן אפשר להשוות פערים בין מדינות.", "retry": "חשבו את שני הפערים, ובדקו איזו אפשרות מוסיפה טענה שהדוח לא מראה."}]}, {"id": "bonus", "badge": "בונוס", "badgeCls": "bonus", "title": "בדיקת איכות בגרף הקווים", "sub": "כמו בשיעור 6: גרף קווים מראה גם דפוסים שנובעים מאופן המדידה, ולא מהאנשים. חזרו לגרף של קנזס.", "qs": [{"id": "X1", "type": "choice", "q": "בגרף הקווים של קנזס בדקו את הקו של College graduate בשנים 2011 עד 2020. מה רואים?", "options": [{"id": "A", "text": "הקו קופץ: ברוב השנים האי-זוגיות הוא גבוה יותר מהשנים הזוגיות שלידן."}, {"id": "B", "text": "הקו קופץ: ברוב השנים הזוגיות הוא גבוה יותר מהשנים האי-זוגיות שלידן."}, {"id": "C", "text": "הקו יורד בהדרגה ובקביעות, בלי קפיצות משנה לשנה לאורך כל התקופה."}, {"id": "D", "text": "הקו עולה בהדרגה ובקביעות, בלי קפיצות משנה לשנה לאורך כל התקופה."}], "key": "A", "why": "הרגלים של מבוגרים רבים לא משתנים בזיגזג משנה לשנה. דפוס כזה מעורר חשד שהשאלון השתנה בין השנים.", "retry": "השוו כל שנה זוגית לשתי השנים שלידה, למשל 2014 מול 2013 ו-2015."}, {"id": "X2", "type": "counts", "q": "השוו רק שנים מאותו סוג: College graduate ב-2011 וב-2023 בקנזס.", "rows": [{"id": "y11", "label": "2011", "key": 15.8, "tol": 0.05, "unit": "%"}, {"id": "y23", "label": "2023", "key": 14.0, "tol": 0.05, "unit": "%"}, {"id": "diff", "label": "כמה ירד האחוז", "key": 1.8, "tol": 0.1, "unit": "נקודות אחוז"}], "why": "15.8 פחות 14.0 הם 1.8 נקודות אחוז, בין שתי שנים אי-זוגיות.", "retry": "השתמשו בטבלה כדי לקרוא ערכים מדויקים, ולא בגובה הקו בעין."}, {"id": "X3", "type": "choice", "q": "איזו מסקנה זהירה מתאימה לבדיקה הזו?", "options": [{"id": "A", "text": "בין השנים האי-זוגיות האחוז ירד; הקפיצות מרמזות על שינוי בשאלון, לא בהכרח באנשים."}, {"id": "B", "text": "בין 2019 ל-2020 האחוז ירד בחדות, ולכן ב-2020 הבוגרים התחילו לעסוק יותר בפעילות."}, {"id": "C", "text": "השנים הזוגיות שגויות, ולכן צריך למחוק אותן מהנתונים לפני שמסיקים מסקנה כלשהי."}, {"id": "D", "text": "הקפיצות מוכיחות שבשנים האי-זוגיות הסוקרים ראיינו אנשים פחות פעילים מבשנים אחרות."}], "key": "A", "why": "משווים שנים שנמדדו באותה דרך. הגרף מעלה שאלה על המדידה, אבל לא מוכיח לבדו מה גרם לקפיצות.", "retry": "איזו אפשרות משווה רק שנים מאותו סוג, ולא טוענת יותר ממה שהגרף מראה?"}]}], "rubric": [["ניקוי", "שלושה סינונים ואיחוד שמות ההשכלה, 60 שורות", 10], ["דיוק החישוב", "Average של האחוז, השנה כתווית, data_value כמספר", 6], ["רכיבי הדוח והסינון", "ארבעה קווים, Slicer שמשנה גרף וטבלה, טבלה מלאה", 10], ["בהירות", "כותרות עם המדד, המקום והשנים, וציון של אחוזים", 4], ["שאלות", "שאלות סגורות, רצף העבודה ותשובה קצרה לשאלת החקר", 20]], "checklistNote": "אותה רשימה מופיעה במבחן. עברו עליה לפני כל הגשה.", "checklist": ["הקובץ נשמר בשם שנדרש, בתיקייה work.", "ב-Applied Steps מופיעים רק צעדי הניקוי שהשאלה דורשת, בלי צעדי בדיקה שנשכחו.", "כל רכיב מחשב את מה שהשאלה מבקשת: ספירה, ממוצע או ערך, ולא חיבור של מזהים, שנים או אחוזים.", "בחירה ב-Slicer משנה את הרכיבים שהיא אמורה לשנות, ורק אותם.", "לכל רכיב כותרת שאומרת מה מוצג: מה נמדד, באיזה מין או קבוצה, איפה ובאילו שנים.", "צילומי המסך מלאים, ושם הקובץ האישי נראה בהם.", "עניתי על כל השאלות והעתקתי את הסיכום."], "submit": ["קובץ `P_BRFSS_{{name}}.pbix`.", "שני צילומי מסך מלאים: Applied Steps ועמוד הדוח של קנזס.", "הסיכום שלמטה, מודבק בתיבת הטקסט של המטלה."], "summaryTitle": "תרגול לקראת המבחן המעשי, חלק 2: BRFSS", "bank": ["Get data > Text/CSV", "Get data > Excel workbook", "Load", "Transform data", "Number Filters > Greater Than", "Number Filters > Less Than", "Remove Empty", "Remove Blank Rows", "Choose Columns", "Replace Values", "Select All (uncheck) > one value", "Close & Apply", "Duplicate", "Card", "Table", "Slicer", "Clustered column chart", "Line chart", "Legend", "Count", "Count (Distinct)", "Sum", "Average", "Don't summarize", "Sort axis", "Display units"], "foot": ["התשובות נשמרות רק בדפדפן הזה. בסיום מעתיקים את הסיכום למודל.", "החלק הראשון של התרגול עוסק בנתוני Portal, בדף נפרד."]};
+(function () {
+  "use strict";
+  var C = CONFIG, PRACTICE = C.mode === "practice";
+  var KEY = C.storageKey;
+  var state = { name: "", done: {}, ans: {}, res: {}, tries: {}, order: {}, checks: {}, self: {}, sub: false };
+  try { var raw = localStorage.getItem(KEY); if (raw) { var s = JSON.parse(raw); for (var k in s) state[k] = s[k]; } } catch (e) { }
+  // Saved at once on every change, so a refresh or a closed tab never loses an answer
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { } }
+
+  var VIEW_KEY = "pbi-assess-view-v1", view = { size: "m", theme: "auto" };
+  try { var v = JSON.parse(localStorage.getItem(VIEW_KEY) || "null"); if (v) { view.size = v.size || "m"; view.theme = v.theme || "auto"; } } catch (e) { }
+  function applyView() {
+    var r = document.documentElement;
+    r.setAttribute("data-size", view.size);
+    if (view.theme === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", view.theme);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-set-size]"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-set-size") === view.size)); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-set-theme]"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-set-theme") === view.theme)); });
+  }
+
+  // ---------- helpers ----------
+  function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+  function nameOr() { var n = String(state.name || "").trim(); return n || "Cohen_Noa"; }
+  // {{name}} becomes the student's name; `code` stays left to right
+  function rich(text) {
+    var frag = document.createDocumentFragment();
+    String(text).replace(/\{\{name\}\}/g, nameOr()).split(/(`[^`]+`)/).forEach(function (p) {
+      if (!p) return;
+      if (p.charAt(0) === "`" && p.charAt(p.length - 1) === "`") frag.appendChild(el("code", null, p.slice(1, -1)));
+      else frag.appendChild(document.createTextNode(p));
+    });
+    return frag;
+  }
+  function plain(text) { return String(text).replace(/\{\{name\}\}/g, nameOr()).replace(/`/g, ""); }
+  function para(cls, text) { var p = el("p", cls); p.appendChild(rich(text)); return p; }
+  var toastEl = document.getElementById("toast"), toastTimer = null;
+  function toast(msg) { toastEl.textContent = msg; toastEl.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastEl.hidden = true; }, Math.min(7000, 1800 + msg.length * 45)); }
+  function shuffled(ids) { var a = ids.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function ordered(q, list, key) {
+    var ids = list.map(function (o) { return o.id; }), k = q.id + (key || "");
+    var o = state.order[k];
+    if (!Array.isArray(o) || o.length !== ids.length || ids.some(function (id) { return o.indexOf(id) < 0; })) { o = shuffled(ids); state.order[k] = o; save(); }
+    return o.map(function (id) { return list.find(function (x) { return x.id === id; }); });
+  }
+  // Numbers: "14,492" and "14492" are the same; "10,9" is a decimal comma
+  function num(s) {
+    s = String(s == null ? "" : s).trim().replace(/[\s%‏‎]/g, "");
+    if (!s) return NaN;
+    if (/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) s = s.replace(/,/g, "");
+    else s = s.replace(",", ".");
+    return /^-?\d+(\.\d+)?$/.test(s) ? parseFloat(s) : NaN;
+  }
+
+  // ---------- scoring (practice only: the exam has no keys) ----------
+  function maxPts(q) {
+    if (q.type === "open") return 0;
+    if (q.type === "choice") return q.pts || 2;
+    return (q.rows || []).length * (q.rp || 1);
+  }
+  function grade(q) {
+    var a = state.ans[q.id], rows = {}, pts = 0;
+    if (q.type === "choice") { var ok = a === q.key; pts = ok ? maxPts(q) : 0; return { pts: pts, max: maxPts(q), ok: ok, rows: rows }; }
+    (q.rows || []).forEach(function (r) {
+      var v = a && a[r.id], good;
+      if (q.type === "counts") { var x = num(v); good = !isNaN(x) && Math.abs(x - r.key) <= (r.tol || 0) + 1e-9; }
+      else good = Array.isArray(r.key) ? r.key.indexOf(v) >= 0 : v === r.key;
+      rows[r.id] = good; if (good) pts += (q.rp || 1);
+    });
+    return { pts: pts, max: maxPts(q), ok: pts === maxPts(q), rows: rows };
+  }
+  function complete(q) {
+    var a = state.ans[q.id];
+    if (q.type === "choice") return !!a;
+    if (q.type === "open") return !!String(a || "").trim();
+    return !!(a && q.rows.every(function (r) { return String(a[r.id] || "").trim(); }));
+  }
+
+  // ---------- question renderers ----------
+  var allQs = [];
+  function setAns(q, rowId, value) {
+    if (rowId == null) state.ans[q.id] = value;
+    else { var a = state.ans[q.id] || {}; a[rowId] = value; state.ans[q.id] = a; }
+    save(); refreshScore(); refreshSummary();
+  }
+  function renderQuestion(q, n) {
+    allQs.push(q);
+    var box = el("div", "q"); box.id = "q-" + q.id;
+    var head = el("div", "q-head");
+    head.appendChild(el("span", "q-num", "שאלה " + n));
+    if (PRACTICE && q.type !== "open") head.appendChild(el("span", "q-pts", maxPts(q) + " נק'"));
+    if (!PRACTICE && q.pts != null) head.appendChild(el("span", "q-pts", q.pts + " נק'"));
+    box.appendChild(head);
+    box.appendChild(para("q-text", q.q));
+    if (q.note) box.appendChild(para("q-note", q.note));
+    var a = state.ans[q.id];
+    var body;
+    if (q.type === "choice") {
+      body = el("div", "q-options"); body.setAttribute("role", "radiogroup");
+      ordered(q, q.options).forEach(function (o) {
+        var lab = el("label", "q-option"); lab.dataset.opt = o.id;
+        var r = document.createElement("input"); r.type = "radio"; r.name = "r-" + q.id; r.value = o.id; r.checked = a === o.id;
+        r.addEventListener("change", function () { setAns(q, null, o.id); clearRes(q); });
+        lab.appendChild(r); var t = el("span"); t.appendChild(rich(o.text)); lab.appendChild(t); body.appendChild(lab);
+      });
+    } else if (q.type === "match" || q.type === "seq") {
+      body = el("div", "q-rows");
+      var opts = q.type === "seq" ? C.bank.map(function (b) { return { id: b, text: b }; }) : ordered(q, q.options);
+      if (q.type === "seq") opts = opts.slice().sort(function (x, y) { return x.text.localeCompare(y.text, "en"); });
+      q.rows.forEach(function (r) {
+        var row = el("label", "q-row"); row.dataset.row = r.id;
+        var lt = el("span"); lt.appendChild(rich(r.label)); row.appendChild(lt);
+        var sel = document.createElement("select"); if (q.type === "seq") sel.className = "ltr-sel";
+        var o0 = el("option", null, q.type === "seq" ? "בחרו כפתור או פקודה" : "בחרו"); o0.value = ""; sel.appendChild(o0);
+        opts.forEach(function (o) { var op = el("option", null, plain(o.text)); op.value = o.id; sel.appendChild(op); });
+        sel.value = (a && a[r.id]) || "";
+        sel.addEventListener("change", function () { setAns(q, r.id, sel.value); clearRes(q); });
+        row.appendChild(sel); body.appendChild(row);
+      });
+      if (q.type === "seq") {
+        var bank = el("div", "bank"); bank.appendChild(el("p", "bank-label", "מאגר הכפתורים והפקודות (חלקם לא שייכים לרצף)"));
+        var bi = el("div", "bank-items"); C.bank.slice().sort(function (x, y) { return x.localeCompare(y, "en"); }).forEach(function (b) { bi.appendChild(el("span", null, b)); });
+        bank.appendChild(bi); box.appendChild(bank);
+      }
+    } else if (q.type === "counts") {
+      body = el("div", "q-rows");
+      q.rows.forEach(function (r) {
+        var row = el("label", "q-row"); row.dataset.row = r.id;
+        var lt = el("span"); lt.appendChild(rich(r.label)); row.appendChild(lt);
+        var wrap = el("span", "row");
+        var inp = document.createElement("input"); inp.type = "text"; inp.inputMode = "decimal"; inp.autocomplete = "off"; inp.value = (a && a[r.id]) || "";
+        inp.addEventListener("input", function () { setAns(q, r.id, inp.value); clearRes(q); });
+        wrap.appendChild(inp); if (r.unit) wrap.appendChild(el("span", "unit", r.unit));
+        row.appendChild(wrap); body.appendChild(row);
+      });
+    } else {
+      body = el("div", "q-rows");
+      var ta = document.createElement("textarea"); ta.value = a || ""; ta.setAttribute("aria-label", plain(q.q));
+      ta.addEventListener("input", function () { setAns(q, null, ta.value); });
+      body.appendChild(ta);
+      if (q.criteria) {
+        var sc = el("div", "selfcheck");
+        sc.appendChild(el("p", "bank-label", PRACTICE ? "בדיקה עצמית: מה יש בתשובה שלכם?" : "תשובה מלאה כוללת"));
+        q.criteria.forEach(function (c, i) {
+          if (PRACTICE) {
+            var lab = el("label"); var cb = document.createElement("input"); cb.type = "checkbox";
+            var key = q.id + "." + i; cb.checked = !!state.self[key];
+            cb.addEventListener("change", function () { state.self[key] = cb.checked; save(); refreshSummary(); });
+            lab.appendChild(cb); var t = el("span"); t.appendChild(rich(c)); lab.appendChild(t); sc.appendChild(lab);
+          } else { sc.appendChild(para("small", "• " + c)); }
+        });
+        body.appendChild(sc);
+      }
+    }
+    box.appendChild(body);
+    if (PRACTICE && q.type !== "open") {
+      var act = el("div", "q-actions");
+      var b = el("button", "btn ghost", "בדיקת התשובה"); b.type = "button";
+      var fb = el("div", "fb"); fb.hidden = true; fb.setAttribute("aria-live", "polite");
+      b.addEventListener("click", function () {
+        if (!complete(q)) { toast("עוד לא עניתם על כל הסעיפים בשאלה הזו."); return; }
+        state.tries[q.id] = (state.tries[q.id] || 0) + 1;
+        state.res[q.id] = grade(q); save();
+        showRes(q); refreshScore(); refreshSummary();
+      });
+      act.appendChild(b); box.appendChild(act); box.appendChild(fb);
+      box._fb = fb;
+    }
+    return box;
+  }
+  function clearRes(q) {
+    if (!PRACTICE || !state.res[q.id]) return;
+    delete state.res[q.id]; save();
+    var box = document.getElementById("q-" + q.id); if (!box) return;
+    Array.prototype.forEach.call(box.querySelectorAll("[data-res]"), function (n) { n.removeAttribute("data-res"); });
+    if (box._fb) box._fb.hidden = true;
+    refreshScore();
+  }
+  function showRes(q) {
+    var res = state.res[q.id], box = document.getElementById("q-" + q.id);
+    if (!res || !box || !box._fb) return;
+    if (q.type === "choice") {
+      Array.prototype.forEach.call(box.querySelectorAll(".q-option"), function (n) {
+        n.removeAttribute("data-res");
+        if (n.dataset.opt === state.ans[q.id]) n.setAttribute("data-res", res.ok ? "ok" : "no");
+      });
+    } else {
+      Array.prototype.forEach.call(box.querySelectorAll(".q-row"), function (n) { n.setAttribute("data-res", res.rows[n.dataset.row] ? "ok" : "no"); });
+    }
+    var fb = box._fb; fb.innerHTML = ""; fb.hidden = false;
+    fb.className = "fb " + (res.ok ? "ok" : res.pts > 0 ? "part" : "no");
+    fb.appendChild(el("p", "fb-title", (res.ok ? "נכון. " : res.pts > 0 ? "נכון בחלקו. " : "עוד לא. ") + res.pts + " מתוך " + res.max + " נקודות."));
+    if (res.ok && q.why) fb.appendChild(para(null, q.why));
+    if (!res.ok && q.retry) fb.appendChild(para(null, q.retry));
+    if (!res.ok) fb.appendChild(el("p", "small", "תקנו את מה שמסומן באדום ובדקו שוב. כל בדיקה נרשמת בסיכום."));
+  }
+
+  // ---------- tasks ----------
+  function renderTasks(list) {
+    var ol = el("ol", "tasks");
+    list.forEach(function (t, i) {
+      var li = el("li", "task"); li.dataset.done = state.done[t.id] ? "1" : "0";
+      var cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "cb-" + t.id; cb.checked = !!state.done[t.id];
+      cb.setAttribute("aria-label", "סיימתי את משימה " + (i + 1));
+      cb.addEventListener("change", function () { state.done[t.id] = cb.checked; li.dataset.done = cb.checked ? "1" : "0"; save(); refreshSummary(); });
+      li.appendChild(cb);
+      var body = el("div", "task-body");
+      body.appendChild(el("span", "t-num", "משימה " + (i + 1)));
+      body.appendChild(para("t-goal", t.t));
+      if (t.p) { var th = el("div", "think"); th.appendChild(el("span", "think-label", "שאלה לתכנון")); th.appendChild(para(null, t.p)); body.appendChild(th); }
+      if (t.e) { var ex = el("p", "expect"); ex.appendChild(el("b", null, "בדיקה: ")); ex.appendChild(rich(t.e)); body.appendChild(ex); }
+      if (t.h) { var d = el("details", "hint"); d.appendChild(el("summary", null, "רמז")); d.appendChild(para(null, t.h)); body.appendChild(d); }
+      li.appendChild(body); ol.appendChild(li);
+    });
+    return ol;
+  }
+
+  // ---------- page ----------
+  var app = document.getElementById("app");
+  var qCounter = 0;
+  function header() {
+    var h = el("header", "top");
+    var eb = el("p", "eyebrow"); eb.appendChild(el("span", "who", C.badge)); eb.appendChild(document.createTextNode(C.eyebrow)); h.appendChild(eb);
+    h.appendChild(el("h1", null, C.title));
+    h.appendChild(para("lede", C.lede));
+    var m = el("div", "meta");
+    C.meta.forEach(function (x) { var s = el("span"); s.appendChild(el("b", null, x[0] + ": ")); s.appendChild(rich(x[1])); m.appendChild(s); });
+    h.appendChild(m);
+    var vs = el("details", "viewset");
+    vs.innerHTML = '<summary>תצוגה: גודל טקסט ורקע</summary><div class="viewset-body">' +
+      '<div><p class="vs-label" id="vsSize">גודל טקסט</p><div class="vs-seg" role="group" aria-labelledby="vsSize">' +
+      '<button type="button" class="vs-btn" data-set-size="m">רגיל</button><button type="button" class="vs-btn" data-set-size="l">גדול</button><button type="button" class="vs-btn" data-set-size="xl">גדול מאוד</button></div></div>' +
+      '<div><p class="vs-label" id="vsTheme">רקע</p><div class="vs-seg" role="group" aria-labelledby="vsTheme">' +
+      '<button type="button" class="vs-btn" data-set-theme="auto">לפי המכשיר</button><button type="button" class="vs-btn" data-set-theme="light">בהיר</button><button type="button" class="vs-btn" data-set-theme="dark">כהה</button></div></div></div>';
+    h.appendChild(vs);
+    if (C.nav) { var nv = el("nav", "nav"); nv.setAttribute("aria-label", "חלקי הדף"); C.nav.forEach(function (x) { var a = el("a", null, x[1]); a.href = "#" + x[0]; nv.appendChild(a); }); h.appendChild(nv); }
+    return h;
+  }
+  function briefPanel() {
+    var p = el("section", "panel"); p.id = "brief";
+    p.appendChild(el("p", "kicker", C.brief.kicker));
+    var nb = el("div", "namebox");
+    var lab = el("label", null, "השם שלכם באנגלית, כמו בשם הקובץ"); lab.htmlFor = "stName";
+    var inp = document.createElement("input"); inp.id = "stName"; inp.placeholder = "Cohen_Noa"; inp.value = state.name || ""; inp.autocomplete = "off"; inp.spellcheck = false;
+    inp.addEventListener("change", function () { state.name = inp.value.trim().replace(/\s+/g, "_"); inp.value = state.name; save(); rerender(); });
+    nb.appendChild(lab); nb.appendChild(inp); nb.appendChild(el("p", "small", "השם מופיע בשמות הקבצים למטה ובסיכום שמגישים."));
+    p.appendChild(nb);
+    var g = el("div", "goal"); g.appendChild(el("p", "goal-label", "שאלת החקר")); g.appendChild(para(null, C.brief.question)); p.appendChild(g);
+    if (C.brief.intro) { var it = el("div", "intro"); C.brief.intro.forEach(function (t) { it.appendChild(para(null, t)); }); p.appendChild(it); }
+    p.appendChild(el("h2", null, "מה צריך להופיע בקובץ"));
+    var dv = el("div", "deliver");
+    C.brief.deliver.forEach(function (d) {
+      var box = el("div", "deliver-page"); box.appendChild(el("h3", null, d.h));
+      var ul = el("ul"); d.items.forEach(function (x) { var li = el("li"); li.appendChild(rich(x)); ul.appendChild(li); }); box.appendChild(ul); dv.appendChild(box);
+    });
+    p.appendChild(dv);
+    return p;
+  }
+  function section(sec) {
+    var p = el("section", "panel"); p.id = sec.id;
+    var hd = el("div", "sec-head");
+    var h = el("h2"); if (sec.badge) h.appendChild(el("span", "badge " + sec.badgeCls, sec.badge)); h.appendChild(document.createTextNode(sec.title)); hd.appendChild(h);
+    if (sec.sub) hd.appendChild(para("sec-sub", sec.sub));
+    p.appendChild(hd);
+    if (sec.intro) { var it = el("div", "intro"); sec.intro.forEach(function (t) { it.appendChild(para(null, t)); }); p.appendChild(it); }
+    if (sec.tasks) p.appendChild(renderTasks(sec.tasks));
+    if (sec.qs && sec.qs.length) {
+      if (sec.tasks) p.appendChild(el("h3", null, "שאלות"));
+      var qs = el("div", "qs"); sec.qs.forEach(function (q) { qCounter++; qs.appendChild(renderQuestion(q, qCounter)); }); p.appendChild(qs);
+    }
+    return p;
+  }
+  var scoreBox = null;
+  function scorePanel() {
+    var p = el("section", "panel"); p.id = "score";
+    p.appendChild(el("h2", null, "הציון שלכם בתרגול"));
+    p.appendChild(para("sec-sub", "הציון מחושב רק מהשאלות הסגורות שבדקתם. התוצר ב-Power BI והתשובה הכתובה נבדקים לפי המחוון בסוף הדף."));
+    scoreBox = el("div", "score"); p.appendChild(scoreBox);
+    if (C.rubric) {
+      p.appendChild(el("h3", null, "כך ייבדק התוצר במבחן"));
+      var wrap = el("div", "score"); wrap.style.borderStyle = "dashed";
+      var tbl = document.createElement("table"); tbl.innerHTML = "<thead><tr><th>רכיב</th><th>מה בודקים</th><th>נקודות</th></tr></thead>";
+      var tbd = document.createElement("tbody");
+      C.rubric.forEach(function (r) { var tr = document.createElement("tr"); [r[0], r[1], String(r[2])].forEach(function (c) { var td = document.createElement("td"); td.appendChild(rich(c)); tr.appendChild(td); }); tbd.appendChild(tr); });
+      tbl.appendChild(tbd); wrap.appendChild(tbl); p.appendChild(wrap);
+    }
+    return p;
+  }
+  function refreshScore() {
+    if (!scoreBox) return;
+    var tot = 0, got = 0, rows = [];
+    allQs.forEach(function (q, i) {
+      if (q.type === "open") return;
+      var m = maxPts(q); tot += m; var r = state.res[q.id];
+      if (r) got += r.pts;
+      rows.push([i + 1, r ? r.pts + " / " + m : "לא נבדק", state.tries[q.id] || 0]);
+    });
+    scoreBox.innerHTML = "";
+    var top = el("div", "score-top");
+    top.appendChild(el("span", "score-num", got + " / " + tot));
+    var pct = tot ? Math.round(100 * got / tot) : 0;
+    top.appendChild(el("span", "status", pct + "% מהשאלות הסגורות"));
+    scoreBox.appendChild(top);
+    var m = el("div", "meter"); var bar = el("i"); bar.style.width = pct + "%"; m.appendChild(bar); scoreBox.appendChild(m);
+    var tbl = document.createElement("table"); tbl.innerHTML = "<thead><tr><th>שאלה</th><th>נקודות</th><th>בדיקות</th></tr></thead>";
+    var tb = document.createElement("tbody");
+    rows.forEach(function (r) { var tr = document.createElement("tr"); r.forEach(function (c) { tr.appendChild(el("td", null, String(c))); }); tb.appendChild(tr); });
+    tbl.appendChild(tb); scoreBox.appendChild(tbl);
+  }
+  function checklistPanel() {
+    var p = el("section", "panel"); p.id = "check";
+    p.appendChild(el("h2", null, "בדיקה לפני הגשה"));
+    p.appendChild(para("sec-sub", C.checklistNote));
+    var box = el("div", "checks");
+    C.checklist.forEach(function (c, i) {
+      var lab = el("label"); var cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = !!state.checks[i];
+      cb.addEventListener("change", function () { state.checks[i] = cb.checked; save(); refreshSummary(); });
+      lab.appendChild(cb); var t = el("span"); t.appendChild(rich(c)); lab.appendChild(t); box.appendChild(lab);
+    });
+    p.appendChild(box);
+    return p;
+  }
+  var sumHost = null;
+  function submitPanel() {
+    var p = el("section", "panel"); p.id = "submit";
+    var s = el("div", "submit");
+    s.appendChild(el("p", "submit-label", "מה מגישים במודל"));
+    var ul = el("ul", "plain-list"); C.submit.forEach(function (x) { var li = el("li"); li.appendChild(rich(x)); ul.appendChild(li); }); s.appendChild(ul);
+    sumHost = el("div", "report-prev"); sumHost.setAttribute("aria-label", "הסיכום שמדביקים במודל");
+    s.appendChild(sumHost);
+    var row = el("div", "row");
+    var cb = el("button", "btn", "העתקת הסיכום"); cb.type = "button";
+    var st = el("span", "status");
+    cb.addEventListener("click", function () { copySummary(st); });
+    row.appendChild(cb); row.appendChild(st); s.appendChild(row);
+    var lab = el("label", "subm"); var sc = document.createElement("input"); sc.type = "checkbox"; sc.checked = !!state.sub;
+    sc.addEventListener("change", function () { state.sub = sc.checked; save(); });
+    lab.appendChild(sc); lab.appendChild(document.createTextNode("הגשתי במודל")); s.appendChild(lab);
+    p.appendChild(s);
+    return p;
+  }
+  function answerText(q) {
+    var a = state.ans[q.id];
+    if (q.type === "choice") { var o = q.options.find(function (x) { return x.id === a; }); return [o ? plain(o.text) : "(לא עניתי)"]; }
+    if (q.type === "open") return String(a || "").trim() ? String(a).trim().split(/\r?\n/) : ["(לא עניתי)"];
+    return q.rows.map(function (r) {
+      var v = a && a[r.id];
+      if (q.type === "match") { var o = q.options.find(function (x) { return x.id === v; }); v = o ? plain(o.text) : ""; }
+      return plain(r.label) + ": " + (String(v || "").trim() || "(לא עניתי)");
+    });
+  }
+  function payload() {
+    var out = { student: state.name || "", file: C.fileId, answers: [] };
+    if (C.form) out.form = C.form;
+    allQs.forEach(function (q) {
+      var a = state.ans[q.id];
+      if (q.type === "choice" || q.type === "open") out.answers.push({ id: q.id, type: q.type, value: String(a || "").trim() });
+      else q.rows.forEach(function (r) { out.answers.push({ id: q.id + "." + r.id, type: q.type === "counts" ? "fill" : q.type, value: String(a && a[r.id] || "").trim() }); });
+    });
+    if (PRACTICE) {
+      var got = 0, tot = 0; allQs.forEach(function (q) { if (q.type === "open") return; tot += maxPts(q); if (state.res[q.id]) got += state.res[q.id].pts; });
+      out.practiceScore = got + "/" + tot;
+      out.checks = allQs.filter(function (q) { return q.type !== "open"; }).map(function (q) { return { id: q.id, tries: state.tries[q.id] || 0, pts: state.res[q.id] ? state.res[q.id].pts : null }; });
+    }
+    return out;
+  }
+  function summaryGroups() {
+    var g = [[{ b: 1, t: C.summaryTitle }, { t: "שם: " + (state.name || "(לא מולא)") + (C.form ? ", טור " + C.formHe : "") }]];
+    if (PRACTICE) {
+      var done = 0, all = 0; C.sections.forEach(function (s) { (s.tasks || []).forEach(function (t) { all++; if (state.done[t.id]) done++; }); });
+      var p = payload(); g[0].push({ t: "סימנתי " + done + " מתוך " + all + " משימות. ציון השאלות הסגורות: " + p.practiceScore + "." });
+    }
+    var c = 0; C.checklist.forEach(function (x, i) { if (state.checks[i]) c++; });
+    g[0].push({ t: "בדיקה לפני הגשה: סימנתי " + c + " מתוך " + C.checklist.length + "." });
+    allQs.forEach(function (q, i) {
+      var grp = [{ b: 1, t: (i + 1) + ". " + plain(q.q) }];
+      answerText(q).forEach(function (ln) { grp.push({ t: ln }); });
+      g.push(grp);
+    });
+    var mk = C.jsonMarker;
+    g.push([{ b: 1, t: mk + "_START" }, { j: 1, t: JSON.stringify(payload()) }, { b: 1, t: mk + "_END" }]);
+    return g;
+  }
+  function refreshSummary() {
+    if (!sumHost) return;
+    var groups = summaryGroups(); sumHost.innerHTML = "";
+    groups.forEach(function (g) {
+      var p = el("p");
+      g.forEach(function (ln, i) { if (i) p.appendChild(document.createElement("br")); var n = ln.b ? el("b", null, ln.t) : ln.j ? el("span", "json", ln.t) : document.createTextNode(ln.t); p.appendChild(n); });
+      sumHost.appendChild(p);
+    });
+    sumHost._text = groups.map(function (g) { return g.map(function (l) { return l.t; }).join("\n"); }).join("\n\n");
+  }
+  function selectNode(n) { var r = document.createRange(); r.selectNodeContents(n); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); }
+  function copySummary(st) {
+    var text = sumHost._text, html = sumHost.innerHTML;
+    function ok() { st.textContent = "הסיכום הועתק. הדביקו אותו במטלה במודל."; }
+    function fallback() {
+      selectNode(sumHost);
+      var done = false; try { done = document.execCommand("copy"); } catch (e) { }
+      st.textContent = done ? "הסיכום הועתק. הדביקו אותו במטלה במודל." : "ההעתקה האוטומטית לא עבדה, אבל הסיכום מסומן. הקישו Ctrl+C (ב-Mac: Cmd+C).";
+    }
+    try {
+      if (navigator.clipboard && window.ClipboardItem) {
+        navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([text], { type: "text/plain" }) })]).then(ok, function () {
+          navigator.clipboard.writeText(text).then(ok, fallback);
+        });
+      } else if (navigator.clipboard) navigator.clipboard.writeText(text).then(ok, fallback);
+      else fallback();
+    } catch (e) { fallback(); }
+  }
+  function footer() {
+    var f = el("footer", "foot");
+    C.foot.forEach(function (t) { f.appendChild(para(null, t)); });
+    var row = el("div", "row");
+    var rb = el("button", "btn quiet", "ניקוי כל התשובות בדפדפן הזה"); rb.type = "button";
+    var yes = el("button", "btn", "כן, למחוק הכול"); yes.type = "button"; yes.hidden = true;
+    var no = el("button", "btn ghost", "ביטול"); no.type = "button"; no.hidden = true;
+    var ask = el("span", "status", "למחוק את כל התשובות והסימונים בדף הזה, בדפדפן הזה?"); ask.hidden = true;
+    function asking(on) { rb.hidden = on; yes.hidden = !on; no.hidden = !on; ask.hidden = !on; }
+    rb.addEventListener("click", function () { asking(true); });
+    no.addEventListener("click", function () { asking(false); });
+    yes.addEventListener("click", function () {
+      state = { name: "", done: {}, ans: {}, res: {}, tries: {}, order: {}, checks: {}, self: {}, sub: false };
+      try { localStorage.removeItem(KEY); } catch (e) { }
+      rerender(); toast("התשובות נמחקו.");
+    });
+    row.appendChild(ask); row.appendChild(yes); row.appendChild(no);
+    row.appendChild(rb); f.appendChild(row);
+    return f;
+  }
+  function rerender() {
+    var y = window.scrollY;
+    app.innerHTML = ""; allQs = []; qCounter = 0; scoreBox = null; sumHost = null;
+    app.appendChild(header());
+    app.appendChild(briefPanel());
+    C.sections.forEach(function (s) { app.appendChild(section(s)); });
+    if (PRACTICE) app.appendChild(scorePanel());
+    app.appendChild(checklistPanel());
+    app.appendChild(submitPanel());
+    app.appendChild(footer());
+    Array.prototype.forEach.call(document.querySelectorAll("[data-set-size]"), function (b) { b.addEventListener("click", function () { view.size = b.getAttribute("data-set-size"); try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) { } applyView(); }); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-set-theme]"), function (b) { b.addEventListener("click", function () { view.theme = b.getAttribute("data-set-theme"); try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) { } applyView(); }); });
+    applyView();
+    allQs.forEach(function (q) { if (state.res[q.id]) showRes(q); });
+    refreshScore(); refreshSummary();
+    window.scrollTo(0, y);
+  }
+  rerender();
+})();
+</script>
+</body>
+</html>
