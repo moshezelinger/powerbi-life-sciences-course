@@ -452,6 +452,48 @@ details[open]::details-content { opacity: 1; block-size: auto; }
   .tab[aria-selected="true"] { transform: none; }
   details::details-content { transition: none; }
 }
+/* ===== תחנת עריכה: דוח התלמיד (ענף בדיקה). שינויים נשמרים בקובץ edits-week1.js ומוחלים בדוח התלמיד ===== */
+.ed-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 1000px) { .ed-grid { grid-template-columns: minmax(0, 1fr); } }
+.ed-col { display: grid; gap: 12px; min-width: 0; }
+.ed-scroll { max-height: 78vh; overflow: auto; display: grid; gap: 12px; padding-inline-end: 4px; }
+.ed-lessons { display: flex; flex-wrap: wrap; gap: 6px; }
+.ed-lessons button { font: inherit; font-weight: 700; min-width: 44px; min-height: 40px; border-radius: 10px; border: 1.5px solid var(--rule); background: var(--card); color: var(--ink); cursor: pointer; position: relative; }
+.ed-lessons button[aria-pressed="true"] { border-color: var(--bar); background: var(--bar-soft); color: var(--bar); }
+.ed-lessons button[data-changed="1"]::after { content: ""; position: absolute; top: 4px; inset-inline-start: 4px; width: 7px; height: 7px; border-radius: 50%; background: var(--tape); }
+.ed-group { border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; display: grid; gap: 10px; min-width: 0; }
+.ed-group > h3 { margin: 0; font-size: 1.0625rem; }
+.ed-q { border: 1px solid var(--rule); border-radius: 12px; padding: 10px 12px; display: grid; gap: 8px; background: var(--card); min-width: 0; }
+.ed-q-head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.ed-q-num { font-weight: 700; color: var(--bar); }
+.ed-id { font-family: var(--mono); font-size: 0.8125rem; color: var(--ink-3); direction: ltr; unicode-bidi: isolate; }
+.ed-move { margin-inline-start: auto; display: flex; gap: 6px; }
+.ed-move button { font: inherit; min-width: 40px; min-height: 36px; border-radius: 8px; border: 1.5px solid var(--rule); background: var(--card); color: var(--ink); cursor: pointer; }
+.ed-move button:disabled { opacity: 0.35; cursor: not-allowed; }
+.ed-field { display: grid; gap: 4px; min-width: 0; }
+.ed-field > span { font-size: 0.875rem; font-weight: 700; color: var(--ink-2); }
+.ed-field textarea, .ed-field input[type="text"], .ed-field select, .ed-opt input[type="text"], .ed-opt select { font: inherit; font-size: 1rem; color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 6px 8px; width: 100%; box-sizing: border-box; min-width: 0; }
+.ed-field textarea { resize: vertical; min-height: 2.6em; }
+.ed-opt { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.ed-opt.ed-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.ed-opt .ed-id { min-width: 2.2em; }
+.ed-opt label { display: inline-flex; gap: 4px; align-items: center; font-size: 0.875rem; white-space: nowrap; color: var(--ink-2); }
+.ed-changed { outline: 2px solid var(--tape); outline-offset: 1px; }
+.ed-key { background: var(--sage-soft); border-radius: 8px; padding: 8px 10px; font-size: 0.9375rem; color: var(--ink); display: grid; gap: 2px; }
+.ed-key b { color: var(--bar); }
+.ed-key.none { background: var(--chip); color: var(--ink-2); }
+.ed-step > summary { cursor: pointer; padding: 6px 0; font-weight: 600; }
+.ed-step[open] > summary { margin-bottom: 6px; }
+.ed-step-body { display: grid; gap: 8px; padding-bottom: 8px; }
+.ed-bar { position: sticky; top: 0; z-index: 2; background: var(--card); padding: 8px 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-bottom: 1px solid var(--rule); }
+.ed-status { font-size: 0.9375rem; color: var(--ink-2); margin: 0; }
+.ed-status[data-dirty="1"] { color: var(--amber-ink); font-weight: 700; }
+.ed-msgs { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.ed-msgs li { border-radius: 8px; padding: 6px 10px; font-size: 0.9375rem; }
+.ed-msgs li.err { background: rgba(196, 43, 28, 0.12); color: var(--ink); border-inline-start: 3px solid #c42b1c; }
+.ed-msgs li.warn { background: var(--amber-soft); color: var(--ink); border-inline-start: 3px solid var(--tape); }
+.ed-msgs li.ok { background: var(--sage-soft); color: var(--ink); border-inline-start: 3px solid var(--bar); }
+.ed-frame { width: 100%; height: 78vh; min-height: 520px; border: 1px solid var(--rule); border-radius: 12px; background: var(--paper); }
 </style>
 
 <div class="app" dir="rtl" lang="he">
@@ -513,6 +555,7 @@ details[open]::details-content { opacity: 1; block-size: auto; }
               <a href="#week">השבוע במבט אחד</a>
               <a href="#stations">ההכנה לפי שיעור</a>
               <a href="#sim">הסימולטור של שיעור 3</a>
+              <a href="#editor">עריכת דוח התלמיד</a>
             </div></div>
           <div class="qgroup" role="group" aria-labelledby="qgClass"><p class="qg-title" id="qgClass">הוראה בכיתה</p>
             <div class="qlinks">
@@ -597,6 +640,49 @@ details[open]::details-content { opacity: 1; block-size: auto; }
     </div>
     <nav class="rail" id="rail" role="tablist" aria-label="תחנות ההכנה"></nav>
     <main class="panel" id="panel" role="tabpanel" tabindex="-1"></main>
+  </section>
+
+  <section class="card" id="editor" aria-labelledby="editorTitle">
+    <div class="sec-head">
+      <h2 id="editorTitle">תחנת עריכה: דוח הלמידה לתלמיד</h2>
+      <p class="sub">משנים סדר שאלות, ניסוחים ותשובות נכונות, ולוחצים על Apply. התצוגה המקדימה מתעדכנת מיד, והתלמידים רואים את השינוי רק אחרי שמעלים את קובץ השינויים.</p>
+    </div>
+    <details class="more">
+      <summary>איך זה עובד, ומה נשמר</summary>
+      <div class="more-body">
+        <ol>
+          <li>בוחרים שיעור, משנים, ולוחצים על <b>Apply</b>. השינויים נבדקים, נשמרים בדפדפן הזה, ומוצגים בתצוגה המקדימה שמשמאל.</li>
+          <li>כשהכול נראה טוב, לוחצים על <b>הורדת קובץ השינויים</b> ומעלים את edits-week1.js לתיקיית האפליקציות במאגר, במקום הקובץ הקיים. מאותו רגע כל התלמידים רואים את הגרסה החדשה.</li>
+          <li>מזהי השאלות לא משתנים, ולכן תשובות שהתלמידים כבר כתבו נשמרות, וה-JSON שבסיכום ממשיך להתאים למחוון. מספר השאלה בסיכום הקריא מתעדכן לפי הסדר החדש.</li>
+          <li>תשובה נכונה אפשר לשנות רק בשאלות שיש להן בדיקה מיידית (שיעורים 1 עד 3). בשאלות ההגשה עם ציון אין מפתח בקוד התלמיד, והעורך לא מוסיף אחד.</li>
+          <li>התשובות בתצוגה המקדימה נשמרות בנפרד, ולא נוגעות בתשובות האמיתיות שבדפדפן.</li>
+        </ol>
+      </div>
+    </details>
+    <div class="ed-grid">
+      <div class="ed-col">
+        <div class="ed-bar">
+          <div class="ed-lessons" id="edLessons" role="group" aria-label="בחירת שיעור לעריכה"></div>
+          <button type="button" class="btn" id="edApply">Apply</button>
+          <button type="button" class="btn ghost" id="edUndo">ביטול מה שלא הוחל</button>
+        </div>
+        <p class="ed-status" id="edStatus" aria-live="polite">טוענים את דוח התלמיד…</p>
+        <ul class="ed-msgs" id="edMsgs" aria-live="polite"></ul>
+        <div class="ed-scroll" id="edBody"></div>
+        <div class="row">
+          <button type="button" class="btn ghost" id="edDownload">הורדת קובץ השינויים</button>
+          <button type="button" class="btn ghost" id="edResetLesson">החזרת השיעור למקור</button>
+          <button type="button" class="btn ghost" id="edPublished">חזרה לקובץ שפורסם</button>
+        </div>
+      </div>
+      <div class="ed-col">
+        <div class="row">
+          <b>תצוגה מקדימה של דוח התלמיד</b>
+          <a class="btn ghost link-btn" id="edOpen" href="#" target="_blank" rel="noopener">פתיחה בלשונית חדשה</a>
+        </div>
+        <iframe class="ed-frame" id="edFrame" title="תצוגה מקדימה של דוח התלמיד"></iframe>
+      </div>
+    </div>
   </section>
 
   <section class="card" id="sim" aria-labelledby="simTitle">
@@ -786,6 +872,7 @@ details[open]::details-content { opacity: 1; block-size: auto; }
   </div>
 </div>
 
+<script src="edits-engine.js"></script>
 <script>
 (function () {
   "use strict";
@@ -2117,6 +2204,336 @@ details[open]::details-content { opacity: 1; block-size: auto; }
   initRemote();
   if (/^s[0-7]$/.test(h)) setTimeout(function () { document.getElementById("rail").scrollIntoView({ block: "start" }); }, 60);
   else if (h && document.getElementById(h)) setTimeout(function () { document.getElementById(h).scrollIntoView({ block: "start" }); }, 60);
+})();
+</script>
+<script>
+/* תחנת עריכה: דוח הלמידה לתלמיד. הנתונים המקוריים מגיעים מדוח התלמיד שבתצוגה המקדימה (postMessage),
+   והשינויים מחושבים ומוחלים ב-edits-engine.js, אותו מנוע שדוח התלמיד משתמש בו. בלי מודל שפה ובלי שרת. */
+(function () {
+  "use strict";
+  var rootEl = document.getElementById("editor");
+  if (!rootEl) return;
+  var API = window.PBIEdits;
+  var STUDENT = encodeURIComponent("לתלמיד - דוח למידה PBI מס' 1.html");
+  var DRAFT_KEY = "pbi-week1-edits-draft-v1";
+  var EMPTY = { version: 1, week: 1, lessons: {} };
+  var frame = document.getElementById("edFrame");
+  var statusEl = document.getElementById("edStatus");
+  var bodyEl = document.getElementById("edBody");
+  var lessonsEl = document.getElementById("edLessons");
+  var msgsEl = document.getElementById("edMsgs");
+  var openEl = document.getElementById("edOpen");
+  var base = null, published = EMPTY, applied = EMPTY, work = null, cur = 1, dirty = false;
+  var TYPE = { choice: "בחירה", match: "התאמה", counts: "מילוי מספרים", assemble: "הרכבת משפט" };
+  var STEP_LABEL = { t: "מה עושים", e: "מה אמור להופיע", h: "רמז (לא חובה)", w: "למה עושים את זה? (לא חובה)" };
+
+  function h(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
+  function clone(x) { return JSON.parse(JSON.stringify(x)); }
+  function byId(list) { var m = {}; (list || []).forEach(function (x) { m[x.id] = x; }); return m; }
+  function same(a, b) { return JSON.stringify(a === undefined ? "" : a) === JSON.stringify(b === undefined ? "" : b); }
+  function loadDraft() { try { var r = localStorage.getItem(DRAFT_KEY); return r ? JSON.parse(r) : null; } catch (e) { return null; } }
+  function saveDraft(ed) { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(ed)); } catch (e) { } }
+  function previewUrl(ed) { return STUDENT + "?edits=" + (ed ? encodeURIComponent(JSON.stringify(ed)) : "published") + "#l" + cur; }
+  function countChanges(ed) {
+    var n = 0;
+    Object.keys(ed.lessons || {}).forEach(function (k) {
+      var e = ed.lessons[k];
+      n += Object.keys(e.items || {}).length + (e.qOrder ? 1 : 0) + (e.goal !== undefined ? 1 : 0) + (e.submit !== undefined ? 1 : 0);
+    });
+    return n;
+  }
+  function msgs(list) {
+    msgsEl.textContent = "";
+    list.forEach(function (m) { msgsEl.appendChild(h("li", m[0], m[1])); });
+  }
+  function setStatus() {
+    if (!base) return;
+    var n = countChanges(applied), pub = same(applied, published);
+    statusEl.dataset.dirty = dirty ? "1" : "0";
+    statusEl.textContent = dirty ? "יש שינויים שעוד לא הוחלו. לוחצים על Apply כדי לראות אותם בתצוגה המקדימה."
+      : (n ? "הוחלו " + n + " שינויים. " : "אין שינויים מהמקור. ") +
+        (pub ? "זה מה שהתלמידים רואים עכשיו." : "התלמידים עדיין רואים את הקובץ שפורסם. כדי לעדכן אותם, מורידים את קובץ השינויים ומעלים אותו למאגר.");
+    var ch = API.diff(base, work).lessons;
+    Array.prototype.forEach.call(lessonsEl.children, function (b) { b.dataset.changed = ch[b.dataset.n] ? "1" : "0"; });
+  }
+  function touch() { dirty = true; setStatus(); }
+
+  if (!API) { statusEl.textContent = "קובץ המנוע edits-engine.js לא נטען, ולכן אי אפשר לערוך. בודקים שהוא נמצא באותה תיקייה."; return; }
+
+  // ---------- Loading: the student report in the preview sends its original data ----------
+  var startDraft = loadDraft();
+  frame.src = previewUrl(startDraft);
+  openEl.href = frame.src;
+  var waitT = setTimeout(function () {
+    if (!base) statusEl.textContent = "דוח התלמיד לא שלח את הנתונים. פותחים את מסע ההכנה מהאתר, או מתיקייה שבה נמצאים גם דוח התלמיד, edits-engine.js ו-edits-week1.js.";
+  }, 8000);
+  window.addEventListener("message", function (ev) {
+    if (ev.source !== frame.contentWindow) return;
+    var d = ev.data;
+    if (!d || d.type !== "pbi-week1-lessons" || !Array.isArray(d.base)) return;
+    if (d.log && d.log.length) msgs(d.log.map(function (t) { return ["warn", t]; }));
+    if (base) return;
+    clearTimeout(waitT);
+    base = d.base;
+    published = d.published && d.published.lessons ? d.published : EMPTY;
+    applied = startDraft && startDraft.lessons ? startDraft : published;
+    work = API.apply(base, applied).lessons;
+    renderLessons(); render(); setStatus();
+  });
+
+  // ---------- Lesson picker ----------
+  function renderLessons() {
+    lessonsEl.textContent = "";
+    base.forEach(function (L) {
+      var b = h("button", "", String(L.n));
+      b.type = "button"; b.dataset.n = L.n;
+      b.setAttribute("aria-label", "שיעור " + L.n + ": " + L.title);
+      b.setAttribute("aria-pressed", L.n === cur ? "true" : "false");
+      b.addEventListener("click", function () {
+        cur = L.n;
+        Array.prototype.forEach.call(lessonsEl.children, function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+        render(); setStatus();
+        frame.src = previewUrl(applied); openEl.href = frame.src;
+      });
+      lessonsEl.appendChild(b);
+    });
+  }
+
+  // ---------- Fields ----------
+  function textField(label, obj, key, orig, multi, onInput) {
+    var f = h("label", "ed-field");
+    f.appendChild(h("span", "", label));
+    var inp = multi ? h("textarea") : h("input");
+    if (!multi) inp.type = "text";
+    if (multi) inp.rows = Math.min(6, Math.max(2, Math.ceil(String(obj[key] || "").length / 70)));
+    inp.value = obj[key] || "";
+    function mark() { inp.classList.toggle("ed-changed", (obj[key] || "") !== (orig || "")); }
+    inp.addEventListener("input", function () {
+      if (inp.value) obj[key] = inp.value; else delete obj[key];
+      mark(); touch(); if (onInput) onInput();
+    });
+    mark();
+    f.appendChild(inp);
+    return f;
+  }
+
+  function keyBox(L, q) {
+    var box = h("div", "ed-key");
+    if (!API.hasKey(q)) {
+      box.className = "ed-key none";
+      box.appendChild(h("span", "", L.n === 4
+        ? "אין מפתח בקוד התלמיד: זו שאלת הגשה עם ציון. המפתח והכללים לבדיקה נמצאים בתחנה של שיעור 4."
+        : "אין מפתח בקוד התלמיד: זו שאלת הגשה עם ציון, ובודקים אותה לפי המחוון."));
+      return box;
+    }
+    var opts = byId(q.options);
+    box.appendChild(h("b", "", "מפתח התשובה (מתעדכן לפי העריכה)"));
+    if (q.type === "choice") {
+      var o = opts[q.correct];
+      box.appendChild(h("span", "", q.correct + ". " + (o ? o.text : "")));
+    } else {
+      q.rows.forEach(function (r) {
+        var o2 = opts[q.correct[r.id]];
+        box.appendChild(h("span", "", r.label + " ← " + (o2 ? o2.text : "(לא נבחר)")));
+      });
+    }
+    if (q.why) box.appendChild(h("span", "", "הסבר לתלמיד: " + q.why));
+    return box;
+  }
+
+  function questionCard(L, B, q, i) {
+    var b = byId(B.qs)[q.id];
+    var card = h("div", "ed-q");
+    var head = h("div", "ed-q-head");
+    head.appendChild(h("span", "ed-q-num", "שאלה " + (i + 1)));
+    head.appendChild(h("span", "ed-id", q.id));
+    head.appendChild(h("span", "small", (TYPE[q.type] || "פתוחה") + (q.opt ? ", רשות" : "")));
+    var origPos = B.qs.indexOf(b);
+    if (origPos !== i) head.appendChild(h("span", "small", "(במקור: שאלה " + (origPos + 1) + ")"));
+    var mv = h("div", "ed-move");
+    [["↑", -1, "להזיז למעלה"], ["↓", 1, "להזיז למטה"]].forEach(function (d) {
+      var btn = h("button", "", d[0]); btn.type = "button";
+      btn.setAttribute("aria-label", "שאלה " + (i + 1) + ": " + d[2]);
+      var j = i + d[1];
+      btn.disabled = j < 0 || j >= L.qs.length;
+      btn.addEventListener("click", function () {
+        var t = L.qs[i]; L.qs[i] = L.qs[j]; L.qs[j] = t;
+        touch(); render();
+        var again = bodyEl.querySelectorAll(".ed-q")[j];
+        if (again) { var nb = again.querySelector('.ed-move button:nth-child(' + (d[1] < 0 ? 1 : 2) + ')'); if (nb && !nb.disabled) nb.focus(); else again.querySelector("textarea").focus(); }
+      });
+      mv.appendChild(btn);
+    });
+    head.appendChild(mv);
+    card.appendChild(head);
+
+    var kb = keyBox(L, q);
+    function refreshKey() { var nk = keyBox(L, q); card.replaceChild(nk, kb); kb = nk; }
+    card.appendChild(textField("ניסוח השאלה", q, "q", b.q, true, refreshKey));
+
+    if (q.type === "choice" && q.options) {
+      var grp = h("div", "ed-field"); grp.appendChild(h("span", "", API.hasKey(q) ? "האפשרויות, והתשובה הנכונה" : "האפשרויות"));
+      var bo = byId(b.options);
+      q.options.forEach(function (o) {
+        var row = h("div", "ed-opt");
+        row.appendChild(h("span", "ed-id", o.id));
+        var inp = h("input"); inp.type = "text"; inp.value = o.text; inp.setAttribute("aria-label", "אפשרות " + o.id);
+        inp.classList.toggle("ed-changed", o.text !== bo[o.id].text);
+        inp.addEventListener("input", function () { o.text = inp.value; inp.classList.toggle("ed-changed", o.text !== bo[o.id].text); touch(); refreshKey(); });
+        row.appendChild(inp);
+        if (API.hasKey(q)) {
+          var lab = h("label"), r = h("input"); r.type = "radio"; r.name = "ed-c-" + q.id; r.checked = q.correct === o.id;
+          r.addEventListener("change", function () { q.correct = o.id; touch(); refreshKey(); lab.parentNode.parentNode.querySelectorAll("label").forEach(function (x) { x.classList.toggle("ed-changed", x.querySelector("input").checked && q.correct !== b.correct); }); });
+          lab.classList.toggle("ed-changed", q.correct === o.id && q.correct !== b.correct);
+          lab.appendChild(r); lab.appendChild(document.createTextNode("נכונה"));
+          row.appendChild(lab);
+        } else row.appendChild(h("span"));
+        grp.appendChild(row);
+      });
+      card.appendChild(grp);
+    }
+
+    if ((q.type === "match" || q.type === "counts") && q.rows) {
+      if (q.options) {
+        var og = h("div", "ed-field"); og.appendChild(h("span", "", "האפשרויות לבחירה"));
+        var bo2 = byId(b.options);
+        q.options.forEach(function (o) {
+          var row = h("div", "ed-opt");
+          row.appendChild(h("span", "ed-id", o.id));
+          var inp = h("input"); inp.type = "text"; inp.value = o.text; inp.setAttribute("aria-label", "אפשרות " + o.id);
+          inp.classList.toggle("ed-changed", o.text !== bo2[o.id].text);
+          inp.addEventListener("input", function () { o.text = inp.value; inp.classList.toggle("ed-changed", o.text !== bo2[o.id].text); touch(); refreshKey(); renderSelects(); });
+          row.appendChild(inp); row.appendChild(h("span"));
+          og.appendChild(row);
+        });
+        card.appendChild(og);
+      }
+      var rg = h("div", "ed-field"); rg.appendChild(h("span", "", API.hasKey(q) ? "השורות, והתשובה הנכונה לכל שורה" : "השורות"));
+      var br = byId(b.rows), selects = [];
+      q.rows.forEach(function (r) {
+        var row = h("div", "ed-opt ed-row");
+        var inp = h("input"); inp.type = "text"; inp.value = r.label; inp.setAttribute("aria-label", "שורה " + r.id);
+        inp.classList.toggle("ed-changed", r.label !== br[r.id].label);
+        inp.addEventListener("input", function () { r.label = inp.value; inp.classList.toggle("ed-changed", r.label !== br[r.id].label); touch(); refreshKey(); });
+        row.appendChild(inp);
+        if (API.hasKey(q) && q.options) {
+          var sel = h("select"); sel.setAttribute("aria-label", "התשובה הנכונה לשורה " + r.label);
+          sel.addEventListener("change", function () {
+            q.correct[r.id] = sel.value;
+            sel.classList.toggle("ed-changed", q.correct[r.id] !== b.correct[r.id]);
+            touch(); refreshKey();
+          });
+          selects.push([sel, r]);
+          row.appendChild(sel);
+        } else row.appendChild(h("span"));
+        rg.appendChild(row);
+      });
+      function renderSelects() {
+        selects.forEach(function (p) {
+          var sel = p[0], r = p[1];
+          sel.textContent = "";
+          q.options.forEach(function (o) { var op = h("option", "", o.id + ". " + o.text); op.value = o.id; sel.appendChild(op); });
+          sel.value = q.correct[r.id];
+          sel.classList.toggle("ed-changed", q.correct[r.id] !== b.correct[r.id]);
+        });
+      }
+      renderSelects();
+      card.appendChild(rg);
+    }
+
+    if (API.hasKey(q)) card.appendChild(textField("ההסבר שמופיע אחרי תשובה נכונה", q, "why", b.why, true, refreshKey));
+    card.appendChild(kb);
+    return card;
+  }
+
+  function stepItem(B, s, i) {
+    var b = byId(B.steps)[s.id];
+    var d = h("details", "ed-step");
+    var sum = h("summary");
+    function label() {
+      var changed = ["t", "e", "h", "w"].some(function (f) { return (s[f] || "") !== (b[f] || ""); });
+      sum.textContent = (changed ? "● " : "") + "צעד " + (i + 1) + (s.opt ? " (רשות)" : "") + ": " + String(s.t || "").replace(/\[\[|\]\]|\{\{|\}\}/g, "").slice(0, 70) + (String(s.t || "").length > 70 ? "…" : "");
+    }
+    label();
+    d.appendChild(sum);
+    var bd = h("div", "ed-step-body");
+    bd.appendChild(h("span", "ed-id", s.id));
+    ["t", "e", "h", "w"].forEach(function (f) { bd.appendChild(textField(STEP_LABEL[f], s, f, b[f], true, label)); });
+    d.appendChild(bd);
+    return d;
+  }
+
+  function render() {
+    if (!work) return;
+    var L = work[cur - 1], B = base[cur - 1];
+    var openSteps = {};
+    bodyEl.querySelectorAll(".ed-step[open] .ed-id").forEach(function (x) { openSteps[x.textContent] = 1; });
+    var top = bodyEl.scrollTop;
+    bodyEl.textContent = "";
+    bodyEl.appendChild(h("p", "muted", "שיעור " + L.n + ": " + L.title));
+
+    var qg = h("section", "ed-group");
+    qg.appendChild(h("h3", "", "שאלות: סדר, ניסוח ותשובות"));
+    L.qs.forEach(function (q, i) { qg.appendChild(questionCard(L, B, q, i)); });
+    bodyEl.appendChild(qg);
+
+    var lg = h("section", "ed-group");
+    lg.appendChild(h("h3", "", "הנחיות השיעור"));
+    lg.appendChild(textField("המטרה של היום", L, "goal", B.goal, true));
+    lg.appendChild(textField("מה מגישים במודל", L, "submit", B.submit, true));
+    bodyEl.appendChild(lg);
+
+    var sg = h("section", "ed-group");
+    sg.appendChild(h("h3", "", "צעדים: ניסוח ההנחיות"));
+    sg.appendChild(h("p", "small", "סדר הצעדים לא משתנה, כי שאלות והסברים מפנים לצעד לפי המספר שלו."));
+    L.steps.forEach(function (s, i) { var it = stepItem(B, s, i); if (openSteps[s.id]) it.open = true; sg.appendChild(it); });
+    bodyEl.appendChild(sg);
+    bodyEl.scrollTop = top;
+  }
+
+  // ---------- Actions ----------
+  document.getElementById("edApply").addEventListener("click", function () {
+    if (!base) return;
+    var errs = API.validate(work);
+    if (errs.length) { msgs(errs.map(function (t) { return ["err", t]; })); statusEl.textContent = "השינויים לא הוחלו. מתקנים את מה שמסומן ולוחצים שוב על Apply."; statusEl.dataset.dirty = "1"; return; }
+    var ed = API.diff(base, work);
+    var check = API.apply(base, ed);
+    var list = API.orderWarnings(base, check.lessons).map(function (t) { return ["warn", t]; })
+      .concat(check.log.map(function (t) { return ["err", t]; }));
+    applied = ed; saveDraft(ed); dirty = false;
+    work = check.lessons;
+    frame.src = previewUrl(applied); openEl.href = frame.src;
+    msgs([["ok", "הוחל. התצוגה המקדימה נטענת מחדש עם השינויים."]].concat(list));
+    render(); setStatus();
+  });
+  document.getElementById("edUndo").addEventListener("click", function () {
+    if (!base) return;
+    work = API.apply(base, applied).lessons; dirty = false; msgs([]); render(); setStatus();
+  });
+  document.getElementById("edResetLesson").addEventListener("click", function () {
+    if (!base) return;
+    work[cur - 1] = clone(base[cur - 1]); touch(); render();
+    msgs([["warn", "שיעור " + cur + " הוחזר למקור. לוחצים על Apply כדי להחיל."]]);
+  });
+  document.getElementById("edPublished").addEventListener("click", function () {
+    if (!base) return;
+    work = API.apply(base, published).lessons; touch(); render();
+    msgs([["warn", "העורך חזר לקובץ שפורסם. לוחצים על Apply כדי להחיל."]]);
+  });
+  document.getElementById("edDownload").addEventListener("click", function () {
+    if (!base) return;
+    if (dirty) { msgs([["err", "יש שינויים שעוד לא הוחלו. קודם לוחצים על Apply ובודקים בתצוגה המקדימה, ורק אחר כך מורידים."]]); return; }
+    var text = "/* קובץ השינויים של דוח הלמידה לשבוע 1. נוצר בתחנת העריכה במסע ההכנה למורה, " + new Date().toLocaleString("he-IL") + ".\n" +
+      "   כל התלמידים רואים את מה שכתוב כאן. מעלים אותו לתיקיית האפליקציות במקום הקובץ הקיים, באותו שם. */\n" +
+      "window.PBI_EDITS = " + JSON.stringify(applied, null, 2) + ";\n";
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text], { type: "text/javascript;charset=utf-8" }));
+    a.download = "edits-week1.js";
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    msgs([["ok", "הקובץ edits-week1.js ירד. מעלים אותו למאגר, לתיקייה project/claude/שבוע 1/אפליקציות, במקום הקובץ הקיים."]]);
+  });
+  window.addEventListener("beforeunload", function (ev) { if (dirty) { ev.preventDefault(); ev.returnValue = ""; } });
 })();
 </script>
 

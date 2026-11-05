@@ -583,6 +583,9 @@ details[open]::details-content { opacity: 1; block-size: auto; }
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 </div>
 
+<!-- שינויים שהמורה פרסם מתחנת העריכה. אם אחד הקבצים חסר, הדוח נטען כמו המקור. -->
+<script src="edits-engine.js"></script>
+<script src="edits-week1.js"></script>
 <script>
 (function () {
   "use strict";
@@ -877,6 +880,30 @@ details[open]::details-content { opacity: 1; block-size: auto; }
       submit: "צילום מסך מלא של הכרטיס עם 14,548 ושם קובץ L07 האישי, ותשובות לשתי השאלות. את הבדיקה המעשית מגישים לפי הוראות המורה." }
   ];
 
+  // ---------- Teacher edits (edits-engine.js + edits-week1.js) ----------
+  // Without ?edits= every student sees the published file. With ?edits= (from the teacher's editor) the page is a preview:
+  // the draft comes from the URL, and progress is kept under separate keys so the real answers are not touched.
+  var LESSONS_BASE = JSON.parse(JSON.stringify(LESSONS));
+  var EDITS_PREVIEW = /[?&]edits=/.test(location.search);
+  var EDITS_LOG = [];
+  (function () {
+    var api = window.PBIEdits;
+    if (!api) return;
+    var edits = window.PBI_EDITS || null;
+    if (EDITS_PREVIEW) {
+      var m = location.search.match(/[?&]edits=([^&]*)/), raw = "";
+      try { raw = decodeURIComponent(m ? m[1] : ""); } catch (e) { raw = ""; }
+      if (raw && raw !== "published") { try { edits = JSON.parse(raw); } catch (e) { EDITS_LOG.push("קובץ השינויים בתצוגה המקדימה לא תקין."); } }
+    }
+    try {
+      var res = api.apply(LESSONS_BASE, edits);
+      LESSONS = res.lessons; EDITS_LOG = EDITS_LOG.concat(res.log);
+    } catch (e) { EDITS_LOG.push("החלת השינויים נכשלה, והדוח מוצג כמו המקור."); }
+    if (EDITS_PREVIEW && window.parent && window.parent !== window) {
+      try { window.parent.postMessage({ type: "pbi-week1-lessons", base: LESSONS_BASE, published: window.PBI_EDITS || null, log: EDITS_LOG }, "*"); } catch (e) { }
+    }
+  })();
+
   // Where each button is in Power BI (English interface). Shown in the copy message and in the lexicon.
   var LOC = {
     "Blank report": "במסך הפתיחה של Power BI",
@@ -927,8 +954,8 @@ details[open]::details-content { opacity: 1; block-size: auto; }
   };
 
   // ---------- State (this browser only) ----------
-  var KEY = "pbi-week1-student-v1";
-  var ORDER_KEY = "pbi-week1-choice-order-v1";
+  var KEY = "pbi-week1-student-v1" + (EDITS_PREVIEW ? "-preview" : "");
+  var ORDER_KEY = "pbi-week1-choice-order-v1" + (EDITS_PREVIEW ? "-preview" : "");
   var REPORT = 8;
   var state = { done: {}, ans: {}, sub: {}, order: {}, lesson: 1 };
   try {
@@ -1446,6 +1473,13 @@ details[open]::details-content { opacity: 1; block-size: auto; }
 
   // ---------- Lesson panel ----------
   var panelEl = document.getElementById("panel");
+  if (EDITS_PREVIEW) {
+    var previewNote = el("p", "edits-preview", "תצוגה מקדימה של שינויי המורה. התשובות כאן נשמרות בנפרד, והדוח שהתלמידים רואים לא משתנה עד שמפרסמים את קובץ השינויים." + (EDITS_LOG.length ? " " + EDITS_LOG.join(" ") : ""));
+    previewNote.setAttribute("role", "note");
+    previewNote.style.cssText = "margin:0 0 12px;padding:10px 14px;border-radius:12px;background:var(--tape-soft,#fff3c4);border:1px solid var(--tape,#ffca08);color:var(--ink,#2b2829);font-weight:600;";
+    var topEl = document.querySelector("header.top");
+    if (topEl && topEl.parentNode) topEl.parentNode.insertBefore(previewNote, topEl.nextSibling);
+  }
   function updatePreview() {
     if (state.lesson === REPORT) return;
     var p = document.getElementById("prev-" + state.lesson);
