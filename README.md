@@ -28,6 +28,7 @@
 - **לבניית קורס או לשיפור חומר קיים:** [השבלונה הכללית והסבר השימוש](course-building-template/README.md).
 - **להתנסות בדפדפן:** [דוח הלמידה לתלמיד](https://moshezelinger.github.io/powerbi-life-sciences-course/week1/student.html) ו[מסע ההכנה למורה](https://moshezelinger.github.io/powerbi-life-sciences-course/week1/teacher.html).
 - **לעיון בתוצרים:** [חומרי השבוע הראשון](project/claude/שבוע%201/).
+- **תרגול לקראת המבחן המעשי:** [תרגול Portal](https://moshezelinger.github.io/powerbi-life-sciences-course/practice/portal.html) ו[תרגול BRFSS](https://moshezelinger.github.io/powerbi-life-sciences-course/practice/brfss.html). [הסבר על התרגולים](project/claude/הכנה%20למבחן%20המעשי/).
 - **להתאמת האפליקציות:** [השבלונות למורה ולתלמיד](project/claude/מערכת/שבלונות/) ו[מדריך השימוש](docs/app-usage.md).
 
 <details dir="rtl">
